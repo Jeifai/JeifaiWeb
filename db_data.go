@@ -7,21 +7,25 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
+    // "github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 var Db *sql.DB
 
 func init() {
-	// Load Environmental Variables, comment if deploy
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
-	}
+    // Load Environmental Variables, comment if deploy
+	// err := godotenv.Load()
+	// if err != nil {
+	//     fmt.Println("Error loading .env file")
+	// }
 
-	psqlInfo := os.Getenv("POSTGRES_CONNECTION")
-	Db, err = sql.Open("postgres", psqlInfo)
+    psqlInfo := os.Getenv("POSTGRES_CONNECTION")
+
+    db, err := sql.Open("postgres", psqlInfo)
+    
+    Db = db
+
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +34,7 @@ func init() {
 		fmt.Println("Unsuccessfully connected to the database")
 		return
 	}
-	fmt.Println("Successfully connected to the database")
+    fmt.Println("Successfully connected to the database")
 }
 
 func createUUID() (uuid string) {

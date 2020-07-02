@@ -158,6 +158,9 @@ func (user *User) Create() (err error) {
 
 // Get a single user given the email
 func UserByEmail(email string) (user User, err error) {
+
+    fmt.Println(email)
+
 	user = User{}
 	err = Db.QueryRow(`SELECT
                         id,
@@ -189,7 +192,10 @@ func UserByEmail(email string) (user User, err error) {
 			&user.Country,
 			&user.City,
 			&user.Gender,
-		)
+        )
+        
+    fmt.Println(user)
+
 	return
 }
 
