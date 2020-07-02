@@ -3,3 +3,10 @@ runtime: go112
 handlers:
 - url: /.*
   script: auto
+
+env_variables:
+  POSTGRES_CONNECTION: "user=postgres password=jeifai dbname=jeifai host=/cloudsql/jeifai:us-central1:jeifai"
+
+
+beta_settings:
+  cloud_sql_instances: jeifai:us-central1:jeifai

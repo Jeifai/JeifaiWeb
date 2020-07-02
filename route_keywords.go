@@ -54,8 +54,8 @@ func putKeyword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type TempResponse struct {
-		SelectedTargets []string     `json:"selectedTargets" validate:"required"`
-		Keyword         Keyword `json:"newKeyword"`
+		SelectedTargets []string `json:"selectedTargets" validate:"required"`
+		Keyword         Keyword  `json:"newKeyword"`
 	}
 
 	response := TempResponse{}
@@ -63,7 +63,7 @@ func putKeyword(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(r.Body).Decode(&response)
 	if err != nil {
 		panic(err.Error())
-    }
+	}
 
 	validate := validator.New()
 	err = validate.Struct(response)

@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"strconv"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -15,35 +14,20 @@ import (
 var Db *sql.DB
 
 func init() {
-	// Load Environmental Variables
+	// Load Environmental Variables, comment if deploy
 	err := godotenv.Load()
 	if err != nil {
-        fmt.Println("Error loading .env file")
-    }
-    
+		fmt.Println("Error loading .env file")
+	}
 
-	dbhost := os.Getenv("DBHOST")
-	dbuser := os.Getenv("DBUSER")
-	dbport, err := strconv.ParseInt(os.Getenv("DBPORT"), 10, 64)
-	dbname := os.Getenv("DBNAME")
-	dbpassword := os.Getenv("DBPASSWORD")
-
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable TimeZone=Europe/Berlin",
-		dbhost, dbport, dbuser, dbpassword, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	Db = db
+	psqlInfo := os.Getenv("POSTGRES_CONNECTION")
+	Db, err = sql.Open("postgres", psqlInfo)
 	if err != nil {
-        fmt.Println(err)
 		panic(err)
 	}
-	// Send a ping to make sure the database connection is alive.
 	if err = Db.Ping(); err != nil {
 		Db.Close()
-        fmt.Println("Unsuccessfully connected to the database")
-        fmt.Println("PRINTING THE ERROR")
-        fmt.Println(err)
-        fmt.Println("ERROR WAS PRINTED")
+		fmt.Println("Unsuccessfully connected to the database")
 		return
 	}
 	fmt.Println("Successfully connected to the database")

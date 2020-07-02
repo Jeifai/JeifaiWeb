@@ -231,7 +231,7 @@ func UserById(id int) (user User, err error) {
 }
 
 func (user User) UpdateUser() {
-    fmt.Println("Starting UpdateUser...")
+	fmt.Println("Starting UpdateUser...")
 
 	statement := `UPDATE users SET 
                     username=$2,
@@ -249,7 +249,7 @@ func (user User) UpdateUser() {
 	if err != nil {
 		panic(err.Error())
 	}
-    defer stmt.Close()
+	defer stmt.Close()
 
 	_, err = stmt.Exec(
 		user.Id,
@@ -262,11 +262,11 @@ func (user User) UpdateUser() {
 		user.City.String,
 		user.Gender.String,
 		user.DateOfBirth.String,
-        time.Now())
-        
-    if err != nil {
-        panic(err.Error())
-    }
+		time.Now())
+
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (user User) UpdateUserUpdates() {

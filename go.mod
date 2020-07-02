@@ -9,4 +9,5 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.7.0
+	mvdan.cc/gofumpt v0.0.0-20200627213337-90206bd98491 // indirect
 )
