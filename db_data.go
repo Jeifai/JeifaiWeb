@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"database/sql"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
@@ -19,8 +18,10 @@ func init() {
 	// Load Environmental Variables
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+        fmt.Println("Error loading .env file")
+    }
+    
+
 	dbhost := os.Getenv("DBHOST")
 	dbuser := os.Getenv("DBUSER")
 	dbport, err := strconv.ParseInt(os.Getenv("DBPORT"), 10, 64)
@@ -33,12 +34,16 @@ func init() {
 	db, err := sql.Open("postgres", psqlInfo)
 	Db = db
 	if err != nil {
+        fmt.Println(err)
 		panic(err)
 	}
 	// Send a ping to make sure the database connection is alive.
 	if err = Db.Ping(); err != nil {
 		Db.Close()
-		fmt.Println("Unsuccessfully connected to the database")
+        fmt.Println("Unsuccessfully connected to the database")
+        fmt.Println("PRINTING THE ERROR")
+        fmt.Println(err)
+        fmt.Println("ERROR WAS PRINTED")
 		return
 	}
 	fmt.Println("Successfully connected to the database")
