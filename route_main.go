@@ -16,7 +16,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	} else {
 		user, err := UserById(sess.UserId)
 		if err != nil {
-			danger(err, "Cannot find user")
+			panic(err)
 		}
 		fmt.Println("Generating HTML for index, user logged in...")
 		templates := template.Must(

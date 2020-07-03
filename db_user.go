@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 )
 
@@ -32,6 +33,17 @@ type Session struct {
 	Email     string
 	UserId    int
 	CreatedAt time.Time
+}
+
+func session(request *http.Request) (sess Session, err error) {
+	cookie, err := request.Cookie("_cookie")
+	if err == nil {
+		sess = Session{Uuid: cookie.Value}
+		if ok, _ := sess.Check(); !ok {
+			panic(err.Error())
+		}
+	}
+	return
 }
 
 // Create a new session for an existing user
@@ -70,7 +82,8 @@ func (user *User) Session() (session Session, err error) {
                         userid, 
                         createdat
                       FROM sessions
-                      WHERE userid = $1`,
+                      WHERE userid = $1
+                      AND deletedat IS NULL`,
 		user.Id,
 	).
 		Scan(
@@ -112,10 +125,9 @@ func (session *Session) Check() (valid bool, err error) {
 	return
 }
 
-// Delete session from database
-func (session *Session) DeleteByUUID() (err error) {
-	statement := `DELETE FROM sessions
-                  WHERE uuid = $1`
+// Set deletedat by uuid
+func (session *Session) SetSessionDeletedAtByUUID() (err error) {
+	statement := `UPDATE sessions SET deletedat = current_timestamp WHERE uuid = $1;`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
 		return
@@ -158,9 +170,6 @@ func (user *User) Create() (err error) {
 
 // Get a single user given the email
 func UserByEmail(email string) (user User, err error) {
-
-    fmt.Println(email)
-
 	user = User{}
 	err = Db.QueryRow(`SELECT
                         id,
@@ -192,10 +201,7 @@ func UserByEmail(email string) (user User, err error) {
 			&user.Country,
 			&user.City,
 			&user.Gender,
-        )
-        
-    fmt.Println(user)
-
+		)
 	return
 }
 
