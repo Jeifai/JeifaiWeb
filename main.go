@@ -10,7 +10,7 @@ import (
 
 func main() {
 	r := mux.NewRouter()
-	files := http.FileServer(http.Dir(config.Static))
+	files := http.FileServer(http.Dir("public"))
 	s := http.StripPrefix("/static/", files)
 	r.PathPrefix("/static/").Handler(s)
 

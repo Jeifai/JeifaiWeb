@@ -9,7 +9,6 @@ import (
 func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting login...")
 	login_template := template.Must(template.ParseFiles("templates/login.html"))
-	fmt.Println("Closing login...")
 	login_template.ExecuteTemplate(w, "login.html", nil)
 }
 
@@ -18,13 +17,13 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	user, err := UserByEmail(r.PostFormValue("email"))
 	if err != nil {
-		danger(err, "Cannot find user")
+		panic(err)
 	}
 
 	if user.Password == Encrypt(r.PostFormValue("password")) {
 		session, err := user.CreateSession()
 		if err != nil {
-			danger(err, "Cannot create session")
+			panic(err)
 		}
 		cookie := http.Cookie{
 			Name:     "_cookie",
@@ -32,31 +31,34 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true,
 		}
 		http.SetCookie(w, &cookie)
-		fmt.Println("Closing login...")
 		http.Redirect(w, r, "/", 302)
 	} else {
 		fmt.Println("Log in not valid...")
-		fmt.Println("Closing login...")
 		http.Redirect(w, r, "/login", 302)
 	}
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting logout...")
-	cookie, err := r.Cookie("_cookie")
-	if err != http.ErrNoCookie {
-		warning(err, "Failed to get cookie")
-		session := Session{Uuid: cookie.Value}
-		session.DeleteByUUID()
+	sess, err := session(r)
+	if err != nil {
+		panic(err.Error())
 	}
-	fmt.Println("Closing logout...")
+	sess.SetSessionDeletedAtByUUID()
+
+	// Delete cookie setting it in the past
+	d_cookie := http.Cookie{
+		Name:   "_cookie",
+		Value:  sess.Uuid,
+		MaxAge: -1,
+	}
+	http.SetCookie(w, &d_cookie)
 	http.Redirect(w, r, "/", 302)
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting signup...")
 	login_template := template.Must(template.ParseFiles("templates/signup.html"))
-	fmt.Println("Closing signup...")
 	login_template.ExecuteTemplate(w, "signup.html", nil)
 }
 
@@ -64,7 +66,7 @@ func signupAccount(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting signupAccount...")
 	err := r.ParseForm()
 	if err != nil {
-		danger(err, "Cannot parse form")
+		panic(err)
 	}
 	user := User{
 		UserName: r.PostFormValue("username"),
@@ -72,8 +74,7 @@ func signupAccount(w http.ResponseWriter, r *http.Request) {
 		Password: r.PostFormValue("password"),
 	}
 	if err := user.Create(); err != nil {
-		danger(err, "Cannot create user")
+		panic(err)
 	}
-	fmt.Println("Closing signupAccount...")
 	http.Redirect(w, r, "/login", 302)
 }
