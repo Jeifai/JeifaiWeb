@@ -35,8 +35,6 @@ func main() {
 
 	r.HandleFunc("/results", results)
 
-	// r.HandleFunc("/test", test)
-
 	fmt.Println("Application is running")
 
 	server := &http.Server{

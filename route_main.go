@@ -11,7 +11,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	sess, err := session(r)
 	if err != nil {
 		fmt.Println("Generating HTML for index, user not logged in...")
-		templates := template.Must(template.ParseFiles("templates/tempIndex.html"))
+		templates := template.Must(template.ParseFiles("templates/home.html"))
 		templates.ExecuteTemplate(w, "layout", nil)
 	} else {
 		user, err := UserById(sess.UserId)
@@ -31,9 +31,4 @@ func index(w http.ResponseWriter, r *http.Request) {
 		infos := TempStruct{user}
 		templates.ExecuteTemplate(w, "layout", infos)
 	}
-}
-
-func test(w http.ResponseWriter, r *http.Request) {
-	login_template := template.Must(template.ParseFiles("templates/test.html"))
-	login_template.ExecuteTemplate(w, "test.html", nil)
 }
