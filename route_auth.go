@@ -8,8 +8,10 @@ import (
 
 func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting login...")
-	login_template := template.Must(template.ParseFiles("templates/login.html"))
-	login_template.ExecuteTemplate(w, "layout", nil)
+    templates := template.Must(template.ParseFiles(
+        "templates/logout_layout.html",
+        "templates/logout_login.html"))
+    templates.ExecuteTemplate(w, "layout", nil)
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
@@ -58,8 +60,10 @@ func logout(w http.ResponseWriter, r *http.Request) {
 
 func signup(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting signup...")
-	login_template := template.Must(template.ParseFiles("templates/signup.html"))
-	login_template.ExecuteTemplate(w, "layout", nil)
+    templates := template.Must(template.ParseFiles(
+        "templates/logout_layout.html",
+        "templates/logout_signup.html"))
+	templates.ExecuteTemplate(w, "layout", nil)
 }
 
 func signupAccount(w http.ResponseWriter, r *http.Request) {

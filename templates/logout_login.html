@@ -1,0 +1,15 @@
+{{ define "main" }}
+    <form role="form" action="/authenticate" method="post">
+        <div>
+            <label for="username">Email:</label><br>
+            <input type="email" name="email" id="email"placeholder="email" required autofocus>
+        </div>
+        <div>
+            <label for="password">Password:</label><br>
+            <input type="password" name="password" id="password" placeholder="password" required>
+        </div>
+        <div>
+            <input type="submit" name="submit" value="submit">
+        </div>
+    </form>
+{{ end }}

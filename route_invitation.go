@@ -9,8 +9,10 @@ import (
 
 func invitation(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting invitation...")
-	invitation_template := template.Must(template.ParseFiles("templates/invitation.html"))
-	invitation_template.ExecuteTemplate(w, "layout", nil)
+    templates := template.Must(template.ParseFiles(
+        "templates/logout_layout.html",
+        "templates/logout_invitation.html"))
+	templates.ExecuteTemplate(w, "layout", nil)
 }
 
 func submitInvitation(w http.ResponseWriter, r *http.Request) {
