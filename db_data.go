@@ -27,7 +27,7 @@ func init() {
 	Db = db
 
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 	if err = Db.Ping(); err != nil {
 		Db.Close()

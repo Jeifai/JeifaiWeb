@@ -17,13 +17,13 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	user, err := UserByEmail(r.PostFormValue("email"))
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 
 	if user.Password == Encrypt(r.PostFormValue("password")) {
 		session, err := user.CreateSession()
 		if err != nil {
-			panic(err)
+			panic(err.Error())
 		}
 		cookie := http.Cookie{
 			Name:     "_cookie",
@@ -66,7 +66,7 @@ func signupAccount(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting signupAccount...")
 	err := r.ParseForm()
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 	user := User{
 		UserName: r.PostFormValue("username"),
@@ -74,7 +74,7 @@ func signupAccount(w http.ResponseWriter, r *http.Request) {
 		Password: r.PostFormValue("password"),
 	}
 	if err := user.Create(); err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 	http.Redirect(w, r, "/login", 302)
 }

@@ -19,7 +19,7 @@ func results(w http.ResponseWriter, r *http.Request) {
 	sess, err := session(r)
 	user, err := UserById(sess.UserId)
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
 	results, err := user.ResultsByUser()
 
