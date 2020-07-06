@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -15,10 +15,10 @@ var Db *sql.DB
 
 func init() {
 	// Load Environmental Variables, comment if deploy
-	err := godotenv.Load()
-	if err != nil {
-		panic(err.Error())
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 
 	psqlInfo := os.Getenv("POSTGRES_CONNECTION")
 
