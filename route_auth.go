@@ -6,12 +6,6 @@ import (
 	"net/http"
 )
 
-func invitation(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting invitation...")
-	invitation_template := template.Must(template.ParseFiles("templates/invitation.html"))
-	invitation_template.ExecuteTemplate(w, "layout", nil)
-}
-
 func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting login...")
 	login_template := template.Must(template.ParseFiles("templates/login.html"))
