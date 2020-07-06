@@ -14,7 +14,9 @@ func main() {
 	s := http.StripPrefix("/static/", files)
 	r.PathPrefix("/static/").Handler(s)
 
-	r.HandleFunc("/", index)
+    r.HandleFunc("/", index)
+    
+	r.HandleFunc("/invitation", invitation)
 
 	r.HandleFunc("/login", login)
 	r.HandleFunc("/logout", logout)
