@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -68,22 +69,13 @@ func signup(w http.ResponseWriter, r *http.Request) {
 
 func signupAccount(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting signupAccount...")
-	err := r.ParseForm()
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		panic(err.Error())
 	}
-	user := User{
-		UserName: r.PostFormValue("username"),
-		Email:    r.PostFormValue("email"),
-		Password: r.PostFormValue("password"),
-	}
 
-	invitation := Invitation{
-		Email: r.PostFormValue("email"),
-		Uuid:  r.PostFormValue("invitationcode"),
-	}
-
-	invitation.InvitationIdByUuidAndEmail()
+	invitation := user.InvitationIdByUuidAndEmail()
 
 	if invitation.Id > 0 {
 		invitation.UpdateInvitation()
@@ -92,7 +84,17 @@ func signupAccount(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Redirect(w, r, "/login", 302)
 	} else {
-		fmt.Println("UNCORRECT UUID")
-		// IF DATA ARE NOT CORRECT RETURN JSON WITH RED MESSAGE
+		var messages []string
+		red_1 := `<p style="color:red">`
+		red_2 := `</p>`
+		messages = append(messages, red_1+"Something got wrong. Please try again."+red_2)
+		messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
+		type TempStruct struct {
+			Messages []string
+		}
+		infos := TempStruct{messages}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(infos)
 	}
 }

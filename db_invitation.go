@@ -23,15 +23,15 @@ func (invitation *Invitation) InvitationIdByEmail() (err error) {
 	return
 }
 
-func (invitation *Invitation) InvitationIdByUuidAndEmail() (err error) {
+func (user *User) InvitationIdByUuidAndEmail() (invitation Invitation) {
 	fmt.Println("Starting InvitationIdByUuidAndEmail...")
-	err = Db.QueryRow(`SELECT i.id
+	_ = Db.QueryRow(`SELECT i.id
                        FROM invitations i
                        WHERE i.uuid=$1
                        AND i.email=$2 
                        AND i.usedat IS NULL`,
-		invitation.Uuid,
-		invitation.Email).Scan(&invitation.Id)
+		user.InvitationCode,
+		user.Email).Scan(&invitation.Id)
 	return
 }
 

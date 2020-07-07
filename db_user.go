@@ -25,6 +25,7 @@ type User struct {
 	CurrentPassword   string         `                 validate:"required,eqfield=Password"`
 	NewPassword       string         `db:"newpassword" validate:"eqfield=RepeatNewPassword"`
 	RepeatNewPassword string         `                 validate:"eqfield=NewPassword"`
+	InvitationCode    string
 }
 
 type Session struct {
