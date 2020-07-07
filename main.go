@@ -19,8 +19,8 @@ func main() {
 	r.HandleFunc("/invitation", invitation).Methods("GET")
 	r.HandleFunc("/invitation", submitInvitation).Methods("PUT")
 
-	r.HandleFunc("/login", login)
-	r.HandleFunc("/logout", logout)
+	r.HandleFunc("/login", login).Methods("GET")
+	r.HandleFunc("/logout", logout).Methods("GET")
 	r.HandleFunc("/signup", signup).Methods("GET")
 	r.HandleFunc("/signup", signupAccount).Methods("PUT")
 	r.HandleFunc("/authenticate", authenticate)

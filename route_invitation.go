@@ -34,7 +34,7 @@ func submitInvitation(w http.ResponseWriter, r *http.Request) {
 		temp_message := green_1 + "Information has been correctely recevied!" + green_2
 		messages = append(messages, temp_message)
 
-		invitation.SendConfirmationEmail()
+		invitation.SendInvitationEmail()
 
 	} else {
 		red_1 := `<p style="color:red">`
