@@ -7,7 +7,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/joho/godotenv"
+    "github.com/joho/godotenv"
+    "github.com/dchest/uniuri"
 	_ "github.com/lib/pq"
 )
 
@@ -60,4 +61,9 @@ func createUUID() (uuid string) {
 func Encrypt(plaintext string) (cryptext string) {
 	cryptext = fmt.Sprintf("%x", sha1.Sum([]byte(plaintext)))
 	return
+}
+
+func GenerateToken() (token string)  {
+    token = uniuri.NewLen(40)
+    return
 }
