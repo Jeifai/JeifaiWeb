@@ -8,10 +8,10 @@ import (
 
 func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting login...")
-    templates := template.Must(template.ParseFiles(
-        "templates/logout_layout.html",
-        "templates/logout_login.html"))
-    templates.ExecuteTemplate(w, "layout", nil)
+	templates := template.Must(template.ParseFiles(
+		"templates/logout_layout.html",
+		"templates/logout_login.html"))
+	templates.ExecuteTemplate(w, "layout", nil)
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
@@ -60,9 +60,9 @@ func logout(w http.ResponseWriter, r *http.Request) {
 
 func signup(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting signup...")
-    templates := template.Must(template.ParseFiles(
-        "templates/logout_layout.html",
-        "templates/logout_signup.html"))
+	templates := template.Must(template.ParseFiles(
+		"templates/logout_layout.html",
+		"templates/logout_signup.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
@@ -77,8 +77,22 @@ func signupAccount(w http.ResponseWriter, r *http.Request) {
 		Email:    r.PostFormValue("email"),
 		Password: r.PostFormValue("password"),
 	}
-	if err := user.Create(); err != nil {
-		panic(err.Error())
+
+	invitation := Invitation{
+		Email: r.PostFormValue("email"),
+		Uuid:  r.PostFormValue("invitationcode"),
 	}
-	http.Redirect(w, r, "/login", 302)
+
+	invitation.InvitationIdByUuidAndEmail()
+
+	if invitation.Id > 0 {
+		invitation.UpdateInvitation()
+		if err := user.Create(); err != nil {
+			panic(err.Error())
+		}
+		http.Redirect(w, r, "/login", 302)
+	} else {
+		fmt.Println("UNCORRECT UUID")
+		// IF DATA ARE NOT CORRECT RETURN JSON WITH RED MESSAGE
+	}
 }

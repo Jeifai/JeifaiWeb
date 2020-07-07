@@ -11,18 +11,17 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const isLocal = false
+const isLocal = true
 
 var Db *sql.DB
 
 func init() {
-
-    if isLocal {
-        err := godotenv.Load()
-        if err != nil {
-            panic(err.Error())
-        }
-    }
+	if isLocal {
+		err := godotenv.Load()
+		if err != nil {
+			panic(err.Error())
+		}
+	}
 
 	psqlInfo := os.Getenv("POSTGRES_CONNECTION")
 

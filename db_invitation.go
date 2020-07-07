@@ -6,12 +6,12 @@ import (
 )
 
 type Invitation struct {
-    Id              int
-    Uuid            string
-	Email           string
-	Whyjoin         string
-	Whichcompanies  string
-	Anythingelse    string
+	Id             int
+	Uuid           string
+	Email          string
+	Whyjoin        string
+	Whichcompanies string
+	Anythingelse   string
 }
 
 func (invitation *Invitation) InvitationIdByEmail() (err error) {
@@ -25,13 +25,13 @@ func (invitation *Invitation) InvitationIdByEmail() (err error) {
 
 func (invitation *Invitation) InvitationIdByUuidAndEmail() (err error) {
 	fmt.Println("Starting InvitationIdByUuidAndEmail...")
-    err = Db.QueryRow(`SELECT i.id
+	err = Db.QueryRow(`SELECT i.id
                        FROM invitations i
                        WHERE i.uuid=$1
                        AND i.email=$2 
-                       AND i.usedat IS NULL`, 
-        invitation.Uuid, 
-        invitation.Email).Scan(&invitation.Id)
+                       AND i.usedat IS NULL`,
+		invitation.Uuid,
+		invitation.Email).Scan(&invitation.Id)
 	return
 }
 
@@ -61,8 +61,8 @@ func (invitation *Invitation) UpdateInvitation() {
 		panic(err.Error())
 	}
 	defer stmt.Close()
-    _, err = stmt.Exec(invitation.Id)
-    if err != nil {
+	_, err = stmt.Exec(invitation.Id)
+	if err != nil {
 		panic(err.Error())
-    }
+	}
 }

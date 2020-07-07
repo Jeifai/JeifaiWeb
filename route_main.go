@@ -12,8 +12,8 @@ func index(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Generating HTML for index, user not logged in...")
 		templates := template.Must(template.ParseFiles(
-            "templates/logout_layout.html",
-            "templates/logout_home.html"))
+			"templates/logout_layout.html",
+			"templates/logout_home.html"))
 		templates.ExecuteTemplate(w, "layout", nil)
 	} else {
 		user, err := UserById(sess.UserId)
