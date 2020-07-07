@@ -23,7 +23,9 @@ func main() {
 	r.HandleFunc("/logout", logout).Methods("GET")
 	r.HandleFunc("/signup", signup).Methods("GET")
 	r.HandleFunc("/signup", signupAccount).Methods("PUT")
-	r.HandleFunc("/authenticate", authenticate)
+    r.HandleFunc("/authenticate", authenticate)
+    r.HandleFunc("/forgot_password", forgotPassword).Methods("GET")
+    r.HandleFunc("/forgot_password", setForgotPassword).Methods("PUT")
 
 	r.HandleFunc("/profile", profile).Methods("GET")
 	r.HandleFunc("/profile", updateProfile).Methods("PUT")
