@@ -19,10 +19,14 @@ func targets(w http.ResponseWriter, r *http.Request) {
 			"templates/targets.html"))
 
 	sess, err := session(r)
-	user, err := UserById(sess.UserId)
 	if err != nil {
 		panic(err.Error())
 	}
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
+
 	targets, err := user.UsersTargetsByUser()
 
 	type TempStruct struct {
@@ -39,10 +43,14 @@ func putTarget(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&target)
 
 	sess, err := session(r)
-	user, err := UserById(sess.UserId)
 	if err != nil {
 		panic(err.Error())
 	}
+
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
 
 	validate := validator.New()
 	err = validate.Struct(target)
@@ -118,10 +126,14 @@ func removeTarget(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&target)
 
 	sess, err := session(r)
-	user, err := UserByEmail(sess.Email)
 	if err != nil {
 		panic(err.Error())
 	}
+
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
 
 	// Get the target to delete
 	target, err = user.UsersTargetsByUserAndName(target.Name)

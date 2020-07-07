@@ -20,10 +20,13 @@ func profile(w http.ResponseWriter, r *http.Request) {
 			"templates/profile.html"))
 
 	sess, err := session(r)
-	user, err := UserById(sess.UserId)
 	if err != nil {
 		panic(err.Error())
 	}
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
 
 	type PublicUser struct {
 		UserName    string
@@ -58,7 +61,13 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting updateProfile...")
 
 	sess, err := session(r)
-	user, err := UserById(sess.UserId)
+	if err != nil {
+		panic(err.Error())
+	}
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
 
 	err = json.NewDecoder(r.Body).Decode(&user)
 

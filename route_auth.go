@@ -17,13 +17,14 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting authenticate...")
-	err := r.ParseForm()
-	user, err := UserByEmail(r.PostFormValue("email"))
-	if err != nil {
-		panic(err.Error())
-	}
 
-	if user.Password == Encrypt(r.PostFormValue("password")) {
+    var user User
+    user.Email = r.FormValue("email")
+    user.LoginPassword = r.FormValue("password")
+    user.UserByEmail()
+
+	if user.Password == Encrypt(user.LoginPassword) {
+		fmt.Println("Log in valid...")
 		session, err := user.CreateSession()
 		if err != nil {
 			panic(err.Error())
@@ -33,11 +34,11 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 			Value:    session.Uuid,
 			HttpOnly: true,
 		}
-		http.SetCookie(w, &cookie)
+        http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/", 302)
 	} else {
 		fmt.Println("Log in not valid...")
-		http.Redirect(w, r, "/login", 302)
+        http.Redirect(w, r, "/login", 302)
 	}
 }
 

@@ -12,10 +12,13 @@ import (
 func keywords(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Generating HTML for keywords...")
 	sess, err := session(r)
-	user, err := UserById(sess.UserId)
 	if err != nil {
 		panic(err.Error())
 	}
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
 
 	templates := template.Must(
 		template.ParseFiles(
@@ -48,10 +51,13 @@ func keywords(w http.ResponseWriter, r *http.Request) {
 func putKeyword(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting putKeyword...")
 	sess, err := session(r)
-	user, err := UserById(sess.UserId)
 	if err != nil {
 		panic(err.Error())
 	}
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
 
 	type TempResponse struct {
 		SelectedTargets []string `json:"selectedTargets" validate:"required"`
@@ -141,10 +147,14 @@ func removeKeyword(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&utk)
 
 	sess, err := session(r)
-	user, err := UserByEmail(sess.Email)
 	if err != nil {
 		panic(err.Error())
 	}
+
+	user := User{
+		Email: sess.Email,
+	}
+	user.UserByEmail()
 
 	target := Target{}
 	target.Name = utk.TargetName

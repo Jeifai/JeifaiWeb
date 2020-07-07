@@ -17,10 +17,14 @@ func results(w http.ResponseWriter, r *http.Request) {
 			"templates/results.html"))
 
 	sess, err := session(r)
-	user, err := UserById(sess.UserId)
 	if err != nil {
 		panic(err.Error())
 	}
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
+
 	results, err := user.ResultsByUser()
 
 	type TempStruct struct {

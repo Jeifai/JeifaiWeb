@@ -9,9 +9,10 @@ import (
 )
 
 type User struct {
-	Id                int            `db:"id"`
-	UserName          string         `db:"username"    validate:"min=1"`
-	Email             string         `db:"email"       validate:"email"`
+	Id                int    `db:"id"`
+	UserName          string `db:"username"    validate:"min=1"`
+	Email             string `db:"email"       validate:"email"`
+	LoginPassword     string
 	Password          string         `db:"password"`
 	CreatedAt         time.Time      `db:"createdat"`
 	UpdatedAt         time.Time      `db:"updatedat"`
@@ -170,8 +171,7 @@ func (user *User) Create() (err error) {
 }
 
 // Get a single user given the email
-func UserByEmail(email string) (user User, err error) {
-	user = User{}
+func (user *User) UserByEmail() (err error) {
 	err = Db.QueryRow(`SELECT
                         id,
                         username,
@@ -187,7 +187,7 @@ func UserByEmail(email string) (user User, err error) {
                         gender
                       FROM users
                       WHERE email = $1`,
-		email,
+		user.Email,
 	).
 		Scan(
 			&user.Id,
@@ -207,8 +207,7 @@ func UserByEmail(email string) (user User, err error) {
 }
 
 // Get a single user given the email
-func UserById(id int) (user User, err error) {
-	user = User{}
+func (user *User) UserById() (err error) {
 	err = Db.QueryRow(`SELECT
                         id,
                         username,
@@ -224,7 +223,7 @@ func UserById(id int) (user User, err error) {
                         gender
                       FROM users
                       WHERE id = $1`,
-		id,
+		user.Id,
 	).
 		Scan(
 			&user.Id,
