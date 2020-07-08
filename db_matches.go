@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type Result struct {
+type Match struct {
 	Target      string
 	Id          int
 	ScraperId   int
@@ -15,9 +15,9 @@ type Result struct {
 	CreatedDate string
 }
 
-// Get all the results belonging to the targets of a specific user
-func (user *User) ResultsByUser() (results []Result, err error) {
-	fmt.Println("Starting ResultsByUser...")
+// Get all the matches belonging to the targets of a specific user
+func (user *User) MatchesByUser() (matches []Match, err error) {
+	fmt.Println("Starting MatchesByUser...")
 	rows, err := Db.Query(`SELECT DISTINCT
                                 s.name,
                                 r.createdat,
@@ -37,16 +37,16 @@ func (user *User) ResultsByUser() (results []Result, err error) {
 		return
 	}
 	for rows.Next() {
-		result := Result{}
+		match := Match{}
 		if err = rows.Scan(
-			&result.Target,
-			&result.CreatedAt,
-			&result.CreatedDate,
-			&result.Title,
-			&result.Url); err != nil {
+			&match.Target,
+			&match.CreatedAt,
+			&match.CreatedDate,
+			&match.Title,
+			&match.Url); err != nil {
 			return
 		}
-		results = append(results, result)
+		matches = append(matches, match)
 	}
 	rows.Close()
 	return

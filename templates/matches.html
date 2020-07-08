@@ -46,7 +46,7 @@
             delimiters: ["[[","]]"],
             data: {
                 filter: '',
-                results: {{.Data}},
+                matches: {{.Data}},
             },
             methods: {
                 select: function(raw) {
@@ -55,7 +55,7 @@
             },
             computed: {
                 filteredRows() {
-                    return this.results.filter(row => {
+                    return this.matches.filter(row => {
                         const CreatedDate = row.CreatedDate.toString().toLowerCase();
                         const Target = row.Target.toString().toLowerCase();
                         const Title = row.Title.toString().toLowerCase();
