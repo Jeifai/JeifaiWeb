@@ -121,14 +121,33 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserByEmail()
 
+    var messages []string
 	if user.Id == 0 {
-		// It means users does not exists
+		red_1 := `<p style="color:red">`
+		red_2 := `</p>`
+		messages = append(messages, red_1+"Something got wrong. Please try again."+red_2)
+		messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
 	} else {
 		token := GenerateToken()
 		err = user.CreateToken(token)
 		if err != nil {
 			panic(err.Error())
 		}
-		user.SendResetPasswordEmail(token)
+        user.SendResetPasswordEmail(token)
+		green_1 := `<p style="color:green">`
+		green_2 := `</p>`
+		messages = append(messages, green_1+"Well done!"+green_2)
+		messages = append(messages, green_1+"We have just sent you an email"+green_2)
+    }
+	type TempStruct struct {
+		Messages []string
 	}
+	infos := TempStruct{messages}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}
+
+func resetPassword(w http.ResponseWriter, r *http.Request) {
+    // TODO
 }
