@@ -31,7 +31,7 @@
 	--space-xx-large: 4em;
 	--space-xxx-large: 6em;
 	--space-navbar: 4em;
-	--font-sans: 'Source Sans Variable', 'Helvetica Neue', helvetica, 'Apple Color Emoji', arial, sans-serif;
+	--font-sans: 'Helvetica Neue', helvetica, 'Apple Color Emoji', arial, sans-serif;
 	--font-mono: monospace;
 	--type-base: calc(1.6em + 0.5vw);
 	--type-xxx-small: 55%;
@@ -55,24 +55,6 @@
 	:root {
 		--type-base: 2.2em
 	}
-}
-
-@font-face {
-	font-family: 'Source Sans Variable';
-	font-weight: 200 900;
-	font-style: normal;
-	font-stretch: normal;
-	src: url(/assets/SourceSansVariable-Subset-b9daf4af5f122c6a45b0d67ae9202bb46b3b80aae9b3e3d3b32a0545ec72e9bd.woff2) format("woff2");
-	font-display: swap
-}
-
-@font-face {
-	font-family: 'Source Sans Variable';
-	font-weight: 200 900;
-	font-style: italic;
-	font-stretch: normal;
-	src: url(/assets/SourceSansVariableItalic-Subset-11405c283bfbfa5122b6c1aeade534596db8872d5bbe39189929baa520abba98.woff2) format("woff2");
-	font-display: swap
 }
 
 *,
@@ -717,7 +699,6 @@ input[type=submit] {
 	position: absolute;
 	top: 0.5em;
 	left: 0;
-	background: url(/assets/general/underline-74c08d26152cfbfe500b06104ed83a1aad1ca1097a89374571c084d24047e1d1.svg) center/contain no-repeat
 }
 
 .txt-clipping {
@@ -741,18 +722,9 @@ input[type=submit] {
 	.txt-knockout {
 		padding-right: 0.03em;
 		color: transparent;
-		background: url(/assets/abstract/89-36c492fc8f3b096ba023dee990d655cf4bf709dd1dc8c584b0cc669844768e6f.svg) center/110% auto no-repeat;
 		-webkit-background-clip: text;
 		background-clip: text
 	}
-}
-
-.txt-knockout--pattern-blue {
-	background-image: url(/assets/abstract/86-7fa2b7cc652a16179e60f71bed490093c83f79ac59ac3e92c81c68a0f6cfcba7.svg)
-}
-
-.txt-knockout--pink-purple {
-	background-image: url(/assets/pebble/pink-purple-46c915234b837e92cea8ab6bd8fdf561cc95d9d63a053e3bf8efa7b93f015035.svg)
 }
 
 .button {
@@ -881,7 +853,6 @@ input[type=submit] {
 	display: flex;
 	flex-wrap: wrap;
 	padding: 0.5em;
-	background: var(--color-mint) url(/assets/pebble/pink-8670798cb2f59e90ee454d5e7a017b57117da2d1eb2457f8a6e3490810b87361.svg) left -5em center/60% auto no-repeat;
 	border-radius: 2em;
 	box-shadow: 2rem 2rem 6rem var(--color-shadow)
 }
@@ -1264,7 +1235,6 @@ input[type=submit] {
 @supports (background-clip: text) or (-webkit-background-clip: text) {
 	.roadblock__headline span {
 		color: transparent;
-		background: url(/assets/abstract/89-36c492fc8f3b096ba023dee990d655cf4bf709dd1dc8c584b0cc669844768e6f.svg) center bottom/101% 101% no-repeat;
 		-webkit-background-clip: text;
 		background-clip: text
 	}
@@ -1280,7 +1250,7 @@ input[type=submit] {
 	font-size: 24px;
 	font-weight: bold;
 	text-align: center;
-	font-family: 'Source Sans Variable', 'Helvetica Neue', helvetica, 'Apple Color Emoji', arial, sans-serif;
+	font-family: 'Helvetica Neue', helvetica, 'Apple Color Emoji', arial, sans-serif;
 	color: #000;
 	background-color: #fff
 }
