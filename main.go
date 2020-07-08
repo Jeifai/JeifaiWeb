@@ -15,6 +15,7 @@ func main() {
 	r.PathPrefix("/static/").Handler(s)
 
 	r.HandleFunc("/", index).Methods("GET")
+	r.HandleFunc("/how", how).Methods("GET")
 
 	r.HandleFunc("/invitation", invitation).Methods("GET")
 	r.HandleFunc("/invitation", submitInvitation).Methods("PUT")
@@ -23,13 +24,12 @@ func main() {
 	r.HandleFunc("/authenticate", authenticate).Methods("POST")
 	r.HandleFunc("/logout", logout).Methods("GET")
 	r.HandleFunc("/signup", signup).Methods("GET")
-    r.HandleFunc("/signup", signupAccount).Methods("PUT")
-    
+	r.HandleFunc("/signup", signupAccount).Methods("PUT")
+
 	r.HandleFunc("/forgot_password", forgotPassword).Methods("GET")
 	r.HandleFunc("/forgot_password", setForgotPassword).Methods("PUT")
-    r.HandleFunc("/reset_password/{token}", resetPassword).Methods("GET")
+	r.HandleFunc("/reset_password/{token}", resetPassword).Methods("GET")
 	r.HandleFunc("/reset_password/{token}", setResetPassword).Methods("PUT")
-
 
 	r.HandleFunc("/profile", profile).Methods("GET")
 	r.HandleFunc("/profile", updateProfile).Methods("PUT")

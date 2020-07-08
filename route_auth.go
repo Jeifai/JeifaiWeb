@@ -161,7 +161,7 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 func resetPassword(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting resetPassword...")
 	token, _ := mux.Vars(r)["token"]
-    user := UserByToken(token)
+	user := UserByToken(token)
 	if user.Id == 0 {
 		templates := template.Must(template.ParseFiles(
 			"templates/logout_layout.html",

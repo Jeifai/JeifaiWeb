@@ -34,3 +34,11 @@ func index(w http.ResponseWriter, r *http.Request) {
 		templates.ExecuteTemplate(w, "layout", infos)
 	}
 }
+
+func how(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Starting login...")
+	templates := template.Must(template.ParseFiles(
+		"templates/logout_layout.html",
+		"templates/logout_how.html"))
+	templates.ExecuteTemplate(w, "layout", nil)
+}
