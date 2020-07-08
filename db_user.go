@@ -302,3 +302,25 @@ func (user User) UpdateUserUpdates() {
 		user_json,
 		time.Now())
 }
+
+func (user *User) CreateToken(token string) (err error) {
+	fmt.Println("Starting CreateToken...")
+	statement := `INSERT INTO resetpasswords (userid, token, createdat, expiredat)
+                  VALUES ($1, $2, $3, $4)`
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		return
+	}
+	defer stmt.Close()
+
+	created_at := time.Now()
+	expired_at := time.Now().Local().Add(time.Minute * time.Duration(10))
+
+	stmt.QueryRow(
+		user.Id,
+		token,
+		created_at,
+		expired_at,
+	)
+	return
+}

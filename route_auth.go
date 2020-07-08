@@ -18,10 +18,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 func authenticate(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Starting authenticate...")
 
-    var user User
-    user.Email = r.FormValue("email")
-    user.LoginPassword = r.FormValue("password")
-    user.UserByEmail()
+	var user User
+	user.Email = r.FormValue("email")
+	user.LoginPassword = r.FormValue("password")
+	user.UserByEmail()
 
 	if user.Password == Encrypt(user.LoginPassword) {
 		fmt.Println("Log in valid...")
@@ -34,11 +34,11 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 			Value:    session.Uuid,
 			HttpOnly: true,
 		}
-        http.SetCookie(w, &cookie)
+		http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/", 302)
 	} else {
 		fmt.Println("Log in not valid...")
-        http.Redirect(w, r, "/login", 302)
+		http.Redirect(w, r, "/login", 302)
 	}
 }
 
@@ -119,8 +119,16 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err.Error())
 	}
-    user.UserByEmail()
+	user.UserByEmail()
 
-    fmt.Println(GenerateToken())
-    fmt.Println(user)
+	if user.Id == 0 {
+		// It means users does not exists
+	} else {
+		token := GenerateToken()
+		err = user.CreateToken(token)
+		if err != nil {
+			panic(err.Error())
+		}
+		user.SendResetPasswordEmail(token)
+	}
 }

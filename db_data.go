@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"os"
 
-    "github.com/joho/godotenv"
-    "github.com/dchest/uniuri"
+	"github.com/dchest/uniuri"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -63,7 +63,7 @@ func Encrypt(plaintext string) (cryptext string) {
 	return
 }
 
-func GenerateToken() (token string)  {
-    token = uniuri.NewLen(40)
-    return
+func GenerateToken() (token string) {
+	token = uniuri.NewLen(40)
+	return
 }

@@ -84,3 +84,52 @@ func (user *User) SendSignUpEmail() {
 		panic(err.Error())
 	}
 }
+
+func (user *User) SendResetPasswordEmail(token string) {
+	fmt.Println(Gray(8-1, "Starting SendResetPasswordEmail..."))
+
+	type TempStruct struct {
+		Email    string
+		UserName string
+		Url      string
+	}
+	infos := TempStruct{
+		Email:    user.Email,
+		UserName: user.UserName,
+		Url:      "http://jeifai.ew.r.appspot.com/reset_password/" + token,
+	}
+
+	err := godotenv.Load()
+	if err != nil {
+		panic(err.Error())
+	}
+	password := os.Getenv("PASSWORD")
+
+	t := template.New("ResetPassword.html")
+
+	t, err = t.ParseFiles("templates/emails/ResetPassword.html")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Println(Blue("Sending email to -->"), Bold(Blue(infos.Email)))
+
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, infos); err != nil {
+		fmt.Println(err)
+	}
+
+	result := tpl.String()
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", "robimalco@gmail.com")
+	m.SetHeader("To", infos.Email)
+	m.SetHeader("Subject", "Hello! Welcome on board!")
+	m.SetBody("text/html", result)
+
+	d := gomail.NewDialer("smtp.gmail.com", 587, "robimalco@gmail.com", password)
+
+	if err := d.DialAndSend(m); err != nil {
+		panic(err.Error())
+	}
+}
