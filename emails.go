@@ -85,7 +85,7 @@ func (user *User) SendSignUpEmail() {
 	}
 }
 
-func (user *User) SendResetPasswordEmail(token string) {
+func (user *User) SendResetPasswordEmail(reset_url string) {
 	fmt.Println(Gray(8-1, "Starting SendResetPasswordEmail..."))
 
 	type TempStruct struct {
@@ -96,7 +96,7 @@ func (user *User) SendResetPasswordEmail(token string) {
 	infos := TempStruct{
 		Email:    user.Email,
 		UserName: user.UserName,
-		Url:      "https://8080-dot-3088465-dot-devshell.appspot.com/reset_password/" + token,
+		Url:      reset_url,
 	}
 
 	err := godotenv.Load()
@@ -125,6 +125,44 @@ func (user *User) SendResetPasswordEmail(token string) {
 	m.SetHeader("From", "robimalco@gmail.com")
 	m.SetHeader("To", infos.Email)
 	m.SetHeader("Subject", "Time to reset your password!")
+	m.SetBody("text/html", result)
+
+	d := gomail.NewDialer("smtp.gmail.com", 587, "robimalco@gmail.com", password)
+
+	if err := d.DialAndSend(m); err != nil {
+		panic(err.Error())
+	}
+}
+
+func (user *User) SendConfirmationResetPasswordEmail() {
+	fmt.Println(Gray(8-1, "Starting SendConfirmationResetPasswordEmail..."))
+
+	err := godotenv.Load()
+	if err != nil {
+		panic(err.Error())
+	}
+	password := os.Getenv("PASSWORD")
+
+	t := template.New("ConfirmationResetPassword.html")
+
+	t, err = t.ParseFiles("templates/emails/ConfirmationResetPassword.html")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Println(Blue("Sending email to -->"), Bold(Blue(user.Email)))
+
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, user); err != nil {
+		fmt.Println(err)
+	}
+
+	result := tpl.String()
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", "robimalco@gmail.com")
+	m.SetHeader("To", user.Email)
+	m.SetHeader("Subject", "Your password has been udpated!")
 	m.SetBody("text/html", result)
 
 	d := gomail.NewDialer("smtp.gmail.com", 587, "robimalco@gmail.com", password)

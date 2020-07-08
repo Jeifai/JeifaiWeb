@@ -135,7 +135,15 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err.Error())
 		}
-		user.SendResetPasswordEmail(token)
+
+		var reset_url string
+		if isLocal {
+			reset_url = "https://8080-dot-3088465-dot-devshell.appspot.com/reset_password/" + token
+		} else {
+			reset_url = "https://jeifai.ew.r.appspot.com/reset_password/" + token
+		}
+
+		user.SendResetPasswordEmail(reset_url)
 		green_1 := `<p style="color:green">`
 		green_2 := `</p>`
 		messages = append(messages, green_1+"Well done!"+green_2)
@@ -151,8 +159,9 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func resetPassword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Starting resetPassword...")
 	token, _ := mux.Vars(r)["token"]
-	user := UserByToken(token)
+    user := UserByToken(token)
 	if user.Id == 0 {
 		templates := template.Must(template.ParseFiles(
 			"templates/logout_layout.html",
@@ -164,4 +173,55 @@ func resetPassword(w http.ResponseWriter, r *http.Request) {
 			"templates/logout_resetPassword.html"))
 		templates.ExecuteTemplate(w, "layout", nil)
 	}
+}
+
+func setResetPassword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Starting setResetPassword...")
+	token, _ := mux.Vars(r)["token"]
+	user := UserByToken(token)
+
+	var messages []string
+	if user.Id > 0 {
+
+		type TempCredentials struct {
+			Password       string
+			RepeatPassword string
+		}
+		var infos TempCredentials
+		err := json.NewDecoder(r.Body).Decode(&infos)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		if infos.Password == infos.RepeatPassword {
+			e_password := Encrypt(infos.Password)
+			err := user.ChangePassword(e_password)
+			if err != nil {
+				panic(err.Error())
+			}
+			green_1 := `<p style="color:green">`
+			green_2 := `</p>`
+			messages = append(messages, green_1+"Well done!"+green_2)
+			messages = append(messages, green_1+"A new password has been set!"+green_2)
+
+			user.SendConfirmationResetPasswordEmail()
+
+		} else {
+			red_1 := `<p style="color:red">`
+			red_2 := `</p>`
+			messages = append(messages, red_1+"The two passwords do not match"+red_2)
+		}
+	} else {
+		red_1 := `<p style="color:red">`
+		red_2 := `</p>`
+		messages = append(messages, red_1+"Something got wrong. Please try again."+red_2)
+		messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
+	}
+	type TempStruct struct {
+		Messages []string
+	}
+	infos := TempStruct{messages}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
 }

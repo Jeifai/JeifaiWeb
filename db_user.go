@@ -328,12 +328,30 @@ func (user *User) CreateToken(token string) (err error) {
 func UserByToken(token string) (user User) {
 	current_timestamp := time.Now()
 	err := Db.QueryRow(`SELECT
-                        userid
-                      FROM resetpasswords
-                      WHERE token = $1
-                      AND $2 < expiredat
-                      AND consumedat IS NULL`,
-		token, current_timestamp).Scan(&user.Id)
+                        u.id,
+                        u.email,
+                        u.username
+                      FROM resetpasswords r
+                      LEFT JOIN users u ON (r.userid = u.id)
+                      WHERE r.token = $1
+                      AND $2 < r.expiredat
+                      AND r.consumedat IS NULL`,
+		token, current_timestamp).Scan(&user.Id, &user.Email, &user.UserName)
 	_ = err
+	return
+}
+
+func (user *User) ChangePassword(password string) (err error) {
+	fmt.Println("Starting ChangePassword...")
+	statement := `UPDATE users SET password=$1 WHERE id=$2`
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer stmt.Close()
+	stmt.QueryRow(
+		password,
+		user.Id,
+	)
 	return
 }
