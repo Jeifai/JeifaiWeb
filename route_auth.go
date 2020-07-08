@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -121,7 +123,7 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserByEmail()
 
-    var messages []string
+	var messages []string
 	if user.Id == 0 {
 		red_1 := `<p style="color:red">`
 		red_2 := `</p>`
@@ -133,12 +135,12 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err.Error())
 		}
-        user.SendResetPasswordEmail(token)
+		user.SendResetPasswordEmail(token)
 		green_1 := `<p style="color:green">`
 		green_2 := `</p>`
 		messages = append(messages, green_1+"Well done!"+green_2)
 		messages = append(messages, green_1+"We have just sent you an email"+green_2)
-    }
+	}
 	type TempStruct struct {
 		Messages []string
 	}
@@ -149,5 +151,17 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func resetPassword(w http.ResponseWriter, r *http.Request) {
-    // TODO
+	token, _ := mux.Vars(r)["token"]
+	user := UserByToken(token)
+	if user.Id == 0 {
+		templates := template.Must(template.ParseFiles(
+			"templates/logout_layout.html",
+			"templates/logout_404.html"))
+		templates.ExecuteTemplate(w, "layout", nil)
+	} else {
+		templates := template.Must(template.ParseFiles(
+			"templates/logout_layout.html",
+			"templates/logout_resetPassword.html"))
+		templates.ExecuteTemplate(w, "layout", nil)
+	}
 }

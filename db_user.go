@@ -324,3 +324,16 @@ func (user *User) CreateToken(token string) (err error) {
 	)
 	return
 }
+
+func UserByToken(token string) (user User) {
+	current_timestamp := time.Now()
+	err := Db.QueryRow(`SELECT
+                        userid
+                      FROM resetpasswords
+                      WHERE token = $1
+                      AND $2 < expiredat
+                      AND consumedat IS NULL`,
+		token, current_timestamp).Scan(&user.Id)
+	_ = err
+	return
+}
