@@ -12,7 +12,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const isLocal = true
+const isLocal = false
 
 var Db *sql.DB
 
