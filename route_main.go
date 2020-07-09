@@ -3,16 +3,16 @@ package main
 import (
 	"fmt"
 	"html/template"
-    "net/http"
-    
+	"net/http"
+
 	. "github.com/logrusorgru/aurora"
 )
 
-func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting index..."))
-	sess, err := session(r)
+func RunIndex(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting RunIndex..."))
+	sess, err := GetSession(r)
 	if err != nil {
-        fmt.Println(Yellow("\tUser not logged in..."))
+		fmt.Println(Yellow("User not logged in..."))
 		templates := template.Must(template.ParseFiles(
 			"templates/logout_layout.html",
 			"templates/logout_home.html"))
@@ -22,7 +22,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 			Id: sess.UserId,
 		}
 		user.UserById()
-        fmt.Println(Green("\tUser logged in..."))
+		fmt.Println(Blue("User logged in..."))
 		templates := template.Must(
 			template.ParseFiles(
 				"templates/layout.html",
@@ -37,8 +37,8 @@ func index(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func how(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting how..."))
+func How(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting How..."))
 	templates := template.Must(template.ParseFiles(
 		"templates/logout_layout.html",
 		"templates/logout_how.html"))

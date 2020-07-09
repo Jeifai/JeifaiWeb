@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-    "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 	. "github.com/logrusorgru/aurora"
 )
 
@@ -15,35 +15,35 @@ func main() {
 	s := http.StripPrefix("/static/", files)
 	r.PathPrefix("/static/").Handler(s)
 
-	r.HandleFunc("/", index).Methods("GET")
-	r.HandleFunc("/how", how).Methods("GET")
+	r.HandleFunc("/", RunIndex).Methods("GET")
+	r.HandleFunc("/how", How).Methods("GET")
 
-	r.HandleFunc("/invitation", invitation).Methods("GET")
-	r.HandleFunc("/invitation", submitInvitation).Methods("PUT")
+	r.HandleFunc("/invitation", StartInvitation).Methods("GET")
+	r.HandleFunc("/invitation", SubmitInvitation).Methods("PUT")
 
-	r.HandleFunc("/login", login).Methods("GET")
-	r.HandleFunc("/authenticate", authenticate).Methods("POST")
-	r.HandleFunc("/logout", logout).Methods("GET")
-	r.HandleFunc("/signup", signup).Methods("GET")
-	r.HandleFunc("/signup", signupAccount).Methods("PUT")
+	r.HandleFunc("/login", Login).Methods("GET")
+	r.HandleFunc("/authenticate", Authenticate).Methods("POST")
+	r.HandleFunc("/logout", Logout).Methods("GET")
+	r.HandleFunc("/signup", Signup).Methods("GET")
+	r.HandleFunc("/signup", SignupAccount).Methods("PUT")
 
-	r.HandleFunc("/forgot_password", forgotPassword).Methods("GET")
-	r.HandleFunc("/forgot_password", setForgotPassword).Methods("PUT")
-	r.HandleFunc("/reset_password/{token}", resetPassword).Methods("GET")
-	r.HandleFunc("/reset_password/{token}", setResetPassword).Methods("PUT")
+	r.HandleFunc("/forgot_password", ForgotPassword).Methods("GET")
+	r.HandleFunc("/forgot_password", SetForgotPassword).Methods("PUT")
+	r.HandleFunc("/reset_password/{token}", ResetPassword).Methods("GET")
+	r.HandleFunc("/reset_password/{token}", SetResetPassword).Methods("PUT")
 
-	r.HandleFunc("/profile", profile).Methods("GET")
-	r.HandleFunc("/profile", updateProfile).Methods("PUT")
+	r.HandleFunc("/profile", Profile).Methods("GET")
+	r.HandleFunc("/profile", UpdateProfile).Methods("PUT")
 
-	r.HandleFunc("/targets", targets).Methods("GET")
-	r.HandleFunc("/targets", putTarget).Methods("PUT")
-	r.HandleFunc("/targets/remove", removeTarget).Methods("PUT")
+	r.HandleFunc("/targets", Targets).Methods("GET")
+	r.HandleFunc("/targets", PutTarget).Methods("PUT")
+	r.HandleFunc("/targets/remove", RemoveTarget).Methods("PUT")
 
-	r.HandleFunc("/keywords", keywords).Methods("GET")
-	r.HandleFunc("/keywords", putKeyword).Methods("PUT")
-	r.HandleFunc("/keywords/remove", removeKeyword).Methods("PUT")
+	r.HandleFunc("/keywords", Keywords).Methods("GET")
+	r.HandleFunc("/keywords", PutKeyword).Methods("PUT")
+	r.HandleFunc("/keywords/remove", RemoveKeyword).Methods("PUT")
 
-	r.HandleFunc("/matches", matches)
+	r.HandleFunc("/matches", Matches)
 
 	fmt.Println(Bold(Green("Application is running")))
 

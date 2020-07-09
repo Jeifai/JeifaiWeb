@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-    "time"
-    
+	"time"
+
 	. "github.com/logrusorgru/aurora"
 )
 
@@ -39,18 +39,17 @@ type Session struct {
 	CreatedAt time.Time
 }
 
-func session(request *http.Request) (sess Session, err error) {
+func GetSession(request *http.Request) (sess Session, err error) {
 	cookie, err := request.Cookie("_cookie")
 	if err == nil {
 		sess = Session{Uuid: cookie.Value}
-		if ok, _ := sess.Check(); !ok {
+		if ok, _ := sess.CheckSession(); !ok {
 			panic(err.Error())
 		}
 	}
 	return
 }
 
-// Create a new session for an existing user
 func (user *User) CreateSession() (session Session, err error) {
 	fmt.Println(Gray(8-1, "Starting CreateSession..."))
 	statement := `INSERT INTO sessions (uuid, email, userid, createdat)
@@ -61,7 +60,7 @@ func (user *User) CreateSession() (session Session, err error) {
 		return
 	}
 	defer stmt.Close()
-	// use QueryRow to return a row and scan the returned id into the Session struct
+
 	err = stmt.QueryRow(
 		createUUID(),
 		user.Email,
@@ -77,33 +76,7 @@ func (user *User) CreateSession() (session Session, err error) {
 	return
 }
 
-// Get the session for an existing user
-func (user *User) Session() (session Session, err error) {
-	fmt.Println(Gray(8-1, "Starting Session..."))
-	session = Session{}
-	err = Db.QueryRow(`SELECT
-                        id, 
-                        uuid, 
-                        email, 
-                        userid, 
-                        createdat
-                      FROM sessions
-                      WHERE userid = $1
-                      AND deletedat IS NULL`,
-		user.Id,
-	).
-		Scan(
-			&session.Id,
-			&session.Uuid,
-			&session.Email,
-			&session.UserId,
-			&session.CreatedAt,
-		)
-	return
-}
-
-// Check if session is valid in the database
-func (session *Session) Check() (valid bool, err error) {
+func (session *Session) CheckSession() (valid bool, err error) {
 	fmt.Println(Gray(8-1, "Starting Check..."))
 	err = Db.QueryRow(`SELECT
                         id,
@@ -146,7 +119,7 @@ func (session *Session) SetSessionDeletedAtByUUID() (err error) {
 	return
 }
 
-func (user *User) Create() (err error) {
+func (user *User) CreateUser() (err error) {
 	fmt.Println(Gray(8-1, "Starting Create..."))
 	statement := `INSERT INTO users
                   (username, email, password, createdat, updatedat)
@@ -327,7 +300,7 @@ func (user *User) CreateToken(token string) (err error) {
 	return
 }
 
-func UserByToken(token string) (user User) {
+func (user *User) UserByToken(token string) {
 	fmt.Println(Gray(8-1, "Starting UserByToken..."))
 	current_timestamp := time.Now()
 	err := Db.QueryRow(`SELECT

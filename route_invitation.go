@@ -4,21 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-    "net/http"
-    
+	"net/http"
+
 	. "github.com/logrusorgru/aurora"
 )
 
-func invitation(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting invitation..."))
+func StartInvitation(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting StartInvitation..."))
 	templates := template.Must(template.ParseFiles(
 		"templates/logout_layout.html",
 		"templates/logout_invitation.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
-func submitInvitation(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting submitInvitation..."))
+func SubmitInvitation(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting SubmitInvitation..."))
 	var invitation Invitation
 	err := json.NewDecoder(r.Body).Decode(&invitation)
 	if err != nil {

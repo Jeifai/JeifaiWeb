@@ -7,12 +7,12 @@ import (
 	"html/template"
 	"net/http"
 
-    "github.com/go-playground/validator"
+	"github.com/go-playground/validator"
 	. "github.com/logrusorgru/aurora"
 )
 
-func profile(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting profile..."))
+func Profile(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Profile..."))
 	templates := template.Must(
 		template.ParseFiles(
 			"templates/layout.html",
@@ -20,7 +20,7 @@ func profile(w http.ResponseWriter, r *http.Request) {
 			"templates/sidebar.html",
 			"templates/profile.html"))
 
-	sess, err := session(r)
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -58,10 +58,10 @@ func profile(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "layout", infos)
 }
 
-func updateProfile(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting updateProfile..."))
+func UpdateProfile(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting UpdateProfile..."))
 
-	sess, err := session(r)
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -115,8 +115,8 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 			user.NewPassword = Encrypt(user.NewPassword)
 		} else { // User does not want to change the password
 			user.NewPassword = user.CurrentPassword
-        }
-    
+		}
+
 		user.UpdateUser()
 		user.UpdateUserUpdates()
 

@@ -6,13 +6,13 @@ import (
 	"html/template"
 	"net/http"
 
-    "github.com/go-playground/validator"
+	"github.com/go-playground/validator"
 	. "github.com/logrusorgru/aurora"
 )
 
-func keywords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting keywords..."))
-	sess, err := session(r)
+func Keywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Keywords..."))
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -49,9 +49,9 @@ func keywords(w http.ResponseWriter, r *http.Request) {
 	_ = err
 }
 
-func putKeyword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting putKeyword..."))
-	sess, err := session(r)
+func PutKeyword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting PutKeyword..."))
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -142,12 +142,12 @@ func putKeyword(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(infos)
 }
 
-func removeKeyword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting removeKeyword..."))
+func RemoveKeyword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting RemoveKeyword..."))
 	var utk UserTargetKeyword
 	err := json.NewDecoder(r.Body).Decode(&utk)
 
-	sess, err := session(r)
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}

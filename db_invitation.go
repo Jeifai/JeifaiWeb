@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-    "time"
-    
+	"time"
+
 	. "github.com/logrusorgru/aurora"
 )
 

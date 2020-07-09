@@ -6,20 +6,20 @@ import (
 	"html/template"
 	"net/http"
 
-    "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
 	. "github.com/logrusorgru/aurora"
 )
 
-func login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting login..."))
+func Login(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Login..."))
 	templates := template.Must(template.ParseFiles(
 		"templates/logout_layout.html",
 		"templates/logout_login.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
-func authenticate(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting authenticate..."))
+func Authenticate(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Authenticate..."))
 
 	var user User
 	user.Email = r.FormValue("email")
@@ -27,7 +27,7 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 	user.UserByEmail()
 
 	if user.Password == Encrypt(user.LoginPassword) {
-		fmt.Println("Log in valid...")
+		fmt.Println(Blue("Log in valid..."))
 		session, err := user.CreateSession()
 		if err != nil {
 			panic(err.Error())
@@ -40,14 +40,14 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &cookie)
 		http.Redirect(w, r, "/", 302)
 	} else {
-		fmt.Println("Log in not valid...")
+		fmt.Println(Yellow("Log in not valid..."))
 		http.Redirect(w, r, "/login", 302)
 	}
 }
 
-func logout(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting logout..."))
-	sess, err := session(r)
+func Logout(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Logout..."))
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -63,16 +63,16 @@ func logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
-func signup(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting signup..."))
+func Signup(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Signup..."))
 	templates := template.Must(template.ParseFiles(
 		"templates/logout_layout.html",
 		"templates/logout_signup.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
-func signupAccount(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting signupAccount..."))
+func SignupAccount(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting SignupAccount..."))
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -87,7 +87,7 @@ func signupAccount(w http.ResponseWriter, r *http.Request) {
 		messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
 	} else {
 		invitation.UpdateInvitation()
-		if err := user.Create(); err != nil {
+		if err := user.CreateUser(); err != nil {
 			panic(err.Error())
 		}
 		user.SendSignUpEmail()
@@ -106,16 +106,16 @@ func signupAccount(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(infos)
 }
 
-func forgotPassword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting forgotPassword..."))
+func ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting ForgotPassword..."))
 	templates := template.Must(template.ParseFiles(
 		"templates/logout_layout.html",
 		"templates/logout_forgotPassword.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
-func setForgotPassword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting setForgotPassword..."))
+func SetForgotPassword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting SetForgotPassword..."))
 
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -159,10 +159,11 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(infos)
 }
 
-func resetPassword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting resetPassword..."))
+func ResetPassword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting ResetPassword..."))
 	token, _ := mux.Vars(r)["token"]
-	user := UserByToken(token)
+	user := User{}
+	user.UserByToken(token)
 	if user.Id == 0 {
 		templates := template.Must(template.ParseFiles(
 			"templates/logout_layout.html",
@@ -176,10 +177,11 @@ func resetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func setResetPassword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting setResetPassword..."))
+func SetResetPassword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting SetResetPassword..."))
 	token, _ := mux.Vars(r)["token"]
-	user := UserByToken(token)
+	user := User{}
+	user.UserByToken(token)
 
 	var messages []string
 	if user.Id > 0 {

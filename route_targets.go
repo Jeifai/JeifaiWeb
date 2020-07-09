@@ -6,12 +6,12 @@ import (
 	"html/template"
 	"net/http"
 
-    "github.com/go-playground/validator"
+	"github.com/go-playground/validator"
 	. "github.com/logrusorgru/aurora"
 )
 
-func targets(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting targets..."))
+func Targets(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Targets..."))
 	templates := template.Must(
 		template.ParseFiles(
 			"templates/layout.html",
@@ -19,7 +19,7 @@ func targets(w http.ResponseWriter, r *http.Request) {
 			"templates/sidebar.html",
 			"templates/targets.html"))
 
-	sess, err := session(r)
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -39,12 +39,12 @@ func targets(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "layout", infos)
 }
 
-func putTarget(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting putTarget..."))
+func PutTarget(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting PutTarget..."))
 	var target Target
 	err := json.NewDecoder(r.Body).Decode(&target)
 
-	sess, err := session(r)
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -123,12 +123,12 @@ func putTarget(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(infos)
 }
 
-func removeTarget(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting removeTarget..."))
+func RemoveTarget(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting RemoveTarget..."))
 	var target Target
 	err := json.NewDecoder(r.Body).Decode(&target)
 
-	sess, err := session(r)
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}

@@ -9,11 +9,11 @@ import (
 
 	"github.com/dchest/uniuri"
 	"github.com/joho/godotenv"
-    _ "github.com/lib/pq"
+	_ "github.com/lib/pq"
 	. "github.com/logrusorgru/aurora"
 )
 
-const isLocal = true
+const isLocal = false
 
 var Db *sql.DB
 
@@ -36,9 +36,9 @@ func init() {
 	}
 	if err = Db.Ping(); err != nil {
 		Db.Close()
-	    fmt.Println(Red("Unsuccessfully connected to the database"))
+		fmt.Println(Red("Unsuccessfully connected to the database"))
 		return
-    }
+	}
 	fmt.Println(Green("Successfully connected to the database"))
 }
 

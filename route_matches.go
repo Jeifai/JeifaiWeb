@@ -3,13 +3,13 @@ package main
 import (
 	"fmt"
 	"html/template"
-    "net/http"
-    
+	"net/http"
+
 	. "github.com/logrusorgru/aurora"
 )
 
-func matches(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting matches..."))
+func Matches(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Matches..."))
 	templates := template.Must(
 		template.ParseFiles(
 			"templates/layout.html",
@@ -17,7 +17,7 @@ func matches(w http.ResponseWriter, r *http.Request) {
 			"templates/sidebar.html",
 			"templates/matches.html"))
 
-	sess, err := session(r)
+	sess, err := GetSession(r)
 	if err != nil {
 		panic(err.Error())
 	}
