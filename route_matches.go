@@ -3,12 +3,13 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"net/http"
+    "net/http"
+    
+	. "github.com/logrusorgru/aurora"
 )
 
 func matches(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Generating HTML for matches...")
-
+	fmt.Println(Gray(8-1, "Starting matches..."))
 	templates := template.Must(
 		template.ParseFiles(
 			"templates/layout.html",

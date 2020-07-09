@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
-	"time"
+    "time"
+    
+	. "github.com/logrusorgru/aurora"
 )
 
 type Invitation struct {
@@ -15,7 +17,7 @@ type Invitation struct {
 }
 
 func (invitation *Invitation) InvitationIdByEmail() (err error) {
-	fmt.Println("Starting InvitationIdByEmail...")
+	fmt.Println(Gray(8-1, "Starting InvitationIdByEmail..."))
 	err = Db.QueryRow(`SELECT
                          i.id
                        FROM invitations i
@@ -24,7 +26,7 @@ func (invitation *Invitation) InvitationIdByEmail() (err error) {
 }
 
 func (user *User) InvitationIdByUuidAndEmail() (invitation Invitation) {
-	fmt.Println("Starting InvitationIdByUuidAndEmail...")
+	fmt.Println(Gray(8-1, "Starting InvitationIdByUuidAndEmail..."))
 	_ = Db.QueryRow(`SELECT i.id
                        FROM invitations i
                        WHERE i.uuid=$1
@@ -36,7 +38,7 @@ func (user *User) InvitationIdByUuidAndEmail() (invitation Invitation) {
 }
 
 func (invitation *Invitation) CreateInvitation() {
-	fmt.Println("Starting CreateInvitation...")
+	fmt.Println(Gray(8-1, "Starting CreateInvitation..."))
 	statement := `INSERT INTO invitations (uuid, email, whyjoin, whichcompanies, anythingelse, createdat)
                   VALUES ($1, $2, $3, $4, $5, $6)`
 	stmt, err := Db.Prepare(statement)
@@ -55,6 +57,7 @@ func (invitation *Invitation) CreateInvitation() {
 }
 
 func (invitation *Invitation) UpdateInvitation() {
+	fmt.Println(Gray(8-1, "Starting UpdateInvitation..."))
 	statement := `UPDATE invitations SET usedat = current_timestamp WHERE id=$1;`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {

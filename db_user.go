@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
+    "time"
+    
+	. "github.com/logrusorgru/aurora"
 )
 
 type User struct {
@@ -50,6 +52,7 @@ func session(request *http.Request) (sess Session, err error) {
 
 // Create a new session for an existing user
 func (user *User) CreateSession() (session Session, err error) {
+	fmt.Println(Gray(8-1, "Starting CreateSession..."))
 	statement := `INSERT INTO sessions (uuid, email, userid, createdat)
                   VALUES ($1, $2, $3, $4)
                   RETURNING id, uuid, email, userid, createdat`
@@ -76,6 +79,7 @@ func (user *User) CreateSession() (session Session, err error) {
 
 // Get the session for an existing user
 func (user *User) Session() (session Session, err error) {
+	fmt.Println(Gray(8-1, "Starting Session..."))
 	session = Session{}
 	err = Db.QueryRow(`SELECT
                         id, 
@@ -100,6 +104,7 @@ func (user *User) Session() (session Session, err error) {
 
 // Check if session is valid in the database
 func (session *Session) Check() (valid bool, err error) {
+	fmt.Println(Gray(8-1, "Starting Check..."))
 	err = Db.QueryRow(`SELECT
                         id,
                         uuid,
@@ -129,6 +134,7 @@ func (session *Session) Check() (valid bool, err error) {
 
 // Set deletedat by uuid
 func (session *Session) SetSessionDeletedAtByUUID() (err error) {
+	fmt.Println(Gray(8-1, "Starting SetSessionDeletedAtByUUID..."))
 	statement := `UPDATE sessions SET deletedat = current_timestamp WHERE uuid = $1;`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
@@ -140,11 +146,8 @@ func (session *Session) SetSessionDeletedAtByUUID() (err error) {
 	return
 }
 
-// Create a new user, save user info into the database
 func (user *User) Create() (err error) {
-	// Postgres does not automatically return the last insert id, because it would be wrong to assume
-	// you're always using a sequence.You need to use the RETURNING keyword in your insert to get this
-	// information from postgres.
+	fmt.Println(Gray(8-1, "Starting Create..."))
 	statement := `INSERT INTO users
                   (username, email, password, createdat, updatedat)
                   VALUES ($1, $2, $3, $4, $5)
@@ -155,7 +158,6 @@ func (user *User) Create() (err error) {
 	}
 	defer stmt.Close()
 
-	// use QueryRow to return a row and scan the returned id into the User struct
 	err = stmt.QueryRow(
 		user.UserName,
 		user.Email,
@@ -170,8 +172,8 @@ func (user *User) Create() (err error) {
 	return
 }
 
-// Get a single user given the email
 func (user *User) UserByEmail() (err error) {
+	fmt.Println(Gray(8-1, "Starting UserByEmail..."))
 	err = Db.QueryRow(`SELECT
                         id,
                         username,
@@ -208,6 +210,7 @@ func (user *User) UserByEmail() (err error) {
 
 // Get a single user given the email
 func (user *User) UserById() (err error) {
+	fmt.Println(Gray(8-1, "Starting UserById..."))
 	err = Db.QueryRow(`SELECT
                         id,
                         username,
@@ -243,8 +246,7 @@ func (user *User) UserById() (err error) {
 }
 
 func (user User) UpdateUser() {
-	fmt.Println("Starting UpdateUser...")
-
+	fmt.Println(Gray(8-1, "Starting UpdateUser..."))
 	statement := `UPDATE users SET 
                     username=$2,
                     email=$3,
@@ -282,7 +284,7 @@ func (user User) UpdateUser() {
 }
 
 func (user User) UpdateUserUpdates() {
-	fmt.Println("Starting UpdateUserUpdates...")
+	fmt.Println(Gray(8-1, "Starting UpdateUserUpdates..."))
 	statement := `INSERT INTO usersupdates (userid, data, createdat) 
                     VALUES ($1, $2, $3)`
 
@@ -304,7 +306,7 @@ func (user User) UpdateUserUpdates() {
 }
 
 func (user *User) CreateToken(token string) (err error) {
-	fmt.Println("Starting CreateToken...")
+	fmt.Println(Gray(8-1, "Starting CreateToken..."))
 	statement := `INSERT INTO resetpasswords (userid, token, createdat, expiredat)
                   VALUES ($1, $2, $3, $4)`
 	stmt, err := Db.Prepare(statement)
@@ -326,6 +328,7 @@ func (user *User) CreateToken(token string) (err error) {
 }
 
 func UserByToken(token string) (user User) {
+	fmt.Println(Gray(8-1, "Starting UserByToken..."))
 	current_timestamp := time.Now()
 	err := Db.QueryRow(`SELECT
                         u.id,
@@ -342,7 +345,7 @@ func UserByToken(token string) (user User) {
 }
 
 func (user *User) ChangePassword(password string) (err error) {
-	fmt.Println("Starting ChangePassword...")
+	fmt.Println(Gray(8-1, "Starting ChangePassword..."))
 	statement := `UPDATE users SET password=$1 WHERE id=$2`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {

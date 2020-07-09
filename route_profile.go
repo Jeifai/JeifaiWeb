@@ -7,11 +7,12 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/go-playground/validator"
+    "github.com/go-playground/validator"
+	. "github.com/logrusorgru/aurora"
 )
 
 func profile(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Generating HTML for profile...")
+	fmt.Println(Gray(8-1, "Starting profile..."))
 	templates := template.Must(
 		template.ParseFiles(
 			"templates/layout.html",
@@ -58,7 +59,7 @@ func profile(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateProfile(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting updateProfile...")
+	fmt.Println(Gray(8-1, "Starting updateProfile..."))
 
 	sess, err := session(r)
 	if err != nil {
@@ -114,9 +115,8 @@ func updateProfile(w http.ResponseWriter, r *http.Request) {
 			user.NewPassword = Encrypt(user.NewPassword)
 		} else { // User does not want to change the password
 			user.NewPassword = user.CurrentPassword
-		}
-
-		fmt.Println("Updating user infos...")
+        }
+    
 		user.UpdateUser()
 		user.UpdateUserUpdates()
 

@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	. "github.com/logrusorgru/aurora"
 	"gopkg.in/gomail.v2"
+	. "github.com/logrusorgru/aurora"
 )
 
 func (invitation *Invitation) SendInvitationEmail() {

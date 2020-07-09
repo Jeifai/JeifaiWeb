@@ -3,14 +3,16 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"net/http"
+    "net/http"
+    
+	. "github.com/logrusorgru/aurora"
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting index...")
+	fmt.Println(Gray(8-1, "Starting index..."))
 	sess, err := session(r)
 	if err != nil {
-		fmt.Println("Generating HTML for index, user not logged in...")
+        fmt.Println(Yellow("\tUser not logged in..."))
 		templates := template.Must(template.ParseFiles(
 			"templates/logout_layout.html",
 			"templates/logout_home.html"))
@@ -20,7 +22,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 			Id: sess.UserId,
 		}
 		user.UserById()
-		fmt.Println("Generating HTML for index, user logged in...")
+        fmt.Println(Green("\tUser logged in..."))
 		templates := template.Must(
 			template.ParseFiles(
 				"templates/layout.html",
@@ -36,7 +38,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 }
 
 func how(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting login...")
+	fmt.Println(Gray(8-1, "Starting how..."))
 	templates := template.Must(template.ParseFiles(
 		"templates/logout_layout.html",
 		"templates/logout_how.html"))

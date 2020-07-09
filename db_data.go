@@ -9,10 +9,11 @@ import (
 
 	"github.com/dchest/uniuri"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+    _ "github.com/lib/pq"
+	. "github.com/logrusorgru/aurora"
 )
 
-const isLocal = false
+const isLocal = true
 
 var Db *sql.DB
 
@@ -35,10 +36,10 @@ func init() {
 	}
 	if err = Db.Ping(); err != nil {
 		Db.Close()
-		fmt.Println("Unsuccessfully connected to the database")
+	    fmt.Println(Red("Unsuccessfully connected to the database"))
 		return
-	}
-	fmt.Println("Successfully connected to the database")
+    }
+	fmt.Println(Green("Successfully connected to the database"))
 }
 
 func createUUID() (uuid string) {

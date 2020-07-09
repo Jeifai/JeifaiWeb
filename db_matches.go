@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
-	"time"
+    "time"
+    
+	. "github.com/logrusorgru/aurora"
 )
 
 type Match struct {
@@ -15,9 +17,8 @@ type Match struct {
 	CreatedDate string
 }
 
-// Get all the matches belonging to the targets of a specific user
 func (user *User) MatchesByUser() (matches []Match, err error) {
-	fmt.Println("Starting MatchesByUser...")
+	fmt.Println(Gray(8-1, "Starting MatchesByUser..."))
 	rows, err := Db.Query(`SELECT DISTINCT
                                 s.name,
                                 r.createdat,
@@ -33,8 +34,7 @@ func (user *User) MatchesByUser() (matches []Match, err error) {
                             AND utk.userid = $1
                             ORDER BY r.createdat DESC;`, user.Id)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		panic(err.Error())
 	}
 	for rows.Next() {
 		match := Match{}

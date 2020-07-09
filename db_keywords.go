@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
-	"time"
+    "time"
+    
+	. "github.com/logrusorgru/aurora"
 )
 
 type Keyword struct {
@@ -25,7 +27,7 @@ type UserTargetKeyword struct {
 }
 
 func (keyword *Keyword) CreateKeyword() (err error) {
-	fmt.Println("Starting CreateKeyword...")
+	fmt.Println(Gray(8-1, "Starting CreateKeyword..."))
 	statement := `INSERT INTO keywords (text, createdat)
                   VALUES ($1, current_timestamp)
                   RETURNING id, createdat`
@@ -44,7 +46,7 @@ func (keyword *Keyword) CreateKeyword() (err error) {
 }
 
 func (keyword *Keyword) KeywordByText() (err error) {
-	fmt.Println("Starting KeywordByText...")
+	fmt.Println(Gray(8-1, "Starting KeywordByText..."))
 	err = Db.QueryRow(`SELECT
                          k.id
                        FROM keywords k
@@ -54,7 +56,7 @@ func (keyword *Keyword) KeywordByText() (err error) {
 
 func (user *User) GetUserTargetKeyword() (
 	utks []UserTargetKeyword, err error) {
-	fmt.Println("Starting GetUserTargetKeyword...")
+	fmt.Println(Gray(8-1, "Starting GetUserTargetKeyword..."))
 
 	rows, err := Db.Query(`SELECT
                                 utk.id,
@@ -97,7 +99,7 @@ func (user *User) GetUserTargetKeyword() (
 
 func SetUserTargetKeyword(
 	user User, targets []Target, keyword Keyword) (err error) {
-	fmt.Println("Starting SetUserTargetKeyword...")
+	fmt.Println(Gray(8-1, "Starting SetUserTargetKeyword..."))
 
 	for _, elem := range targets {
 		statement := `INSERT INTO userstargetskeywords (
@@ -121,7 +123,7 @@ func SetUserTargetKeyword(
 }
 
 func (utk *UserTargetKeyword) SetDeletedAtIntUserTargetKeyword() (err error) {
-	fmt.Println("Starting SetDeletedAtIntUserTargetKeyword...")
+	fmt.Println(Gray(8-1, "Starting SetDeletedAtIntUserTargetKeyword..."))
 	statement := `UPDATE userstargetskeywords
                   SET deletedat = current_timestamp
                   WHERE userid = $1

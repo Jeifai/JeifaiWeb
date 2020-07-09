@@ -6,11 +6,12 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/go-playground/validator"
+    "github.com/go-playground/validator"
+	. "github.com/logrusorgru/aurora"
 )
 
 func keywords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Generating HTML for keywords...")
+	fmt.Println(Gray(8-1, "Starting keywords..."))
 	sess, err := session(r)
 	if err != nil {
 		panic(err.Error())
@@ -49,7 +50,7 @@ func keywords(w http.ResponseWriter, r *http.Request) {
 }
 
 func putKeyword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting putKeyword...")
+	fmt.Println(Gray(8-1, "Starting putKeyword..."))
 	sess, err := session(r)
 	if err != nil {
 		panic(err.Error())
@@ -142,7 +143,7 @@ func putKeyword(w http.ResponseWriter, r *http.Request) {
 }
 
 func removeKeyword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting removeKeyword...")
+	fmt.Println(Gray(8-1, "Starting removeKeyword..."))
 	var utk UserTargetKeyword
 	err := json.NewDecoder(r.Body).Decode(&utk)
 

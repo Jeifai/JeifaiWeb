@@ -6,11 +6,12 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/go-playground/validator"
+    "github.com/go-playground/validator"
+	. "github.com/logrusorgru/aurora"
 )
 
 func targets(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Generating HTML for targets...")
+	fmt.Println(Gray(8-1, "Starting targets..."))
 	templates := template.Must(
 		template.ParseFiles(
 			"templates/layout.html",
@@ -39,6 +40,7 @@ func targets(w http.ResponseWriter, r *http.Request) {
 }
 
 func putTarget(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting putTarget..."))
 	var target Target
 	err := json.NewDecoder(r.Body).Decode(&target)
 
@@ -122,6 +124,7 @@ func putTarget(w http.ResponseWriter, r *http.Request) {
 }
 
 func removeTarget(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting removeTarget..."))
 	var target Target
 	err := json.NewDecoder(r.Body).Decode(&target)
 

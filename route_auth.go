@@ -6,11 +6,12 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/gorilla/mux"
+    "github.com/gorilla/mux"
+	. "github.com/logrusorgru/aurora"
 )
 
 func login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting login...")
+	fmt.Println(Gray(8-1, "Starting login..."))
 	templates := template.Must(template.ParseFiles(
 		"templates/logout_layout.html",
 		"templates/logout_login.html"))
@@ -18,7 +19,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 }
 
 func authenticate(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting authenticate...")
+	fmt.Println(Gray(8-1, "Starting authenticate..."))
 
 	var user User
 	user.Email = r.FormValue("email")
@@ -45,7 +46,7 @@ func authenticate(w http.ResponseWriter, r *http.Request) {
 }
 
 func logout(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting logout...")
+	fmt.Println(Gray(8-1, "Starting logout..."))
 	sess, err := session(r)
 	if err != nil {
 		panic(err.Error())
@@ -63,7 +64,7 @@ func logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func signup(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting signup...")
+	fmt.Println(Gray(8-1, "Starting signup..."))
 	templates := template.Must(template.ParseFiles(
 		"templates/logout_layout.html",
 		"templates/logout_signup.html"))
@@ -71,7 +72,7 @@ func signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func signupAccount(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting signupAccount...")
+	fmt.Println(Gray(8-1, "Starting signupAccount..."))
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -106,7 +107,7 @@ func signupAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func forgotPassword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting forgotPassword...")
+	fmt.Println(Gray(8-1, "Starting forgotPassword..."))
 	templates := template.Must(template.ParseFiles(
 		"templates/logout_layout.html",
 		"templates/logout_forgotPassword.html"))
@@ -114,7 +115,7 @@ func forgotPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func setForgotPassword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting setForgotPassword...")
+	fmt.Println(Gray(8-1, "Starting setForgotPassword..."))
 
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -159,7 +160,7 @@ func setForgotPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func resetPassword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting resetPassword...")
+	fmt.Println(Gray(8-1, "Starting resetPassword..."))
 	token, _ := mux.Vars(r)["token"]
 	user := UserByToken(token)
 	if user.Id == 0 {
@@ -176,7 +177,7 @@ func resetPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func setResetPassword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Starting setResetPassword...")
+	fmt.Println(Gray(8-1, "Starting setResetPassword..."))
 	token, _ := mux.Vars(r)["token"]
 	user := UserByToken(token)
 

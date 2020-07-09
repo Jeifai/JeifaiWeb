@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/lib/pq"
+    "github.com/lib/pq"
+	. "github.com/logrusorgru/aurora"
 )
 
 type Target struct {
@@ -18,7 +19,7 @@ type Target struct {
 
 // Add a new target
 func (target *Target) CreateTarget() (err error) {
-	fmt.Println("Starting CreateTarget...")
+	fmt.Println(Gray(8-1, "Starting CreateTarget..."))
 	statement := `INSERT INTO targets (name, createdat)
                   VALUES ($1, $2)
                   RETURNING id, name, createdat`
@@ -38,9 +39,8 @@ func (target *Target) CreateTarget() (err error) {
 	return err
 }
 
-// Add a new relation user <--> target
 func (target *Target) CreateUserTarget(user User) {
-	fmt.Println("Starting CreateUserTarget...")
+	fmt.Println(Gray(8-1, "Starting CreateUserTarget..."))
 	statement := `INSERT INTO userstargets (userid, targetid, createdat) 
                   VALUES ($1, $2, $3)`
 	stmt, err := Db.Prepare(statement)
@@ -51,9 +51,8 @@ func (target *Target) CreateUserTarget(user User) {
 	stmt.QueryRow(user.Id, target.Id, time.Now())
 }
 
-// Get all the targets for a specific user
 func (user *User) UsersTargetsByUser() (targets []Target, err error) {
-	fmt.Println("Starting UsersTargetsByUser...")
+	fmt.Println(Gray(8-1, "Starting UsersTargetsByUser..."))
 	rows, err := Db.Query(`SELECT
                             t.id,
                             t.name,
@@ -83,9 +82,8 @@ func (user *User) UsersTargetsByUser() (targets []Target, err error) {
 	return
 }
 
-// Get the target for a specific name
 func (target *Target) TargetByName() (err error) {
-	fmt.Println("Starting TargetByName...")
+	fmt.Println(Gray(8-1, "Starting TargetByName..."))
 	err = Db.QueryRow(`SELECT
                          t.id
                        FROM targets t
@@ -93,9 +91,8 @@ func (target *Target) TargetByName() (err error) {
 	return
 }
 
-// Get all the targets based on a list of names
 func TargetsByNames(targetNames []string) (targets []Target, err error) {
-	fmt.Println("Starting TargetsByNames...")
+	fmt.Println(Gray(8-1, "Starting TargetsByNames..."))
 
 	rows, err := Db.Query(`SELECT
                                 t.id,
@@ -116,9 +113,8 @@ func TargetsByNames(targetNames []string) (targets []Target, err error) {
 	return
 }
 
-// Get the target for a specific user and name, must return a unique value
 func (user *User) UsersTargetsByUserAndName(name string) (target Target, err error) {
-	fmt.Println("Starting UsersTargetsByUserAndName...")
+	fmt.Println(Gray(8-1, "Starting UsersTargetsByUserAndName..."))
 	err = Db.QueryRow(`SELECT
                          t.id, 
                          t.name, 
@@ -135,7 +131,8 @@ func (user *User) UsersTargetsByUserAndName(name string) (target Target, err err
 // Update userstargets in column deletedat
 func (target *Target) SetDeletedAtInUsersTargetsByUserAndTarget(
 	user User) (err error) {
-	fmt.Println("Starting SetDeletedAtInUserTargetsByUserAndTarget...")
+	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUsersTargetsByUserAndTarget..."))
+
 	statement := `UPDATE userstargets
                   SET deletedat = current_timestamp
                   WHERE userid = $1

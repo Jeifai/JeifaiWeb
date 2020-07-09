@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/mux"
+    "github.com/gorilla/mux"
+	. "github.com/logrusorgru/aurora"
 )
 
 func main() {
@@ -44,7 +45,7 @@ func main() {
 
 	r.HandleFunc("/matches", matches)
 
-	fmt.Println("Application is running")
+	fmt.Println(Bold(Green("Application is running")))
 
 	server := &http.Server{
 		Addr:           "0.0.0.0:8080",
