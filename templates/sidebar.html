@@ -2,7 +2,7 @@
     <aside class="mdc-drawer mdc-top-app-bar--fixed-adjust">
         <div class="mdc-drawer__content">
             <nav class="mdc-list" role="listbox">
-                <a class="mdc-list-item mdc-list-item--selected" role="option" tabindex="0" href="/targets">
+                <a class="mdc-list-item" role="option" tabindex="0" href="/targets">
                     <i class="material-icons mdc-list-item__graphic">gps_fixed</i>
                     <span class="mdc-list-item__text">Targets</span>
                 </a>
@@ -20,6 +20,7 @@
     <script type="module">
         const list = mdc.list.MDCList.attachTo(document.querySelector('.mdc-list'));
         list.singleSelection = true;
+        list.selectedIndex = app.selectedIndex;
     </script>
     <style>
         @use "@material/drawer/mdc-drawer";

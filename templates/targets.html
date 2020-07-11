@@ -43,10 +43,11 @@
         </div>
     </div>
     <script>
-        new Vue({
+        var app = new Vue({
             el: '#app',
             delimiters: ["[[","]]"],
             data: {
+                    selectedIndex: 0,
                     messages: '',
                     targets: {{.Targets}},
                     newTarget: {}

@@ -67,10 +67,11 @@
     </div>
     <script src="https://unpkg.com/vue-simple-multi-select@latest"></script>
     <script>
-        new Vue({
+        var app = new Vue({
             el: '#app',
             delimiters: ["[[","]]"],
             data: {
+                    selectedIndex: 1,
                     messages: '',
                     targets: {{.Targets}},
                     utks: {{.Utks}},

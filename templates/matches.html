@@ -41,10 +41,11 @@
         </div>
     </div>
     <script>
-        new Vue({
+        var app = new Vue({
             el: '#app',
             delimiters: ["[[","]]"],
             data: {
+                selectedIndex: 2,
                 filter: '',
                 matches: {{.Data}},
             },
