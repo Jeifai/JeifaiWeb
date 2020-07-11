@@ -34,27 +34,7 @@ func init_log() {
 	}
 
 	log.SetFormatter(&logrus.JSONFormatter{})
-
-	log.WithFields(logrus.Fields{
-		"animal": "walrus",
-		"size":   10,
-	}).Info("A group of walrus emerges from the ocean")
-}
-
-func createUUID() (uuid string) {
-	u := new([16]byte)
-	_, err := rand.Read(u[:])
-	if err != nil {
-		return
-	}
-
-	// 0x40 is reserved variant from RFC 4122
-	u[8] = (u[8] | 0x40) & 0x7F
-	// Set the four most significant bits (bits 12 through 15) of the
-	// time_hi_and_version field to the 4-bit version number.
-	u[6] = (u[6] & 0xF) | (0x4 << 4)
-	uuid = fmt.Sprintf("%x-%x-%x-%x-%x", u[0:4], u[4:6], u[6:8], u[8:10], u[10:])
-	return
+	log.SetReportCaller(true)
 }
 
 func init_db() {
@@ -73,8 +53,10 @@ func init_db() {
 	if err = Db.Ping(); err != nil {
 		Db.Close()
 		fmt.Println(Red("Unsuccessfully connected to the database"))
+		log.Warn("Unsuccessfully connected to the database")
 		return
 	}
+	log.Info("Successfully connected to the database")
 	fmt.Println(Green("Successfully connected to the database"))
 }
 
@@ -85,5 +67,21 @@ func Encrypt(plaintext string) (cryptext string) {
 
 func GenerateToken() (token string) {
 	token = uniuri.NewLen(40)
+	return
+}
+
+func createUUID() (uuid string) {
+	u := new([16]byte)
+	_, err := rand.Read(u[:])
+	if err != nil {
+		return
+	}
+
+	// 0x40 is reserved variant from RFC 4122
+	u[8] = (u[8] | 0x40) & 0x7F
+	// Set the four most significant bits (bits 12 through 15) of the
+	// time_hi_and_version field to the 4-bit version number.
+	u[6] = (u[6] & 0xF) | (0x4 << 4)
+	uuid = fmt.Sprintf("%x-%x-%x-%x-%x", u[0:4], u[4:6], u[6:8], u[8:10], u[10:])
 	return
 }
