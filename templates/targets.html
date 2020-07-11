@@ -6,13 +6,18 @@
         <p v-for="(message, index) in messages">
             <span v-html="message"></span>
         </p>
-        <label id="Target" for="Target" class="mdc-text-field mdc-text-field--filled mdc-text-field--with-leading-icon">
-            <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" role="button">gps_fixed</i>
-            <input class="mdc-text-field__input" type="text" aria-labelledby="Target" v-model="newTarget.Name">
-            <span class="mdc-floating-label" id="Target">Target</span>
-            <div class="mdc-line-ripple"></div>
-        </label>
-        <button class="mdc-icon-button material-icons" aria-label="Check" v-on:click="createTarget">check</button>
+        <div class="taggableselectfield">
+            <span><br>Select an existing target or add a new one.</span>
+            <vue-taggable-select
+                v-model="selectedTargets"
+                :options="nameTargets"
+                class="multiselect"
+                placeholder="Targets"
+                :taggable="true"
+            >
+            </vue-taggable-select>
+            <button class="mdc-icon-button material-icons" aria-label="Check" v-on:click="createTarget">check</button>
+        </div>
         <div>
             <h1>
                 My targets
@@ -42,6 +47,7 @@
             </div>
         </div>
     </div>
+    <script src="https://unpkg.com/vue-taggable-select@latest"></script>
     <script>
         var app = new Vue({
             el: '#app',
@@ -50,14 +56,18 @@
                     selectedIndex: 0,
                     messages: '',
                     targets: {{.Targets}},
+                    nameTargets: {{.NameTargets}},
+                    selectedTargets: null,
                     newTarget: {}
                 },
             methods: {
                 createTarget: function() {
-                    this.$http.put('/targets', this.newTarget).then(function(response) {
-                        this.messages = response.data.Messages
-                        this.targets = response.data.Targets
-                        this.newTarget = {}
+                    this.$http.put('/targets', {
+                        "selectedTargets": this.selectedTargets
+                        }).then(function(response) {
+                            this.messages = response.data.Messages
+                            this.targets = response.data.Targets
+                            this.newTarget = {}
                     }).catch(function(error) {
                         console.log(error)
                     });
@@ -91,5 +101,9 @@
         @include icon.icon-core-styles;
 
         @use "@material/fab/mdc-fab";
+
+        .taggableselectfield {
+            max-width: 35%;
+        }
     </style>
 {{ end }}
