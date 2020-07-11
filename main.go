@@ -45,8 +45,7 @@ func main() {
 
 	r.HandleFunc("/matches", Matches)
 
-	fmt.Println(Bold(Green("Application is running")))
-	log.Info("Application is running")
+    fmt.Println(Bold(Green("Application is running")))
 
 	server := &http.Server{
 		Addr:           "0.0.0.0:8080",
