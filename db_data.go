@@ -13,7 +13,7 @@ import (
 	. "github.com/logrusorgru/aurora"
 )
 
-const isLocal = true
+const isLocal = false
 
 var Db *sql.DB
 

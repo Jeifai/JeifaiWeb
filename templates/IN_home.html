@@ -1,7 +1,9 @@
 {{ define "content" }}
     <div id="app">
         <span class="mdc-top-app-bar__title">~ Hi {{.User.UserName}}</span><br>
-        <span class="mdc-top-app-bar__title">{{.Home.Targets}} targets are being monitored by {{.Home.Keywords}} keywords so far.</span>
+        <span class="mdc-top-app-bar__title">{{.Home.Targets}} targets are being monitored by {{.Home.Keywords}} keywords so far.</span><br>
+        <span class="mdc-top-app-bar__title">In the last 7 days your targets have published {{.Home.Results}} new job offers.</span><br>
+        <span class="mdc-top-app-bar__title">On top of those ones, your keywords have triggered {{.Home.Matches}} matches.</span>
     </div>
     <script>
         var app = new Vue({
