@@ -14,8 +14,8 @@ func RunIndex(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(Yellow("User not logged in..."))
 		templates := template.Must(template.ParseFiles(
-			"templates/logout_layout.html",
-			"templates/logout_home.html"))
+			"templates/OUT_layout.html",
+			"templates/OUT_home.html"))
 		templates.ExecuteTemplate(w, "layout", nil)
 	} else {
 		user := User{
@@ -25,10 +25,10 @@ func RunIndex(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(Blue("User logged in..."))
 		templates := template.Must(
 			template.ParseFiles(
-				"templates/layout.html",
-				"templates/topbar.html",
-				"templates/sidebar.html",
-				"templates/index.html"))
+				"templates/IN_layout.html",
+				"templates/IN_topbar.html",
+				"templates/IN_sidebar.html",
+				"templates/IN_index.html"))
 		type TempStruct struct {
 			User User
 		}
@@ -40,7 +40,7 @@ func RunIndex(w http.ResponseWriter, r *http.Request) {
 func How(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting How..."))
 	templates := template.Must(template.ParseFiles(
-		"templates/logout_layout.html",
-		"templates/logout_how.html"))
+		"templates/OUT_layout.html",
+		"templates/OUT_how.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }

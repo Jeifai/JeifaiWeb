@@ -23,10 +23,10 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 
 	templates := template.Must(
 		template.ParseFiles(
-			"templates/layout.html",
-			"templates/topbar.html",
-			"templates/sidebar.html",
-			"templates/keywords.html"))
+			"templates/IN_layout.html",
+			"templates/IN_topbar.html",
+			"templates/IN_sidebar.html",
+			"templates/IN_keywords.html"))
 
 	struct_targets, err := user.UsersTargetsByUser()
 

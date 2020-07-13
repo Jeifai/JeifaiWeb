@@ -13,8 +13,8 @@ import (
 func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Login..."))
 	templates := template.Must(template.ParseFiles(
-		"templates/logout_layout.html",
-		"templates/logout_login.html"))
+		"templates/OUT_layout.html",
+		"templates/OUT_login.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
@@ -66,8 +66,8 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 func Signup(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Signup..."))
 	templates := template.Must(template.ParseFiles(
-		"templates/logout_layout.html",
-		"templates/logout_signup.html"))
+		"templates/OUT_layout.html",
+		"templates/OUT_signup.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
@@ -109,8 +109,8 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting ForgotPassword..."))
 	templates := template.Must(template.ParseFiles(
-		"templates/logout_layout.html",
-		"templates/logout_forgotPassword.html"))
+		"templates/OUT_layout.html",
+		"templates/OUT_forgotPassword.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
@@ -166,13 +166,13 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	user.UserByToken(token)
 	if user.Id == 0 {
 		templates := template.Must(template.ParseFiles(
-			"templates/logout_layout.html",
-			"templates/logout_404.html"))
+			"templates/OUT_layout.html",
+			"templates/OUT_404.html"))
 		templates.ExecuteTemplate(w, "layout", nil)
 	} else {
 		templates := template.Must(template.ParseFiles(
-			"templates/logout_layout.html",
-			"templates/logout_resetPassword.html"))
+			"templates/OUT_layout.html",
+			"templates/OUT_resetPassword.html"))
 		templates.ExecuteTemplate(w, "layout", nil)
 	}
 }

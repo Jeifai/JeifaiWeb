@@ -12,8 +12,8 @@ import (
 func StartInvitation(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting StartInvitation..."))
 	templates := template.Must(template.ParseFiles(
-		"templates/logout_layout.html",
-		"templates/logout_invitation.html"))
+		"templates/OUT_layout.html",
+		"templates/OUT_invitation.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 

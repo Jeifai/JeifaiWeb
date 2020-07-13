@@ -14,10 +14,10 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Targets..."))
 	templates := template.Must(
 		template.ParseFiles(
-			"templates/layout.html",
-			"templates/topbar.html",
-			"templates/sidebar.html",
-			"templates/targets.html"))
+			"templates/IN_layout.html",
+			"templates/IN_topbar.html",
+			"templates/IN_sidebar.html",
+			"templates/IN_targets.html"))
 
 	sess, err := GetSession(r)
 	if err != nil {

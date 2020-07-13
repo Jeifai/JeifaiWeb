@@ -15,10 +15,10 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Profile..."))
 	templates := template.Must(
 		template.ParseFiles(
-			"templates/layout.html",
-			"templates/topbar.html",
-			"templates/sidebar.html",
-			"templates/profile.html"))
+			"templates/IN_layout.html",
+			"templates/IN_topbar.html",
+			"templates/IN_sidebar.html",
+			"templates/IN_profile.html"))
 
 	sess, err := GetSession(r)
 	if err != nil {
