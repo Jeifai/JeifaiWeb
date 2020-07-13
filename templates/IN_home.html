@@ -1,0 +1,18 @@
+{{ define "content" }}
+    <div id="app">
+        <span class="mdc-top-app-bar__title">~ Hi {{.User.UserName}}</span>
+    </div>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            delimiters: ["[[","]]"],
+            data: {
+                selectedIndex: 0
+            },
+            methods: {
+            }
+        })
+    </script>
+    <style>
+    </style>
+{{ end }}

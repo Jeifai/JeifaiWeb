@@ -28,7 +28,7 @@ func RunIndex(w http.ResponseWriter, r *http.Request) {
 				"templates/IN_layout.html",
 				"templates/IN_topbar.html",
 				"templates/IN_sidebar.html",
-				"templates/IN_index.html"))
+				"templates/IN_home.html"))
 		type TempStruct struct {
 			User User
 		}
