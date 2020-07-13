@@ -23,8 +23,15 @@
                     class="multiselect"
                     placeholder="Targets"
                 >
-                </vue-multi-select>
-                <button class="mdc-icon-button material-icons" aria-label="Check" v-on:click="createKeyword">check</button>
+                </vue-multi-select><br>
+                <button class="mdc-button mdc-button--raised" v-on:click="selectAllTargets">
+                    <span class="mdc-button__label">Select all</span>
+                </button>
+                <button class="mdc-button mdc-button--raised" v-on:click="createKeyword">
+                    <div class="mdc-button__ripple"></div>
+                    <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
+                    <span class="mdc-button__label">Add keyword</span>
+                </button>
             </div>
         </div>
         <div>
@@ -103,6 +110,9 @@
                     }).catch(function(error) {
                         console.log(error)
                     });
+                },
+                selectAllTargets: function() {
+                    this.selectedTargets = this.targets;
                 }
             },
             computed: {
@@ -127,13 +137,6 @@
         const button = mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-icon-button'));
     </script>
     <style>
-        @use "@material/checkbox"; // Required only for data table with row selection.
-        @use "@material/data-table";
-        @include checkbox.core-styles;
-        @include data-table.core-styles;
-
-        @use "@material/fab/mdc-fab";
-
         .multiselectfield {
             max-width: 35%;
         }
