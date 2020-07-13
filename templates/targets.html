@@ -15,8 +15,12 @@
                 placeholder="Targets"
                 :taggable="true"
             >
-            </vue-taggable-select>
-            <button class="mdc-icon-button material-icons" aria-label="Check" v-on:click="createTarget">check</button>
+            </vue-taggable-select><br>
+            <button class="mdc-button mdc-button--raised" v-on:click="createTarget">
+                <div class="mdc-button__ripple"></div>
+                <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
+                <span class="mdc-button__label">Add target</span>
+            </button>
         </div>
         <div>
             <h1>
@@ -86,22 +90,9 @@
     </script>
     <script type="module">
         const topAppBarElement = mdc.dataTable.MDCDataTable.attachTo(document.querySelector('.mdc-data-table'));
-        const textTarget = mdc.textField.MDCTextField.attachTo(document.getElementById("Target"));
         const button = mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-icon-button'));
     </script>
     <style>
-        @use "@material/checkbox"; // Required only for data table with row selection.
-        @use "@material/data-table";
-        @include checkbox.core-styles;
-        @include data-table.core-styles;
-
-        @use "@material/textfield";
-        @include textfield.core-styles;
-        @use "@material/textfield/icon";
-        @include icon.icon-core-styles;
-
-        @use "@material/fab/mdc-fab";
-
         .taggableselectfield {
             max-width: 35%;
         }

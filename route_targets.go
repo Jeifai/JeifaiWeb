@@ -42,6 +42,11 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 		name_targets = append(name_targets, v.Name)
 	}
 
+	// vue-taggable-select does not work if name_targets is empty
+	if len(name_targets) == 0 {
+		name_targets = []string{" "}
+	}
+
 	type TempStruct struct {
 		User        User
 		Targets     []Target
