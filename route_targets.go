@@ -28,10 +28,17 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserById()
 
-	targets, err := user.UsersTargetsByUser()
+	user_targets, err := user.UsersTargetsByUser()
+	if err != nil {
+		panic(err.Error())
+	}
 
 	var name_targets []string
-	for _, v := range targets {
+	all_targets, err := GetAllTargetsNames()
+	if err != nil {
+		panic(err.Error())
+	}
+	for _, v := range all_targets {
 		name_targets = append(name_targets, v.Name)
 	}
 
@@ -41,7 +48,7 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 		NameTargets []string
 	}
 
-	infos := TempStruct{user, targets, name_targets}
+	infos := TempStruct{user, user_targets, name_targets}
 	templates.ExecuteTemplate(w, "layout", infos)
 }
 

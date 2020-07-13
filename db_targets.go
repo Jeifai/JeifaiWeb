@@ -39,6 +39,24 @@ func (target *Target) CreateTarget() (err error) {
 	return err
 }
 
+func GetAllTargetsNames() (targets []Target, err error) {
+	fmt.Println(Gray(8-1, "Starting GetAllTargets..."))
+	rows, err := Db.Query(`SELECT name FROM targets ORDER BY 1`)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		target := Target{}
+		if err = rows.Scan(
+			&target.Name); err != nil {
+			panic(err.Error())
+		}
+		targets = append(targets, target)
+	}
+	rows.Close()
+	return
+}
+
 func (target *Target) CreateUserTarget(user User) {
 	fmt.Println(Gray(8-1, "Starting CreateUserTarget..."))
 	statement := `INSERT INTO userstargets (userid, targetid, createdat) 
