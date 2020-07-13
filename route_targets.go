@@ -172,21 +172,24 @@ func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserById()
 
-	// Get the target to delete
 	target, err = user.UsersTargetsByUserAndName(target.Name)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	// Fill Deleted_At
 	err = target.SetDeletedAtInUsersTargetsByUserAndTarget(user)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	err = target.SetDeletedAtIntUserTargetKeywordByUserAndTarget(user)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	type TempStruct struct{ Messages []string }
 	var messages []string
-	messages = append(messages, "Target successfully removed")
+	messages = append(messages, `<p style="color:green">Target successfully removed"</p>`)
 	infos := TempStruct{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

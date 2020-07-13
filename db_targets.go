@@ -175,3 +175,19 @@ func (target *Target) SetDeletedAtInUsersTargetsByUserAndTarget(
 	_, err = stmt.Exec(user.Id, target.Id)
 	return
 }
+
+func (target *Target) SetDeletedAtIntUserTargetKeywordByUserAndTarget(user User) (err error) {
+	fmt.Println(Gray(8-1, "Starting SetDeletedAtIntUserTargetKeywordByUserAndTarget..."))
+	statement := `UPDATE userstargetskeywords
+                  SET deletedat = current_timestamp
+                  WHERE userid = $1
+                  AND targetid = $2`
+
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(user.Id, target.Id)
+	return
+}
