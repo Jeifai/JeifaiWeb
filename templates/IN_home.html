@@ -1,6 +1,7 @@
 {{ define "content" }}
     <div id="app">
-        <span class="mdc-top-app-bar__title">~ Hi {{.User.UserName}}</span>
+        <span class="mdc-top-app-bar__title">~ Hi {{.User.UserName}}</span><br>
+        <span class="mdc-top-app-bar__title">{{.Home.Targets}} targets are being monitored by {{.Home.Keywords}} keywords so far.</span>
     </div>
     <script>
         var app = new Vue({

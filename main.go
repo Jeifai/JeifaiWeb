@@ -15,7 +15,7 @@ func main() {
 	s := http.StripPrefix("/static/", files)
 	r.PathPrefix("/static/").Handler(s)
 
-	r.HandleFunc("/", RunIndex).Methods("GET")
+	r.HandleFunc("/", Home).Methods("GET")
 	r.HandleFunc("/how", How).Methods("GET")
 
 	r.HandleFunc("/invitation", StartInvitation).Methods("GET")

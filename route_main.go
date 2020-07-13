@@ -8,8 +8,8 @@ import (
 	. "github.com/logrusorgru/aurora"
 )
 
-func RunIndex(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting RunIndex..."))
+func Home(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Home..."))
 	sess, err := GetSession(r)
 	if err != nil {
 		fmt.Println(Yellow("User not logged in..."))
@@ -18,11 +18,16 @@ func RunIndex(w http.ResponseWriter, r *http.Request) {
 			"templates/OUT_home.html"))
 		templates.ExecuteTemplate(w, "layout", nil)
 	} else {
+        fmt.Println(Blue("User logged in..."))
 		user := User{
 			Id: sess.UserId,
 		}
-		user.UserById()
-		fmt.Println(Blue("User logged in..."))
+        user.UserById()
+
+        home, err := user.GetHomeData()
+        if err != nil {
+            panic(err.Error())
+        }        
 		templates := template.Must(
 			template.ParseFiles(
 				"templates/IN_layout.html",
@@ -30,9 +35,10 @@ func RunIndex(w http.ResponseWriter, r *http.Request) {
 				"templates/IN_sidebar.html",
 				"templates/IN_home.html"))
 		type TempStruct struct {
-			User User
+            User    User
+            Home    HomeData
 		}
-		infos := TempStruct{user}
+		infos := TempStruct{user, home}
 		templates.ExecuteTemplate(w, "layout", infos)
 	}
 }
