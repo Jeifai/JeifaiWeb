@@ -34,11 +34,11 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var name_targets []string
-	all_targets, err := GetAllTargetsNames()
+	not_selected_targets, err := user.NotSelectedUsersTargetsByUser()
 	if err != nil {
 		panic(err.Error())
 	}
-	for _, v := range all_targets {
+	for _, v := range not_selected_targets {
 		name_targets = append(name_targets, v.Name)
 	}
 

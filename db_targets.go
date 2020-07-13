@@ -39,24 +39,6 @@ func (target *Target) CreateTarget() (err error) {
 	return err
 }
 
-func GetAllTargetsNames() (targets []Target, err error) {
-	fmt.Println(Gray(8-1, "Starting GetAllTargets..."))
-	rows, err := Db.Query(`SELECT name FROM targets ORDER BY 1`)
-	if err != nil {
-		panic(err.Error())
-	}
-	for rows.Next() {
-		target := Target{}
-		if err = rows.Scan(
-			&target.Name); err != nil {
-			panic(err.Error())
-		}
-		targets = append(targets, target)
-	}
-	rows.Close()
-	return
-}
-
 func (target *Target) CreateUserTarget(user User) {
 	fmt.Println(Gray(8-1, "Starting CreateUserTarget..."))
 	statement := `INSERT INTO userstargets (userid, targetid, createdat) 
@@ -92,6 +74,35 @@ func (user *User) UsersTargetsByUser() (targets []Target, err error) {
 			&target.Name,
 			&target.CreatedAt,
 			&target.CreatedDate); err != nil {
+			panic(err.Error())
+		}
+		targets = append(targets, target)
+	}
+	rows.Close()
+	return
+}
+
+func (user *User) NotSelectedUsersTargetsByUser() (targets []Target, err error) {
+	fmt.Println(Gray(8-1, "Starting NotSelectedUsersTargetsByUser..."))
+	rows, err := Db.Query(`WITH usertargets AS (
+                                SELECT
+                                    ut.targetid
+                                FROM userstargets ut
+                                WHERE ut.deletedat IS NULL
+                                AND ut.userid=$1)
+                            SELECT
+                            t.name
+                            FROM targets t
+                            LEFT JOIN usertargets ut ON(t.id = ut.targetid)
+                            WHERE ut.targetid IS NULL
+                            ORDER BY 1;`, user.Id)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		target := Target{}
+		if err = rows.Scan(
+			&target.Name); err != nil {
 			panic(err.Error())
 		}
 		targets = append(targets, target)
