@@ -725,7 +725,7 @@ input[type=submit] {
 }
 
 .txt-clipping--subtle {
-	background: linear-gradient(90deg, var(--color-peach) 0%, var(--color-canary) 100%)
+	background: linear-gradient(90deg, #2e69c0 0%, #6de0db 100%)
 }
 
 @supports (background-clip: text) or (-webkit-background-clip: text) {

@@ -50,3 +50,11 @@ func How(w http.ResponseWriter, r *http.Request) {
 		"templates/OUT_how.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
+
+func Faq(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Faq..."))
+	templates := template.Must(template.ParseFiles(
+		"templates/OUT_layout.html",
+		"templates/OUT_faq.html"))
+	templates.ExecuteTemplate(w, "layout", nil)
+}
