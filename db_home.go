@@ -14,7 +14,7 @@ type HomeData struct {
 }
 
 func (user *User) GetHomeData() (home HomeData, err error) {
-	fmt.Println(Gray(8-1, "Starting GetHomeData..."))
+    fmt.Println(Gray(8-1, "Starting GetHomeData..."))
 	err = Db.QueryRow(`
                         WITH 
                             results_last_days AS(
@@ -39,7 +39,7 @@ func (user *User) GetHomeData() (home HomeData, err error) {
                                 GROUP BY 1)
                         SELECT
                             rld.count_results,
-                            mld.count_matches,
+                            CASE WHEN mld.count_matches IS NULL THEN 0 ELSE mld.count_matches END,
                             COUNT(DISTINCT utk.targetid),
                             COUNT(DISTINCT utk.keywordid)
                         FROM userstargetskeywords utk
@@ -53,6 +53,6 @@ func (user *User) GetHomeData() (home HomeData, err error) {
 			&home.Matches,
 			&home.Targets,
 			&home.Keywords,
-		)
+        )
 	return
 }
