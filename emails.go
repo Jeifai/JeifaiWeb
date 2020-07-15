@@ -48,6 +48,43 @@ func (invitation *Invitation) SendInvitationEmail() {
 	}
 }
 
+func (invitation *Invitation) SendEmailToAdminAboutInvitation() {
+	fmt.Println(Gray(8-1, "Starting SendEmailToAdminAboutInvitation..."))
+	err := godotenv.Load()
+	if err != nil {
+		panic(err.Error())
+	}
+	password := os.Getenv("PASSWORD")
+
+	t := template.New("SendEmailToAdminAboutInvitation.html")
+
+	t, err = t.ParseFiles("templates/emails/SendEmailToAdminAboutInvitation.html")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Println(Blue("Sending email to -->"), Bold(Blue("robimalco@gmail.com")))
+
+	var tpl bytes.Buffer
+	if err := t.Execute(&tpl, invitation); err != nil {
+		fmt.Println(err)
+	}
+
+	result := tpl.String()
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", "robimalco@gmail.com")
+	m.SetHeader("To", "robimalco@gmail.com")
+	m.SetHeader("Subject", "NEW INVITATION REQUEST RECEIVED")
+	m.SetBody("text/html", result)
+
+	d := gomail.NewDialer("smtp.gmail.com", 587, "robimalco@gmail.com", password)
+
+	if err := d.DialAndSend(m); err != nil {
+		panic(err.Error())
+	}
+}
+
 func (user *User) SendSignUpEmail() {
 	fmt.Println(Gray(8-1, "Starting SendSignUpEmail..."))
 	err := godotenv.Load()
