@@ -13,12 +13,6 @@ import (
 
 func Profile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Profile..."))
-	templates := template.Must(
-		template.ParseFiles(
-			"templates/IN_layout.html",
-			"templates/IN_topbar.html",
-			"templates/IN_sidebar.html",
-			"templates/IN_profile.html"))
 
 	sess, err := GetSession(r)
 	if err != nil {
@@ -55,6 +49,14 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 	publicUser.Gender.String = user.Gender.String
 
 	infos := TempStruct{publicUser}
+
+	templates := template.Must(
+		template.ParseFiles(
+			"templates/IN_layout.html",
+			"templates/IN_topbar.html",
+			"templates/IN_sidebar.html",
+			"templates/IN_profile.html"))
+
 	templates.ExecuteTemplate(w, "layout", infos)
 }
 

@@ -12,12 +12,6 @@ import (
 
 func Targets(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Targets..."))
-	templates := template.Must(
-		template.ParseFiles(
-			"templates/IN_layout.html",
-			"templates/IN_topbar.html",
-			"templates/IN_sidebar.html",
-			"templates/IN_targets.html"))
 
 	sess, err := GetSession(r)
 	if err != nil {
@@ -54,6 +48,14 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	infos := TempStruct{user, user_targets, name_targets}
+
+	templates := template.Must(
+		template.ParseFiles(
+			"templates/IN_layout.html",
+			"templates/IN_topbar.html",
+			"templates/IN_sidebar.html",
+			"templates/IN_targets.html"))
+
 	templates.ExecuteTemplate(w, "layout", infos)
 }
 
@@ -115,10 +117,8 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 
 		if len(temp_messages) == 0 {
 
-			fmt.Println(name_target)
-
 			if err := target.CreateTarget(); err != nil { // Try to create a target
-				err := target.TargetByName() // If already exists, get its url
+				err := target.TargetByName() // If already exists, get its name
 				if err != nil {
 					panic(err.Error())
 				}

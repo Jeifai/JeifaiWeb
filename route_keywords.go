@@ -21,32 +21,37 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserById()
 
-	templates := template.Must(
-		template.ParseFiles(
-			"templates/IN_layout.html",
-			"templates/IN_topbar.html",
-			"templates/IN_sidebar.html",
-			"templates/IN_keywords.html"))
-
-	struct_targets, err := user.UsersTargetsByUser()
+    struct_targets, err := user.UsersTargetsByUser()
+	if err != nil {
+		panic(err.Error())
+	}
 
 	var arr_targets []string
 	for _, v := range struct_targets {
 		arr_targets = append(arr_targets, v.Name)
 	}
 
-	utks, err := user.GetUserTargetKeyword()
+    utks, err := user.GetUserTargetKeyword()
+	if err != nil {
+		panic(err.Error())
+	}
 
 	type TempStruct struct {
 		User    User
 		Targets []string
 		Utks    []UserTargetKeyword
-	}
+    }
 
-	infos := TempStruct{user, arr_targets, utks}
+    infos := TempStruct{user, arr_targets, utks}
+    
+	templates := template.Must(
+		template.ParseFiles(
+			"templates/IN_layout.html",
+			"templates/IN_topbar.html",
+			"templates/IN_sidebar.html",
+            "templates/IN_keywords.html"))
+
 	templates.ExecuteTemplate(w, "layout", infos)
-
-	_ = err
 }
 
 func PutKeyword(w http.ResponseWriter, r *http.Request) {
@@ -151,11 +156,10 @@ func RemoveKeyword(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err.Error())
 	}
-
 	user := User{
-		Email: sess.Email,
+		Id: sess.UserId,
 	}
-	user.UserByEmail()
+	user.UserById()
 
 	target := Target{}
 	target.Name = utk.TargetName

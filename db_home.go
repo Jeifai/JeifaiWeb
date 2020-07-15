@@ -7,15 +7,15 @@ import (
 )
 
 type HomeData struct {
-    Targets     int
-    Keywords    int
-    Results     int
-    Matches     int
+	Targets  int
+	Keywords int
+	Results  int
+	Matches  int
 }
 
 func (user *User) GetHomeData() (home HomeData, err error) {
 	fmt.Println(Gray(8-1, "Starting GetHomeData..."))
-    err = Db.QueryRow(`
+	err = Db.QueryRow(`
                         WITH 
                             results_last_days AS(
                                 SELECT
@@ -47,10 +47,10 @@ func (user *User) GetHomeData() (home HomeData, err error) {
                         LEFT JOIN matches_last_days mld ON(utk.userid = mld.userid)
                         WHERE utk.userid=$1
                         AND utk.deletedat IS NULL
-                        GROUP BY 1, 2;`, user.Id,).
+                        GROUP BY 1, 2;`, user.Id).
 		Scan(
-            &home.Results,
-        	&home.Matches,
+			&home.Results,
+			&home.Matches,
 			&home.Targets,
 			&home.Keywords,
 		)

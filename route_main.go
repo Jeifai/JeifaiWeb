@@ -18,27 +18,27 @@ func Home(w http.ResponseWriter, r *http.Request) {
 			"templates/OUT_home.html"))
 		templates.ExecuteTemplate(w, "layout", nil)
 	} else {
-        fmt.Println(Blue("User logged in..."))
+		fmt.Println(Blue("User logged in..."))
 		user := User{
 			Id: sess.UserId,
 		}
-        user.UserById()
+		user.UserById()
 
-        home, err := user.GetHomeData()
-        if err != nil {
-            panic(err.Error())
-        }        
+		home, err := user.GetHomeData()
+		if err != nil {
+			panic(err.Error())
+		}
+		type TempStruct struct {
+			User User
+			Home HomeData
+		}
+        infos := TempStruct{user, home}
 		templates := template.Must(
 			template.ParseFiles(
 				"templates/IN_layout.html",
 				"templates/IN_topbar.html",
 				"templates/IN_sidebar.html",
 				"templates/IN_home.html"))
-		type TempStruct struct {
-            User    User
-            Home    HomeData
-		}
-		infos := TempStruct{user, home}
 		templates.ExecuteTemplate(w, "layout", infos)
 	}
 }
