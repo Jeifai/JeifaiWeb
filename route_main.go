@@ -26,7 +26,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 		home, err := user.GetHomeData()
 		if err != nil {
-			panic(err.Error())
+	        fmt.Println(Gray(8-1, "User has no data..."))
 		}
 		type TempStruct struct {
 			User User
