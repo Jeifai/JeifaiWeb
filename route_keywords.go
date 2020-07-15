@@ -29,12 +29,14 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 	var arr_targets []string
 	for _, v := range struct_targets {
 		arr_targets = append(arr_targets, v.Name)
-	}
+    }
+    
+    fmt.Println(arr_targets)
 
     utks, err := user.GetUserTargetKeyword()
 	if err != nil {
 		panic(err.Error())
-	}
+    }
 
 	type TempStruct struct {
 		User    User

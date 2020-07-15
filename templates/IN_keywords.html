@@ -117,15 +117,17 @@
             },
             computed: {
                 filteredRows() {
-                    return this.utks.filter(row => {
-                        const CreatedDate = row.CreatedDate.toString().toLowerCase();
-                        const KeywordText = row.KeywordText.toString().toLowerCase();
-                        const TargetName = row.TargetName.toString().toLowerCase();
-                        const searchTerm = this.filter.toLowerCase();
-                        return (
-                            CreatedDate.includes(searchTerm) || KeywordText.includes(searchTerm) || TargetName.includes(searchTerm)
-                        );
-                    });
+                    if (this.utks != null) {
+                        return this.utks.filter(row => {
+                            const CreatedDate = row.CreatedDate.toString().toLowerCase();
+                            const KeywordText = row.KeywordText.toString().toLowerCase();
+                            const TargetName = row.TargetName.toString().toLowerCase();
+                            const searchTerm = this.filter.toLowerCase();
+                            return (
+                                CreatedDate.includes(searchTerm) || KeywordText.includes(searchTerm) || TargetName.includes(searchTerm)
+                            );
+                        });
+                    }
                 }
             }
         })
