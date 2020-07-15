@@ -26,13 +26,13 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 		home, err := user.GetHomeData()
 		if err != nil {
-	        fmt.Println(Gray(8-1, "User has no data..."))
+			fmt.Println(Gray(8-1, "User has no data..."))
 		}
 		type TempStruct struct {
 			User User
 			Home HomeData
 		}
-        infos := TempStruct{user, home}
+		infos := TempStruct{user, home}
 		templates := template.Must(
 			template.ParseFiles(
 				"templates/IN_layout.html",

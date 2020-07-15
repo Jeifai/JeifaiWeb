@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	. "github.com/logrusorgru/aurora"
@@ -101,23 +103,32 @@ func SetUserTargetKeyword(
 	user User, targets []Target, keyword Keyword) (err error) {
 	fmt.Println(Gray(8-1, "Starting SetUserTargetKeyword..."))
 
-	for _, elem := range targets {
-		statement := `INSERT INTO userstargetskeywords (
-                        userid, targetid, keywordid, createdat)
-                        VALUES ($1, $2, $3, $4)
-                        ON CONFLICT (userid, targetid, keywordid) 
-                        DO UPDATE SET deletedat = NULL, updatedat = current_timestamp`
-		stmt, err := Db.Prepare(statement)
-		if err != nil {
-			panic(err.Error())
-		}
-		defer stmt.Close()
-		stmt.QueryRow(
-			user.Id,
-			elem.Id,
-			keyword.Id,
-			time.Now(),
-		)
+	valueStrings := []string{}
+	valueArgs := []interface{}{}
+	timeNow := time.Now()
+	for i, elem := range targets {
+		str1 := "$" + strconv.Itoa(1+i*4) + ","
+		str2 := "$" + strconv.Itoa(2+i*4) + ","
+		str3 := "$" + strconv.Itoa(3+i*4) + ","
+		str4 := "$" + strconv.Itoa(4+i*4)
+		str_n := "(" + str1 + str2 + str3 + str4 + ")"
+		valueStrings = append(valueStrings, str_n)
+		valueArgs = append(valueArgs, user.Id)
+		valueArgs = append(valueArgs, elem.Id)
+		valueArgs = append(valueArgs, keyword.Id)
+		valueArgs = append(valueArgs, timeNow)
+	}
+	smt := `INSERT INTO userstargetskeywords (
+            userid, targetid, keywordid, createdat)
+            VALUES %s
+            ON CONFLICT (userid, targetid, keywordid) 
+            DO UPDATE SET deletedat = NULL, updatedat = current_timestamp`
+
+	smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
+
+	_, err = Db.Exec(smt, valueArgs...)
+	if err != nil {
+		panic(err.Error())
 	}
 	return
 }

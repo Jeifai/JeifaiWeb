@@ -27,14 +27,14 @@ func Matches(w http.ResponseWriter, r *http.Request) {
 		Data []Match
 	}
 
-    infos := TempStruct{user, matches}
+	infos := TempStruct{user, matches}
 
-    templates := template.Must(
-        template.ParseFiles(
-            "templates/IN_layout.html",
-            "templates/IN_topbar.html",
-            "templates/IN_sidebar.html",
-            "templates/IN_matches.html"))
+	templates := template.Must(
+		template.ParseFiles(
+			"templates/IN_layout.html",
+			"templates/IN_topbar.html",
+			"templates/IN_sidebar.html",
+			"templates/IN_matches.html"))
 
 	templates.ExecuteTemplate(w, "layout", infos)
 }
