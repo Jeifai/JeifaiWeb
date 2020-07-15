@@ -14,7 +14,7 @@ type HomeData struct {
 }
 
 func (user *User) GetHomeData() (home HomeData, err error) {
-    fmt.Println(Gray(8-1, "Starting GetHomeData..."))
+	fmt.Println(Gray(8-1, "Starting GetHomeData..."))
 	err = Db.QueryRow(`
                         WITH 
                             results_last_days AS(
@@ -53,6 +53,6 @@ func (user *User) GetHomeData() (home HomeData, err error) {
 			&home.Matches,
 			&home.Targets,
 			&home.Keywords,
-        )
+		)
 	return
 }

@@ -5,11 +5,28 @@ import (
 	"fmt"
 	"html/template"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	. "github.com/logrusorgru/aurora"
 	"gopkg.in/gomail.v2"
 )
+
+func SaveEmailIntoDb(email string, action string) {
+	fmt.Println(Gray(8-1, "Starting SaveEmailIntoDb..."))
+	statement := `INSERT INTO sentemails (email, action, sentat)
+                  VALUES ($1, $2, $3)`
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer stmt.Close()
+	stmt.QueryRow(
+		email,
+		action,
+		time.Now(),
+	)
+}
 
 func (invitation *Invitation) SendInvitationEmail() {
 	fmt.Println(Gray(8-1, "Starting SendInvitationEmail..."))
@@ -46,6 +63,8 @@ func (invitation *Invitation) SendInvitationEmail() {
 	if err := d.DialAndSend(m); err != nil {
 		panic(err.Error())
 	}
+
+	SaveEmailIntoDb(invitation.Email, "SendInvitationEmail")
 }
 
 func (invitation *Invitation) SendEmailToAdminAboutInvitation() {
@@ -83,6 +102,8 @@ func (invitation *Invitation) SendEmailToAdminAboutInvitation() {
 	if err := d.DialAndSend(m); err != nil {
 		panic(err.Error())
 	}
+
+	SaveEmailIntoDb("robimalco@gmail.com", "SendEmailToAdminAboutInvitation")
 }
 
 func (user *User) SendSignUpEmail() {
@@ -120,6 +141,8 @@ func (user *User) SendSignUpEmail() {
 	if err := d.DialAndSend(m); err != nil {
 		panic(err.Error())
 	}
+
+	SaveEmailIntoDb(user.Email, "SendSignUpEmail")
 }
 
 func (user *User) SendResetPasswordEmail(reset_url string) {
@@ -169,6 +192,8 @@ func (user *User) SendResetPasswordEmail(reset_url string) {
 	if err := d.DialAndSend(m); err != nil {
 		panic(err.Error())
 	}
+
+	SaveEmailIntoDb(user.Email, "SendResetPasswordEmail")
 }
 
 func (user *User) SendConfirmationResetPasswordEmail() {
@@ -207,4 +232,6 @@ func (user *User) SendConfirmationResetPasswordEmail() {
 	if err := d.DialAndSend(m); err != nil {
 		panic(err.Error())
 	}
+
+	SaveEmailIntoDb(user.Email, "SendConfirmationResetPasswordEmail")
 }
