@@ -22,12 +22,29 @@ func Matches(w http.ResponseWriter, r *http.Request) {
 
 	matches, err := user.MatchesByUser()
 
-	type TempStruct struct {
-		User User
-		Data []Match
+	type PublicMatch struct {
+		CreatedDate string
+		Target      string
+		Title       string
+		Url         string
 	}
 
-	infos := TempStruct{user, matches}
+	var public_matches []PublicMatch
+	for _, match := range matches {
+		var public_match PublicMatch
+		public_match.CreatedDate = match.CreatedDate
+		public_match.Target = match.Target
+		public_match.Title = match.Title
+		public_match.Url = match.Url
+		public_matches = append(public_matches, public_match)
+	}
+
+	type TempStruct struct {
+		User User
+		Data []PublicMatch
+	}
+
+	infos := TempStruct{user, public_matches}
 
 	templates := template.Must(
 		template.ParseFiles(

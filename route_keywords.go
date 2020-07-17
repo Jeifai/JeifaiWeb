@@ -36,13 +36,28 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 
+	type PublicTargetKeyword struct {
+		CreatedDate string
+		KeywordText string
+		TargetName  string
+	}
+
+	var public_utks []PublicTargetKeyword
+	for _, utk := range utks {
+		var public_utk PublicTargetKeyword
+		public_utk.CreatedDate = utk.CreatedDate
+		public_utk.KeywordText = utk.KeywordText
+		public_utk.TargetName = utk.TargetName
+		public_utks = append(public_utks, public_utk)
+	}
+
 	type TempStruct struct {
 		User    User
 		Targets []string
-		Utks    []UserTargetKeyword
+		Utks    []PublicTargetKeyword
 	}
 
-	infos := TempStruct{user, arr_targets, utks}
+	infos := TempStruct{user, arr_targets, public_utks}
 
 	templates := template.Must(
 		template.ParseFiles(

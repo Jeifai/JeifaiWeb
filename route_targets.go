@@ -27,6 +27,19 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 
+	type PublicTarget struct {
+		CreatedDate string
+		Name        string
+	}
+
+	var public_targets []PublicTarget
+	for _, user_target := range user_targets {
+		var public_target PublicTarget
+		public_target.CreatedDate = user_target.CreatedDate
+		public_target.Name = user_target.Name
+		public_targets = append(public_targets, public_target)
+	}
+
 	var name_targets []string
 	not_selected_targets, err := user.NotSelectedUsersTargetsByUser()
 	if err != nil {
@@ -43,11 +56,11 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 
 	type TempStruct struct {
 		User        User
-		Targets     []Target
+		Targets     []PublicTarget
 		NameTargets []string
 	}
 
-	infos := TempStruct{user, user_targets, name_targets}
+	infos := TempStruct{user, public_targets, name_targets}
 
 	templates := template.Must(
 		template.ParseFiles(
