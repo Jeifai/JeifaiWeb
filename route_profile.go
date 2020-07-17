@@ -93,6 +93,8 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 					temp_message = `Current password cannot be empty`
 				} else if err.Tag() == "eqfield" {
 					temp_message = `Wrong current password`
+				} else if err.Tag() == "min" {
+					temp_message = `Password is too short`
 				}
 				messages = append(messages, red_1+temp_message+red_2)
 			}

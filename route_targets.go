@@ -202,7 +202,7 @@ func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 
 	type TempStruct struct{ Messages []string }
 	var messages []string
-	messages = append(messages, `<p style="color:green">Target successfully removed"</p>`)
+	messages = append(messages, `<p style="color:green">Target successfully removed</p>`)
 	infos := TempStruct{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

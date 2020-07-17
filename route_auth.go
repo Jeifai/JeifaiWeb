@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
 	. "github.com/logrusorgru/aurora"
 )
@@ -78,25 +79,73 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err.Error())
 	}
-	invitation := user.InvitationIdByUuidAndEmail()
+
+	validate := validator.New()
+	err = validate.Struct(user)
+
 	var messages []string
-	if invitation.Id == 0 {
-		red_1 := `<p style="color:red">`
-		red_2 := `</p>`
-		messages = append(messages, red_1+"Something got wrong. Please try again."+red_2)
-		messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
-	} else {
-		invitation.UpdateInvitation()
-		if err := user.CreateUser(); err != nil {
-			panic(err.Error())
+
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			red_1 := `<p style="color:red">`
+			red_2 := `</p>`
+			var temp_message string
+			if err.Field() == "CurrentPassword" {
+				if err.Tag() == "min" {
+					temp_message = `Password is too short`
+				} else if err.Tag() == "required" {
+					temp_message = `Password cannot be empty`
+				}
+				messages = append(messages, red_1+temp_message+red_2)
+			}
+			if err.Field() == "UserName" {
+				if err.Tag() == "required" {
+					temp_message = `Username cannot be empty`
+				} else if err.Tag() == "min" {
+					temp_message = `Username is too short`
+				} else if err.Tag() == "max" {
+					temp_message = `Username is too long`
+				}
+				messages = append(messages, red_1+temp_message+red_2)
+			}
+			if err.Field() == "Email" {
+				if err.Tag() == "required" {
+					temp_message = `Email cannot be empty`
+				} else if err.Tag() == "email" {
+					temp_message = `Email is not valid`
+				}
+				messages = append(messages, red_1+temp_message+red_2)
+			}
+			if err.Field() == "InvitationCode" {
+				if err.Tag() == "required" {
+					temp_message = `InvitationCode cannot be empty`
+				}
+				messages = append(messages, red_1+temp_message+red_2)
+			}
 		}
-		user.SendSignUpEmail()
-		green_1 := `<p style="color:green">`
-		green_2 := `</p>`
-		messages = append(messages, green_1+"Well done!"+green_2)
-		messages = append(messages, green_1+"We have just sent you an email,"+green_2)
-		messages = append(messages, green_1+"otherwise just straight to log in!"+green_2)
 	}
+
+	if len(messages) == 0 {
+		invitation := user.InvitationIdByUuidAndEmail()
+		if invitation.Id == 0 {
+			red_1 := `<p style="color:red">`
+			red_2 := `</p>`
+			messages = append(messages, red_1+"Something got wrong. Please try again."+red_2)
+			messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
+		} else {
+			invitation.UpdateInvitation()
+			if err := user.CreateUser(); err != nil {
+				panic(err.Error())
+			}
+			user.SendSignUpEmail()
+			green_1 := `<p style="color:green">`
+			green_2 := `</p>`
+			messages = append(messages, green_1+"Well done!"+green_2)
+			messages = append(messages, green_1+"We have just sent you an email,"+green_2)
+			messages = append(messages, green_1+"otherwise just straight to log in!"+green_2)
+		}
+	}
+
 	type TempStruct struct {
 		Messages []string
 	}

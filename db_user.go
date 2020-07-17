@@ -12,8 +12,8 @@ import (
 
 type User struct {
 	Id                int    `db:"id"`
-	UserName          string `db:"username"    validate:"min=1"`
-	Email             string `db:"email"       validate:"email"`
+	UserName          string `db:"username"    validate:"required,min=5,max=15"`
+	Email             string `db:"email"       validate:"required,email"`
 	LoginPassword     string
 	Password          string         `db:"password"`
 	CreatedAt         time.Time      `db:"createdat"`
@@ -25,10 +25,10 @@ type User struct {
 	Country           sql.NullString `db:"country"`
 	City              sql.NullString `db:"city"`
 	Gender            sql.NullString `db:"gender"`
-	CurrentPassword   string         `                 validate:"required,eqfield=Password"`
+	CurrentPassword   string         `                 validate:"required,min=8,eqfield=Password"`
 	NewPassword       string         `db:"newpassword" validate:"eqfield=RepeatNewPassword"`
 	RepeatNewPassword string         `                 validate:"eqfield=NewPassword"`
-	InvitationCode    string
+	InvitationCode    string         `                 validate:"required"`
 }
 
 type Session struct {
