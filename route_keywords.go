@@ -163,63 +163,6 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(infos)
 }
 
-func RemoveKeyword(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting RemoveKeyword..."))
-	var utk UserTargetKeyword
-	err := json.NewDecoder(r.Body).Decode(&utk)
-
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
-
-	target := Target{}
-	target.Name = utk.TargetName
-	err = target.TargetByName()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	keyword := Keyword{}
-	keyword.Text = utk.KeywordText
-	err = keyword.KeywordByText()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	utk.UserId = user.Id
-	utk.TargetId = target.Id
-	utk.KeywordId = keyword.Id
-
-	err = utk.SetDeletedAtIntUserTargetKeyword()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	var utks []UserTargetKeyword
-	utks, err = user.GetUserTargetKeyword()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	type TempStruct struct {
-		Messages []string
-		Utks     []UserTargetKeyword
-	}
-
-	var messages []string
-	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
-
-	infos := TempStruct{messages, utks}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
-}
-
 func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting RemoveKeywords..."))
 
@@ -241,24 +184,32 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &utks)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		panic(err.Error())
 	}
 
 	for i := range utks {
 		utks[i].UserId = sess.UserId
 	}
 
-	// UPDATE DATABASE
+	err = SetDeletedAtInUserTargetKeywordMultiple(utks)
+	if err != nil {
+		panic(err.Error())
+	}
 
-	var messages []string
-	messages = append(messages, `<p style="color:green">THIS IS A TEST RESPONSE</p>`)
+	utks, err = user.GetUserTargetKeyword()
+	if err != nil {
+		panic(err.Error())
+	}
 
 	type TempStruct struct {
 		Messages []string
+		Utks     []UserTargetKeyword
 	}
 
-	infos := TempStruct{messages}
+	var messages []string
+	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
+
+	infos := TempStruct{messages, utks}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

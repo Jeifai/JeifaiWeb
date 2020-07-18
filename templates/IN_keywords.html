@@ -45,12 +45,14 @@
                     <span class="mdc-floating-label" id="Filter">Filter by any field</span>
                     <div class="mdc-line-ripple"></div>
                 </label>
+            </div><br>
+            <div>
                 <button class="mdc-button mdc-button--raised removeSelected" v-on:click="deleteUtks">
                     <div class="mdc-button__ripple"></div>
                     <i class="material-icons mdc-button__icon" aria-hidden="true">clear</i>
                     <span class="mdc-button__label">Remove selected</span>
                 </button>
-            </div>
+            </div><br>
             <div class="mdc-data-table">
                 <table class="mdc-data-table__table" aria-label="Created Keywords">
                     <thead>
@@ -71,13 +73,6 @@
                             <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                             <td class="mdc-data-table__cell" v-html="row.KeywordText"></td>
                             <td class="mdc-data-table__cell" v-html="row.TargetName"></td>
-                            <td class="mdc-data-table__cell">
-                                <button 
-                                    class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
-                                    aria-label="Clear" 
-                                    v-on:click="deleteUtk(index)">clear
-                                </button>
-                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -112,33 +107,26 @@
                         console.log(error)
                     });
                 },
-                deleteUtk: function(index) {
-                    payload = {
-                        "TargetName": this.utks[index].TargetName,
-                        "KeywordText": this.utks[index].KeywordText
-                        }
-                    this.$http.put('/keywords/remove', payload).then(function(response) {
-                        this.messages = response.data.Messages
-                        this.utks = response.data.Utks;
-                    }).catch(function(error) {
-                        console.log(error)
-                    });
-                },
                 deleteUtks: function() {
-                    payload = []; 
-                    for (var i = 0; i < this.checks.length; i++) {
-                        payload.push({
-                            "TargetName": this.filteredRows[this.checks[i]].TargetName,
-                            "KeywordText": this.filteredRows[this.checks[i]].KeywordText
-                        })
+                    payload = [];
+                    if (this.checks.length > 0) {
+                        for (var i = 0; i < this.checks.length; i++) {
+                            payload.push({
+                                "TargetName": this.filteredRows[this.checks[i]].TargetName,
+                                "KeywordText": this.filteredRows[this.checks[i]].KeywordText
+                            })
+                        }
+                        console.log("THIS IS THE PAYLOAD");
+                        payload_string = JSON.stringify(payload);
+                        this.$http.put('/keywords/remove', payload_string).then(function(response) {
+                            this.messages = response.data.Messages
+                            this.utks = response.data.Utks;
+                            this.checks = [];
+                            this.checkAll = false;
+                        }).catch(function(error) {
+                            console.log(error)
+                        });
                     }
-                    console.log("THIS IS THE PAYLOAD");
-                    payload_string = JSON.stringify(payload);
-                    this.$http.put('/keywords/remove/multiple', payload_string).then(function(response) {
-                        console.log(response);
-                    }).catch(function(error) {
-                        console.log(error)
-                    });
                 },
                 selectAllTargets: function() {
                     this.selectedTargets = this.targets;
@@ -182,8 +170,8 @@
             max-width: 35%;
         }
         .removeSelected {
-            --mdc-theme-primary: #fcb8ab;
-            --mdc-theme-secondary: #feeae6;
+            --mdc-theme-primary: #ea5a3d;
+            --mdc-theme-secondary: #ea5a3d;
         }
     </style>
 {{ end }}

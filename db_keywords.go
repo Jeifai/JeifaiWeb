@@ -133,19 +133,36 @@ func SetUserTargetKeyword(
 	return
 }
 
-func (utk *UserTargetKeyword) SetDeletedAtIntUserTargetKeyword() (err error) {
-	fmt.Println(Gray(8-1, "Starting SetDeletedAtIntUserTargetKeyword..."))
-	statement := `UPDATE userstargetskeywords
-                  SET deletedat = current_timestamp
-                  WHERE userid = $1
-                  AND targetid = $2
-                  AND keywordid = $3;`
+func SetDeletedAtInUserTargetKeywordMultiple(utks []UserTargetKeyword) (err error) {
+	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUserTargetKeywordMultiple..."))
 
-	stmt, err := Db.Prepare(statement)
+	valueArray := []string{}
+	timeNow := time.Now()
+	_ = timeNow
+	for _, elem := range utks {
+		str1 := "(userid=" + strconv.Itoa(elem.UserId) + " AND "
+		str2 := "keywordid=(SELECT id FROM keywords WHERE text='" + elem.KeywordText + "') AND "
+		str3 := "targetid=(SELECT id FROM targets WHERE name='" + elem.TargetName + "'))"
+		str_n := str1 + str2 + str3
+		valueArray = append(valueArray, str_n)
+	}
+	valueString := strings.Join(valueArray, " OR ")
+
+	smt := `UPDATE userstargetskeywords
+            SET deletedat = current_timestamp
+            WHERE id IN (
+                SELECT
+                    id
+                FROM userstargetskeywords
+                WHERE (%s));`
+
+	smt = fmt.Sprintf(smt, valueString)
+
+	fmt.Println(smt)
+
+	_, err = Db.Exec(smt)
 	if err != nil {
 		panic(err.Error())
 	}
-	defer stmt.Close()
-	_, err = stmt.Exec(utk.UserId, utk.TargetId, utk.KeywordId)
 	return
 }
