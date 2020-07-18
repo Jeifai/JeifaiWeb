@@ -15,7 +15,7 @@ type User struct {
 	UserName          string `db:"username"    validate:"required,min=5,max=15"`
 	Email             string `db:"email"       validate:"required,email"`
 	LoginPassword     string
-	Password          string         `db:"password"`
+	Password          string         `db:"password" validate:"required,min=8,`
 	CreatedAt         time.Time      `db:"createdat"`
 	UpdatedAt         time.Time      `db:"updatedat"`
 	DeletedAt         time.Time      `db:"deletedat"`

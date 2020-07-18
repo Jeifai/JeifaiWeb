@@ -87,10 +87,11 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
+
 			red_1 := `<p style="color:red">`
 			red_2 := `</p>`
 			var temp_message string
-			if err.Field() == "CurrentPassword" {
+			if err.Field() == "Password" {
 				if err.Tag() == "min" {
 					temp_message = `Password is too short`
 				} else if err.Tag() == "required" {
