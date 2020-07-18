@@ -197,7 +197,6 @@ func SetForgotPassword(w http.ResponseWriter, r *http.Request) {
 		user.SendResetPasswordEmail(reset_url)
 		green_1 := `<p style="color:green">`
 		green_2 := `</p>`
-		messages = append(messages, green_1+"Well done!"+green_2)
 		messages = append(messages, green_1+"We have just sent you an email"+green_2)
 	}
 	type TempStruct struct {
@@ -254,7 +253,6 @@ func SetResetPassword(w http.ResponseWriter, r *http.Request) {
 			}
 			green_1 := `<p style="color:green">`
 			green_2 := `</p>`
-			messages = append(messages, green_1+"Well done!"+green_2)
 			messages = append(messages, green_1+"A new password has been set!"+green_2)
 
 			user.SendConfirmationResetPasswordEmail()
