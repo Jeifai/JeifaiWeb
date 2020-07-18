@@ -45,11 +45,19 @@
                     <span class="mdc-floating-label" id="Filter">Filter by any field</span>
                     <div class="mdc-line-ripple"></div>
                 </label>
+                <button class="mdc-button mdc-button--raised removeSelected" v-on:click="deleteUtks">
+                    <div class="mdc-button__ripple"></div>
+                    <i class="material-icons mdc-button__icon" aria-hidden="true">clear</i>
+                    <span class="mdc-button__label">Remove selected</span>
+                </button>
             </div>
             <div class="mdc-data-table">
                 <table class="mdc-data-table__table" aria-label="Created Keywords">
                     <thead>
                         <tr class="mdc-data-table__header-row">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <input type="checkbox" v-model="checkAll" @click="selectAll">
+                            </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col">CreatedAt</th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Keyword</th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Target</th>
@@ -57,6 +65,9 @@
                     </thead>
                     <tbody class="mdc-data-table__content">
                         <tr v-for="(row, index) in filteredRows" class="mdc-data-table__row">
+                            <td class="mdc-data-table__cell">
+                                <input type="checkbox" v-model="checks" :value="index">
+                            </td>
                             <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                             <td class="mdc-data-table__cell" v-html="row.KeywordText"></td>
                             <td class="mdc-data-table__cell" v-html="row.TargetName"></td>
@@ -85,7 +96,9 @@
                     utks: {{.Utks}},
                     newKeyword: {},
                     selectedTargets: null,
-                    filter: ''
+                    filter: '',
+                    checkAll: false,
+                    checks: []
                 },
             methods: {
                 createKeyword: function() {
@@ -111,8 +124,32 @@
                         console.log(error)
                     });
                 },
+                deleteUtks: function() {
+                    payload = []; 
+                    for (var i = 0; i < this.checks.length; i++) {
+                        payload.push({
+                            "TargetName": this.filteredRows[this.checks[i]].TargetName,
+                            "KeywordText": this.filteredRows[this.checks[i]].KeywordText
+                        })
+                    }
+                    console.log("THIS IS THE PAYLOAD");
+                    payload_string = JSON.stringify(payload);
+                    this.$http.put('/keywords/remove/multiple', payload_string).then(function(response) {
+                        console.log(response);
+                    }).catch(function(error) {
+                        console.log(error)
+                    });
+                },
                 selectAllTargets: function() {
                     this.selectedTargets = this.targets;
+                },
+                selectAll: function() {
+                    this.checks = [];
+                    if (!this.checkAll) {
+                        for (var i = 0; i < this.filteredRows.length; i++) {
+                            this.checks.push(i)
+                        }
+                    }
                 }
             },
             computed: {
@@ -124,7 +161,9 @@
                             const TargetName = row.TargetName.toString().toLowerCase();
                             const searchTerm = this.filter.toLowerCase();
                             return (
-                                CreatedDate.includes(searchTerm) || KeywordText.includes(searchTerm) || TargetName.includes(searchTerm)
+                                CreatedDate.includes(searchTerm) || 
+                                KeywordText.includes(searchTerm) || 
+                                TargetName.includes(searchTerm)
                             );
                         });
                     }
@@ -141,6 +180,10 @@
     <style>
         .multiselectfield {
             max-width: 35%;
+        }
+        .removeSelected {
+            --mdc-theme-primary: #fcb8ab;
+            --mdc-theme-secondary: #feeae6;
         }
     </style>
 {{ end }}

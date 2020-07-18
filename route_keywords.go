@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/go-playground/validator"
@@ -214,6 +215,50 @@ func RemoveKeyword(w http.ResponseWriter, r *http.Request) {
 	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
 
 	infos := TempStruct{messages, utks}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}
+
+func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting RemoveKeywords..."))
+
+	sess, err := GetSession(r)
+	if err != nil {
+		panic(err.Error())
+	}
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var utks []UserTargetKeyword
+
+	err = json.Unmarshal(body, &utks)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	for i := range utks {
+		utks[i].UserId = sess.UserId
+	}
+
+	// UPDATE DATABASE
+
+	var messages []string
+	messages = append(messages, `<p style="color:green">THIS IS A TEST RESPONSE</p>`)
+
+	type TempStruct struct {
+		Messages []string
+	}
+
+	infos := TempStruct{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
