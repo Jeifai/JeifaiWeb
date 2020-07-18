@@ -10,11 +10,11 @@ import (
 type Invitation struct {
 	Id               int
 	Uuid             string
-	Email            string
-	Whoareyou        string
+	Email            string `validate:"required,email"`
+	Whoareyou        string `validate:"required"`
 	Specifywhoareyou string
-	Whyjoin          string
-	Whichcompanies   string
+	Whyjoin          string `validate:"required"`
+	Whichcompanies   string `validate:"required"`
 	Anythingelse     string
 }
 
