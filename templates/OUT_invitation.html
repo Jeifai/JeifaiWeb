@@ -7,8 +7,22 @@
     <p>Before make it official, we need to ask you a few questions.</p>
     <div id="app">
         <div>
-            <label for="username">Email:</label><br>
+            <label for="email">Email:</label><br>
             <input type="email" name="email" id="email" class="form-control" placeholder="email" v-model="infos.Email" required autofocus>
+        </div>
+        <div>
+            <label for="email">Who are you?</label><br>
+            <select id="whoareyou" v-model="infos.Whoareyou" onchange='checkValue(this.value);'>
+                <option value="JobSeeker">Job seeker</option>
+                <option value="HeadHunter">Head Hunter</option>
+                <option value="Company">Company</option>
+                <option value="NoProfit">No Profit</option>
+                <option value="Other">Other</option>
+            </select>
+            <div id="sectionSpecify" style="display:none;" >
+                <label for="specify">Please specify:</label><br>
+                <input type="specify" name="specify" id="specify" class="form-control" placeholder="specify" v-model="infos.SpecifyWhoAreYou" required autofocus>
+            </div>
         </div>
         <div>
             <label for="whyjoin">Why would you like to join us?</label><br>
@@ -47,5 +61,15 @@
                 },
             }
         })
+    </script>
+    <script type="text/javascript">
+        function checkValue(val){
+            var element=document.getElementById('sectionSpecify');
+            if (val == 'Other') {
+                element.style.display='block';
+            } else {  
+                element.style.display='none';
+            }
+        }
     </script>
 {{ end }}

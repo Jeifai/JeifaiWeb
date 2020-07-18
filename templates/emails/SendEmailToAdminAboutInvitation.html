@@ -350,6 +350,10 @@
                     <tr>
                       <td>
                         <p><b>Email</b>: {{ .Email}}</p>
+                        <p><b>Who are you</b>: {{ .Whoareyou}}</p>
+                        {{if .Specifywhoareyou}}
+                            <p><b>Specify</b>: {{ .Specifywhoareyou}}</p>
+                        {{end}}
                         <p><b>Why join</b>: {{ .Whyjoin}}</p>
                         <p><b>Which companies</b>: {{ .Whichcompanies}}</p>
                         <p><b>Anything else</b>: {{ .Anythingelse}}</p>

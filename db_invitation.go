@@ -8,12 +8,14 @@ import (
 )
 
 type Invitation struct {
-	Id             int
-	Uuid           string
-	Email          string
-	Whyjoin        string
-	Whichcompanies string
-	Anythingelse   string
+	Id               int
+	Uuid             string
+	Email            string
+	Whoareyou        string
+	Specifywhoareyou string
+	Whyjoin          string
+	Whichcompanies   string
+	Anythingelse     string
 }
 
 func (invitation *Invitation) InvitationIdByEmail() (err error) {
@@ -39,8 +41,16 @@ func (user *User) InvitationIdByUuidAndEmail() (invitation Invitation) {
 
 func (invitation *Invitation) CreateInvitation() {
 	fmt.Println(Gray(8-1, "Starting CreateInvitation..."))
-	statement := `INSERT INTO invitations (uuid, email, whyjoin, whichcompanies, anythingelse, createdat)
-                  VALUES ($1, $2, $3, $4, $5, $6)`
+	statement := `INSERT INTO invitations (
+                    uuid, 
+                    email, 
+                    whoareyou, 
+                    specifywhoareyou, 
+                    whyjoin, 
+                    whichcompanies, 
+                    anythingelse, 
+                    createdat)
+                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
 		panic(err.Error())
@@ -49,6 +59,8 @@ func (invitation *Invitation) CreateInvitation() {
 	stmt.QueryRow(
 		createUUID(),
 		invitation.Email,
+		invitation.Whoareyou,
+		invitation.Specifywhoareyou,
 		invitation.Whyjoin,
 		invitation.Whichcompanies,
 		invitation.Anythingelse,

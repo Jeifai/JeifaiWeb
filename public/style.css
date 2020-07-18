@@ -349,6 +349,8 @@ input[type=text],
 input[type=email],
 input[type=password],
 input[type=username],
+input[type=specify],
+#whoareyou,
 textarea {
 	transition: all 0.2s ease;
 	display: block;
@@ -368,6 +370,7 @@ input[type=text]:focus,
 input[type=email]:focus,
 input[type=password]:focus,
 input[type=username]:focus,
+input[type=specify]:focus,
 textarea:focus {
 	outline: none;
 	border-color: var(--color-teal) !important
