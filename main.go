@@ -16,7 +16,8 @@ func main() {
 	r.PathPrefix("/static/").Handler(s)
 
 	r.HandleFunc("/", Home).Methods("GET")
-	r.HandleFunc("/how", How).Methods("GET")
+    r.HandleFunc("/how", How).Methods("GET")
+	r.HandleFunc("/features", Features).Methods("GET")
 	r.HandleFunc("/faq", Faq).Methods("GET")
 
 	r.HandleFunc("/invitation", StartInvitation).Methods("GET")
