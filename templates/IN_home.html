@@ -1,9 +1,19 @@
 {{ define "content" }}
     <div id="app">
-        <span class="mdc-top-app-bar__title">~ Hi {{.User.UserName}}</span><br>
-        <span class="mdc-top-app-bar__title">{{.Home.Targets}} targets are being monitored by {{.Home.Keywords}} keywords so far.</span><br>
-        <span class="mdc-top-app-bar__title">In the last 7 days your targets have published {{.Home.Results}} new job offers.</span><br>
-        <span class="mdc-top-app-bar__title">On top of those ones, your keywords have triggered {{.Home.Matches}} matches.</span>
+        <div class="mdc-typography">
+            <h2 class="mdc-typography--headline3">Hi {{.User.UserName}} ~~~</h2>
+            <span class="mdc-typography--body1">
+                <b>{{.Home.CountTargets}}</b> targets are being monitored by <b>{{.Home.CountKeywords}}</b> keywords so far.<br>
+                In total you have created <b>{{.Home.CountTargetsKeywords}}</b> combinations between targets and keywords.<br>
+                Those triggers have been able to generate <b>{{.Home.CountMatchesLast7Days}}</b> matches in the last 7 days.<br><br>
+                Currently in total your targets have <b>{{.Home.CountOpenPositions}}</b> open job positions on their career pages.<br>
+                <b>{{.Home.CountResultsLast7Days}}</b> have been published within 7 days, 
+                while <b>{{.Home.CountClosedPositionLast7Days}}</b> have been closed in the last 7 days.
+            </span><br><br>
+            <span class="mdc-typography--body2">
+                If you want to see other details on this homepage, just let us know :)
+            </span>
+        </div>
     </div>
     <script>
         var app = new Vue({
@@ -17,5 +27,8 @@
         })
     </script>
     <style>
+        .mdc-typography--body1 {
+            font-size: 1.2rem;
+        }
     </style>
 {{ end }}
