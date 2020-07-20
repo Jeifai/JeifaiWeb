@@ -51,6 +51,14 @@ func How(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
+func Pricing(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting How..."))
+	templates := template.Must(template.ParseFiles(
+		"templates/OUT_layout.html",
+		"templates/OUT_pricing.html"))
+	templates.ExecuteTemplate(w, "layout", nil)
+}
+
 func Features(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Features..."))
 	templates := template.Must(template.ParseFiles(
