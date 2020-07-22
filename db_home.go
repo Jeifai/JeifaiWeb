@@ -63,6 +63,7 @@ func (user *User) GetHomeData() (home HomeData, err error) {
                                 INNER JOIN latest_scraping ls ON(s.id = ls.scraperid)
                                 LEFT JOIN results r ON(ls.scrapingid = r.scrapingid)
                                 WHERE ut.userid=1
+                                AND ut.deletedat IS NULL
                                 GROUP BY 1),
                             closed_positions_last_7_days AS(
                                 WITH latest_scraping AS (
@@ -82,6 +83,7 @@ func (user *User) GetHomeData() (home HomeData, err error) {
                                 WHERE ut.userid=$1
                                 AND r.updatedat > current_date - interval '7' day
                                 AND r.scrapingid != ls.scrapingid
+                                AND ut.deletedat IS NULL
                                 GROUP BY 1),
                             results_last_7_days AS(
                                 SELECT
