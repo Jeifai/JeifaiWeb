@@ -17,6 +17,15 @@ type Target struct {
 	CreatedDate string
 }
 
+type TargetInfo struct {
+	Name        string
+	CreatedDate string
+	JobsAll     int
+	JobsNow     int
+	Opened      int
+	Closed      int
+}
+
 // Add a new target
 func (target *Target) CreateTarget() (err error) {
 	fmt.Println(Gray(8-1, "Starting CreateTarget..."))
@@ -77,6 +86,50 @@ func (user *User) UsersTargetsByUser() (targets []Target, err error) {
 			panic(err.Error())
 		}
 		targets = append(targets, target)
+	}
+	rows.Close()
+	return
+}
+
+func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo, err error) {
+	fmt.Println(Gray(8-1, "Starting InfoUsersTargetsByUser..."))
+	rows, err := Db.Query(`WITH usertargets AS (
+                                SELECT
+                                    s.id AS scraperid,
+                                    t.name,
+                                    TO_CHAR(t.createdat, 'YYYY-MM-DD') AS createdat
+                                FROM users u
+                                INNER JOIN userstargets ut ON(u.id = ut.userid) 
+                                INNER JOIN targets t ON(ut.targetid = t.id)
+                                INNER JOIN scrapers s ON(t.id = s.targetid)
+                                WHERE ut.deletedat IS NULL
+                                AND u.id=$1
+                                ORDER BY t.createdat DESC)
+                                SELECT
+                                    ut.name,
+                                    ut.createdat,
+                                    COUNT(DISTINCT r.url) AS all_time_job,
+                                    SUM(CASE WHEN r.updatedat::date = current_date::date THEN 1 ELSE 0 END) AS actual_job_opens,
+                                    SUM(CASE WHEN (r.createdat > current_date - interval '7' day) THEN 1 ELSE 0 END) AS open_positions_last_7_days,
+                                    SUM(CASE WHEN (r.updatedat > current_date - interval '7' day AND r.updatedat < current_date - interval '1' day) THEN 1 ELSE 0 END) AS close_positions_last_7_days
+                                FROM usertargets ut
+                                LEFT JOIN results r ON(ut.scraperid = r.scraperid)
+                                GROUP BY 1, 2;`, user.Id)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		targetinfo := TargetInfo{}
+		if err = rows.Scan(
+			&targetinfo.Name,
+			&targetinfo.CreatedDate,
+			&targetinfo.JobsAll,
+			&targetinfo.JobsNow,
+			&targetinfo.Opened,
+			&targetinfo.Closed); err != nil {
+			panic(err.Error())
+		}
+		targetsinfo = append(targetsinfo, targetinfo)
 	}
 	rows.Close()
 	return
