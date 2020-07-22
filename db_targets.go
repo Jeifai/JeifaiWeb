@@ -114,7 +114,8 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo, err error)
                                     SUM(CASE WHEN (r.updatedat > current_date - interval '7' day AND r.updatedat < current_date - interval '1' day) THEN 1 ELSE 0 END) AS close_positions_last_7_days
                                 FROM usertargets ut
                                 LEFT JOIN results r ON(ut.scraperid = r.scraperid)
-                                GROUP BY 1, 2;`, user.Id)
+                                GROUP BY 1, 2
+                                ORDER BY 2;`, user.Id)
 	if err != nil {
 		panic(err.Error())
 	}
