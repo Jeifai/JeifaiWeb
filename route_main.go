@@ -124,3 +124,34 @@ func TestMatch(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
 }
+
+func TestHome(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting Home..."))
+	sess, err := GetSession(r)
+	if err != nil {
+		fmt.Println(Yellow("User not logged in..."))
+		templates := template.Must(template.ParseFiles(
+			"templates/OUT_layout.html",
+			"templates/OUT_home.html"))
+		templates.ExecuteTemplate(w, "layout", nil)
+	} else {
+		fmt.Println(Blue("User logged in..."))
+		user := User{
+			Id: sess.UserId,
+		}
+		user.UserById()
+
+		home, err := user.GetHomeData()
+		if err != nil {
+			fmt.Println(Gray(8-1, "User has no data..."))
+        }
+        home.UserName = user.UserName
+		type TempStruct struct {
+			Home HomeData
+        }
+		infos := TempStruct{home}
+        w.Header().Set("Content-Type", "application/json")
+        w.WriteHeader(http.StatusCreated)
+        json.NewEncoder(w).Encode(infos)
+	}
+}

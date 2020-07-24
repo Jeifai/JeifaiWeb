@@ -1,8 +1,10 @@
 const list = mdc.list.MDCList.attachTo(document.querySelector('.mdc-list'));
 list.singleSelection = true;
+list.selectedIndex = 0;
 
 import Home from './components/Home.js';
 import Targets from './components/Targets.js';
+import Keywords from './components/Keywords.js';
 import Matches from './components/Matches.js';
 
 const router = new VueRouter({
@@ -14,6 +16,10 @@ const router = new VueRouter({
     },
     {
         path: '/targets',
+        component: Targets
+    },
+    {
+        path: '/keywords',
         component: Targets
     },
     {
@@ -33,19 +39,9 @@ var app = new Vue({
     },
     watch: {
         selectedIndex: function(val) {
-            list.selectedIndex = 2;
-            alert(val);
+            list.selectedIndex = val;
         }
     }
 })
 
 app.$mount('#app');
-
-console.log(app.data)
-console.log(app.$data)
-console.log(app.$data.selectedIndex)
-
-// const list = mdc.list.MDCList.attachTo(document.querySelector('.mdc-list'));
-// list.singleSelection = true;
-// list.selectedIndex = app.$data.selectedIndex;
-list.selectedIndex = 2;

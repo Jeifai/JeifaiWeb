@@ -1,5 +1,5 @@
 export default {
-    name: 'Targets',
+    name: 'targets',
     delimiters: ["[[","]]"],
     data: function () {
         return {

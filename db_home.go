@@ -7,6 +7,7 @@ import (
 )
 
 type HomeData struct {
+    UserName                     string
 	CountKeywords                int
 	CountTargets                 int
 	CountTargetsKeywords         int
