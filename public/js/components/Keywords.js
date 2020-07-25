@@ -19,6 +19,9 @@ export default {
         let multiSelectScript = document.createElement('script')
         multiSelectScript.setAttribute('src', 'https://unpkg.com/vue-simple-multi-select@latest')
         document.head.appendChild(multiSelectScript)
+        const topAppBarElement = mdc.dataTable.MDCDataTable.attachTo(document.querySelector('.mdc-data-table'))
+        const textKeyword = mdc.textField.MDCTextField.attachTo(document.getElementById("Keyword"))
+        const textFilter= mdc.textField.MDCTextField.attachTo(document.getElementById("Filter"))
     },
     created () {
         this.fetchKeywords()

@@ -16,6 +16,8 @@ export default {
         let multiToggleScript = document.createElement('script')
         multiToggleScript.setAttribute('src', 'https://unpkg.com/vue-taggable-select@latest')
         document.head.appendChild(multiToggleScript)
+        const topAppBarElement = mdc.dataTable.MDCDataTable.attachTo(document.querySelector('.mdc-data-table'));
+        const button = mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-icon-button'));
     },
     created () {
         this.fetchTargets()

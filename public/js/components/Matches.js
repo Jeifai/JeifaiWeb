@@ -9,7 +9,9 @@ export default {
         }
     },
     mounted() {
-        this.$parent.selectedIndex = this.selectedIndex;
+        this.$parent.selectedIndex = this.selectedIndex
+        const dataTable = mdc.dataTable.MDCDataTable.attachTo(document.querySelector('.mdc-data-table'));
+        const textFilter= mdc.textField.MDCTextField.attachTo(document.getElementById("Filter"));
     },
     created () {
         this.fetchMatches()
