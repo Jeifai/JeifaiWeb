@@ -22,8 +22,9 @@ func main() {
     r.HandleFunc("/faq", Faq).Methods("GET")
     
     r.HandleFunc("/test", Test).Methods("GET")
+    r.HandleFunc("/testHome", TestHome).Methods("GET")
+	r.HandleFunc("/testTargets", TestTargets).Methods("GET")
     r.HandleFunc("/testMatch", TestMatch).Methods("GET")
-	r.HandleFunc("/testHome", TestHome).Methods("GET")
 
 	r.HandleFunc("/invitation", StartInvitation).Methods("GET")
 	r.HandleFunc("/invitation", SubmitInvitation).Methods("PUT")

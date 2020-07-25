@@ -155,3 +155,45 @@ func TestHome(w http.ResponseWriter, r *http.Request) {
         json.NewEncoder(w).Encode(infos)
 	}
 }
+
+func TestTargets(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting TestTargets..."))
+
+	sess, err := GetSession(r)
+	if err != nil {
+		panic(err.Error())
+	}
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
+
+	user_targets_info, err := user.InfoUsersTargetsByUser()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var name_targets []string
+	not_selected_targets, err := user.NotSelectedUsersTargetsByUser()
+	if err != nil {
+		panic(err.Error())
+	}
+	for _, v := range not_selected_targets {
+		name_targets = append(name_targets, v.Name)
+	}
+
+	// vue-taggable-select does not work if name_targets is empty
+	if len(name_targets) == 0 {
+		name_targets = []string{" "}
+	}
+
+	type TempStruct struct {
+		Targets     []TargetInfo
+		NameTargets []string
+	}
+
+    infos := TempStruct{user_targets_info, name_targets}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}

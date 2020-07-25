@@ -11,19 +11,19 @@ const router = new VueRouter({
   mode: 'history',
   routes: [
     {
-        path: '/home',
+        path: '/homeT',
         component: Home
     },
     {
-        path: '/targets',
+        path: '/targetsT',
         component: Targets
     },
     {
-        path: '/keywords',
-        component: Targets
+        path: '/keywordsT',
+        component: Keywords
     },
     {
-        path: '/matches',
+        path: '/matchesT',
         component: Matches
     },
   ]

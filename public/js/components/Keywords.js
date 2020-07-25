@@ -1,5 +1,5 @@
 export default {
-    name: 'keywords',
+    name: 'keywordsT',
     delimiters: ["[[","]]"],
     data: function () {
         return {
