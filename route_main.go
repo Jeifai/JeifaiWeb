@@ -197,3 +197,56 @@ func TestTargets(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
 }
+
+func TestKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting TestKeywords..."))
+
+	sess, err := GetSession(r)
+	if err != nil {
+		panic(err.Error())
+	}
+	user := User{
+		Id: sess.UserId,
+	}
+	user.UserById()
+
+	struct_targets, err := user.UsersTargetsByUser()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	var arr_targets []string
+	for _, v := range struct_targets {
+		arr_targets = append(arr_targets, v.Name)
+	}
+
+	utks, err := user.GetUserTargetKeyword()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	type PublicTargetKeyword struct {
+		CreatedDate string
+		KeywordText string
+		TargetName  string
+	}
+
+	var public_utks []PublicTargetKeyword
+	for _, utk := range utks {
+		var public_utk PublicTargetKeyword
+		public_utk.CreatedDate = utk.CreatedDate
+		public_utk.KeywordText = utk.KeywordText
+		public_utk.TargetName = utk.TargetName
+		public_utks = append(public_utks, public_utk)
+	}
+
+	type TempStruct struct {
+		Targets []string
+		Utks    []PublicTargetKeyword
+	}
+
+	infos := TempStruct{arr_targets, public_utks}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}

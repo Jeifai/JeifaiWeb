@@ -1,5 +1,5 @@
 export default {
-    name: 'matchesT',
+    name: 'matches',
     delimiters: ["[[","]]"],
     data: function () {
         return {
