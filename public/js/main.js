@@ -41,7 +41,7 @@ var app = new Vue({
     mounted() {
         const list = mdc.list.MDCList.attachTo(document.querySelector('.mdc-list'));
         list.singleSelection = true;
-        list.selectedIndex = val;
+        list.selectedIndex = this.selectedIndex;
     }
 })
 
