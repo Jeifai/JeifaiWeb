@@ -41,7 +41,7 @@ var app = new Vue({
         selectedIndex: function(val) {
             list.selectedIndex = val;
         }
-    }
+    },
 })
 
 app.$mount('#app');

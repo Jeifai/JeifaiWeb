@@ -18,6 +18,15 @@ export default {
         document.head.appendChild(multiToggleScript)
         const topAppBarElement = mdc.dataTable.MDCDataTable.attachTo(document.querySelector('.mdc-data-table'));
         const button = mdc.ripple.MDCRipple.attachTo(document.querySelector('.mdc-icon-button'));
+        let styleElem = document.createElement('style');
+        styleElem.textContent = `
+            .overflow-x-scroll {
+                overflow-x: hidden !important;
+            }
+            .taggableselectfield {
+                max-width: 35%;
+            }`
+        document.head.appendChild(styleElem);
     },
     created () {
         this.fetchTargets()

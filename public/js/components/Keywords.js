@@ -22,6 +22,16 @@ export default {
         const topAppBarElement = mdc.dataTable.MDCDataTable.attachTo(document.querySelector('.mdc-data-table'))
         const textKeyword = mdc.textField.MDCTextField.attachTo(document.getElementById("Keyword"))
         const textFilter= mdc.textField.MDCTextField.attachTo(document.getElementById("Filter"))
+        let styleElem = document.createElement('style');
+        styleElem.textContent = `
+            .multiselectfield {
+                max-width: 35%;
+            }
+            .removeSelected {
+                --mdc-theme-primary: #ea5a3d;
+                --mdc-theme-secondary: #ea5a3d;
+            }`
+        document.head.appendChild(styleElem);
     },
     created () {
         this.fetchKeywords()

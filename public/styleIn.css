@@ -21,20 +21,3 @@ body {
 .mdc-top-app-bar {
     z-index: 7;
 }
-
-/* Targets */
-.taggableselectfield {
-    max-width: 35%;
-}
-.overflow-x-scroll[data-v-5127bdf7] {
-    overflow-x: hidden;
-}
-
-/* Keywords */
-.multiselectfield {
-    max-width: 35%;
-}
-.removeSelected {
-    --mdc-theme-primary: #ea5a3d;
-    --mdc-theme-secondary: #ea5a3d;
-}
