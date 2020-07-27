@@ -19,59 +19,64 @@
             <title>JeiFai - Know First</title>
         </head>
         <body>
-            <header class="mdc-top-app-bar">
-                <div class="mdc-top-app-bar__row">
-                    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-                        <img src="/static/logoWhite.png" alt="triangle with all three sides equal" height="38px" width="82px"/>
-                    </section>
-                    <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-                        <button 
-                            class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
-                            aria-label="Person"
-                            onclick="location.href='/profile';">person
-                        </button>
-                        <button 
-                            class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
-                            aria-label="Login" 
-                            onclick="location.href='/logout';">logout
-                        </button>
-                    </section>
-                </div>
-            </header>
-            <aside class="mdc-drawer mdc-top-app-bar--fixed-adjust">
-                <div class="mdc-drawer__content">
-                    <nav class="mdc-list" role="listbox">
-                        <a class="mdc-list-item" role="option" tabindex="0" href="/">
-                            <i class="material-icons mdc-list-item__graphic">home</i>
-                            <span class="mdc-list-item__text">Home</span>
-                        </a>
-                        <a class="mdc-list-item" href="#" onclick="newwin()">
-                            <i class="material-icons mdc-list-item__graphic">gps_fixed</i>
-                            <span class="mdc-list-item__text">Targets</span>
-                        </a>
-                        <a class="mdc-list-item" role="option" href="/keywords">
-                            <i class="material-icons mdc-list-item__graphic">text_fields</i>
-                            <span class="mdc-list-item__text">Keywords</span>
-                        </a>
-                        <a class="mdc-list-item" role="option" href="/matchesCiao">
-                            <i class="material-icons mdc-list-item__graphic">local_fire_department</i>
-                            <span class="mdc-list-item__text">Matches</span>
-                        </a>
-                    </nav>
-                </div>
-            </aside>
-            <div class="mdc-drawer-app-content mdc-top-app-bar--fixed-adjust">
-                <main class="main-content" id="main-content">
-                    <div id="app">
-                        <h3 id="selectedIndex">[[selectedIndex]]</h3>
-                        <router-link to="/homeT">/Home</router-link>
-                        <router-link to="/targetsT">/Targets</router-link>
-                        <router-link to="/keywordsT">/Keywords</router-link>
-                        <router-link to="/matchesT">Matches</router-link>
-                        <router-view></router-view>
+            <div id="app"> 
+                <header class="mdc-top-app-bar">
+                    <div class="mdc-top-app-bar__row">
+                        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                            <img src="/static/logoWhite.png" alt="triangle with all three sides equal" height="38px" width="82px"/>
+                        </section>
+                        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+                            <button 
+                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
+                                aria-label="Person"
+                                onclick="location.href='/profile';">person
+                            </button>
+                            <button 
+                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
+                                aria-label="Login" 
+                                onclick="location.href='/logout';">logout
+                            </button>
+                        </section>
                     </div>
-                </main>
+                </header>
+                <aside class="mdc-drawer mdc-top-app-bar--fixed-adjust">
+                    <div class="mdc-drawer__content">
+                        <nav class="mdc-list" role="listbox">
+                            <router-link to="/homeT" class="mdc-list-item" tabindex="0">
+                                <i class="material-icons mdc-list-item__graphic">home</i>
+                                <span class="mdc-list-item__text">HomeTemp</span>
+                            </router-link>
+                            <router-link to="/targetsT" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">gps_fixed</i>
+                                <span class="mdc-list-item__text">TargetsTemp</span>
+                            </router-link>
+                            <router-link to="/keywordsT" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">text_fields</i>
+                                <span class="mdc-list-item__text">KeywordsTemp</span>
+                            </router-link>
+                            <router-link to="/matchesT" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">local_fire_department</i>
+                                <span class="mdc-list-item__text">MatchesTemp</span>
+                            </router-link>
+                        </nav>
+                    </div>
+                </aside>
+                <div class="main-content">
+                    <router-view></router-view>
+                </div>
             </div>
+            <style>
+                @use "@material/typography/mdc-typography";
+                .mdc-top-app-bar {
+                    z-index: 7;
+                }
+                .main-content {
+                    position: absolute; 
+                    left: 20%; 
+                    top: 10%;
+                    width: 80%;
+                }
+            </style>
         </body>
     </html>
 {{ end }}
