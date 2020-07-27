@@ -70,13 +70,6 @@
         })
     </script>
     <script type="module">
-        const dataTable = mdc.dataTable.MDCDataTable.attachTo(document.querySelector('.mdc-data-table'));
         const textFilter= mdc.textField.MDCTextField.attachTo(document.getElementById("Filter"));
     </script>
-    <style>
-        @use "@material/checkbox"; // Required only for data table with row selection.
-        @use "@material/data-table";
-        @include checkbox.core-styles;
-        @include data-table.core-styles;
-    </style>
 {{ end }}
