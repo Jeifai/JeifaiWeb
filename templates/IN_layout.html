@@ -25,11 +25,9 @@
                             <img src="/static/images/logoWhite.png" alt="triangle with all three sides equal" height="38px" width="82px"/>
                         </section>
                         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-                            <button 
-                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
-                                aria-label="Person"
-                                onclick="location.href='/profile';">person
-                            </button>
+                            <router-link to="/profile" tag="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Person">
+                                person
+                            </router-link>
                             <button 
                                 class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
                                 aria-label="Login" 

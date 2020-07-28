@@ -1,15 +1,27 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 
 	"github.com/go-playground/validator"
 	. "github.com/logrusorgru/aurora"
 )
+
+type PublicUser struct {
+	UserName          string
+	Email             string
+	FirstName         string
+	LastName          string
+	DateOfBirth       string
+	Country           string
+	City              string
+	Gender            string
+	CurrentPassword   string
+	NewPassword       string
+	RepeatNewPassword string
+}
 
 func Profile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Profile..."))
@@ -23,17 +35,6 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserById()
 
-	type PublicUser struct {
-		UserName    string
-		Email       string
-		FirstName   sql.NullString
-		LastName    sql.NullString
-		DateOfBirth sql.NullString
-		Country     sql.NullString
-		City        sql.NullString
-		Gender      sql.NullString
-	}
-
 	type TempStruct struct {
 		User PublicUser
 	}
@@ -41,23 +42,18 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 	var publicUser PublicUser
 	publicUser.UserName = user.UserName
 	publicUser.Email = user.Email
-	publicUser.FirstName.String = user.FirstName.String
-	publicUser.LastName.String = user.LastName.String
-	publicUser.Country.String = user.Country.String
-	publicUser.City.String = user.City.String
-	publicUser.DateOfBirth.String = user.DateOfBirth.String
-	publicUser.Gender.String = user.Gender.String
+	publicUser.FirstName = user.FirstName.String
+	publicUser.LastName = user.LastName.String
+	publicUser.Country = user.Country.String
+	publicUser.City = user.City.String
+	publicUser.DateOfBirth = user.DateOfBirth.String
+	publicUser.Gender = user.Gender.String
 
 	infos := TempStruct{publicUser}
 
-	templates := template.Must(
-		template.ParseFiles(
-			"templates/IN_layout.html",
-			"templates/IN_topbar.html",
-			"templates/IN_sidebar.html",
-			"templates/IN_profile.html"))
-
-	templates.ExecuteTemplate(w, "layout", infos)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
 }
 
 func UpdateProfile(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +68,28 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserById()
 
-	err = json.NewDecoder(r.Body).Decode(&user)
+	var publicUser PublicUser
+
+	err = json.NewDecoder(r.Body).Decode(&publicUser)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	user.UserName = publicUser.UserName
+	user.Email = publicUser.Email
+	user.FirstName.String = publicUser.FirstName
+	user.LastName.String = publicUser.LastName
+	user.Country.String = publicUser.Country
+	user.City.String = publicUser.City
+	user.DateOfBirth.String = publicUser.DateOfBirth
+	user.Gender.String = publicUser.Gender
+	user.CurrentPassword = publicUser.CurrentPassword
+	user.NewPassword = publicUser.NewPassword
+	user.RepeatNewPassword = publicUser.RepeatNewPassword
+
+	fmt.Println("user.CurrentPassword")
+	fmt.Println(user.CurrentPassword)
 
 	if user.CurrentPassword != "" {
 		user.CurrentPassword = Encrypt(user.CurrentPassword)

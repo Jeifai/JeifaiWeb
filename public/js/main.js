@@ -2,6 +2,7 @@ import Home from './components/Home.js';
 import Targets from './components/Targets.js';
 import Keywords from './components/Keywords.js';
 import Matches from './components/Matches.js';
+import Profile from './components/Profile.js';
 
 const router = new VueRouter({
     mode: 'hash',
@@ -21,6 +22,10 @@ const router = new VueRouter({
     {
         path: '/matches',
         component: Matches
+    },
+    {
+        path: '/profile',
+        component: Profile
     },
     ]
 })

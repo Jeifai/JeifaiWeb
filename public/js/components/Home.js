@@ -1,5 +1,5 @@
 export default {
-    name: 'homeT',
+    name: 'home',
     delimiters: ["[[","]]"],
     data: function () {
         return {

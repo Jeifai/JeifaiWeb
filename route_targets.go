@@ -45,7 +45,7 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 		NameTargets []string
 	}
 
-    infos := TempStruct{user_targets_info, name_targets}
+	infos := TempStruct{user_targets_info, name_targets}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
