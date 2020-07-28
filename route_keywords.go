@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"net/http"
 
@@ -53,21 +52,14 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type TempStruct struct {
-		User    User
 		Targets []string
 		Utks    []PublicTargetKeyword
 	}
 
-	infos := TempStruct{user, arr_targets, public_utks}
-
-	templates := template.Must(
-		template.ParseFiles(
-			"templates/IN_layout.html",
-			"templates/IN_topbar.html",
-			"templates/IN_sidebar.html",
-			"templates/IN_keywords.html"))
-
-	templates.ExecuteTemplate(w, "layout", infos)
+	infos := TempStruct{arr_targets, public_utks}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
 }
 
 func PutKeyword(w http.ResponseWriter, r *http.Request) {

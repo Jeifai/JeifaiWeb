@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"html/template"
-	"net/http"
+    "net/http"
+    "encoding/json"
 
 	. "github.com/logrusorgru/aurora"
 )
@@ -40,18 +40,11 @@ func Matches(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type TempStruct struct {
-		User User
 		Data []PublicMatch
 	}
 
-	infos := TempStruct{user, public_matches}
-
-	templates := template.Must(
-		template.ParseFiles(
-			"templates/IN_layout.html",
-			"templates/IN_topbar.html",
-			"templates/IN_sidebar.html",
-			"templates/IN_matches.html"))
-
-	templates.ExecuteTemplate(w, "layout", infos)
+	infos := TempStruct{public_matches}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 
 	"github.com/go-playground/validator"
@@ -42,21 +41,14 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type TempStruct struct {
-		User        User
 		Targets     []TargetInfo
 		NameTargets []string
 	}
 
-	infos := TempStruct{user, user_targets_info, name_targets}
-
-	templates := template.Must(
-		template.ParseFiles(
-			"templates/IN_layout.html",
-			"templates/IN_topbar.html",
-			"templates/IN_sidebar.html",
-			"templates/IN_targets.html"))
-
-	templates.ExecuteTemplate(w, "layout", infos)
+    infos := TempStruct{user_targets_info, name_targets}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
 }
 
 func PutTarget(w http.ResponseWriter, r *http.Request) {

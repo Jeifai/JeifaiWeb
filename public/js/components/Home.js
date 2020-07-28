@@ -15,7 +15,7 @@ export default {
     },
     methods: {
         fetchHome: function() {
-            this.$http.get('/testHome').then(function(response) {
+            this.$http.get('/getHome').then(function(response) {
                 this.homeInfo = response.data.Home;
             }).catch(function(error) {
                 console.log(error)

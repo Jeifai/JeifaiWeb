@@ -1,5 +1,5 @@
 export default {
-    name: 'targetsT',
+    name: 'targets',
     delimiters: ["[[","]]"],
     data: function () {
         return {
@@ -33,7 +33,7 @@ export default {
     },
     methods: {
         fetchTargets: function() {
-            this.$http.get('/testTargets').then(function(response) {
+            this.$http.get('/targets').then(function(response) {
                 this.targets = response.data.Targets,
                 this.nameTargets = response.data.NameTargets
             }).catch(function(error) {

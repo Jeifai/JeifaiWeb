@@ -7,19 +7,19 @@ const router = new VueRouter({
     mode: 'hash',
     routes: [
     {
-        path: '/homeT',
+        path: '/',
         component: Home
     },
     {
-        path: '/targetsT',
+        path: '/targets',
         component: Targets
     },
     {
-        path: '/keywordsT',
+        path: '/keywords',
         component: Keywords
     },
     {
-        path: '/matchesT',
+        path: '/matches',
         component: Matches
     },
     ]

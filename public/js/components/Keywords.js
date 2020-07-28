@@ -1,5 +1,5 @@
 export default {
-    name: 'keywordsT',
+    name: 'keywords',
     delimiters: ["[[","]]"],
     data: function () {
         return {
@@ -38,7 +38,7 @@ export default {
     },
     methods: {
         fetchKeywords: function() {
-            this.$http.get('/testKeywords').then(function(response) {
+            this.$http.get('/keywords').then(function(response) {
                 this.targets = response.data.Targets,
                 this.utks = response.data.Utks
             }).catch(function(error) {
@@ -57,7 +57,7 @@ export default {
             });
         },
         deleteUtks: function() {
-            payload = [];
+            var payload = new Array();
             if (this.checks.length > 0) {
                 for (var i = 0; i < this.checks.length; i++) {
                     payload.push({
@@ -65,6 +65,7 @@ export default {
                         "KeywordText": this.filteredRows[this.checks[i]].KeywordText
                     })
                 }
+                console.log(payload)
                 payload_string = JSON.stringify(payload);
                 this.$http.put('/keywords/remove', payload_string).then(function(response) {
                     this.messages = response.data.Messages

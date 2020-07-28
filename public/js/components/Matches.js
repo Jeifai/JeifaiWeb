@@ -17,7 +17,7 @@ export default {
     },
     methods: {
         fetchMatches: function() {
-            this.$http.get('/testMatch').then(function(response) {
+            this.$http.get('/matches').then(function(response) {
                 this.matches = response.data.Data;
             }).catch(function(error) {
                 console.log(error)
