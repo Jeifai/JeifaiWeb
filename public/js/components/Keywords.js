@@ -65,9 +65,7 @@ export default {
                         "KeywordText": this.filteredRows[this.checks[i]].KeywordText
                     })
                 }
-                console.log(payload)
-                payload_string = JSON.stringify(payload);
-                this.$http.put('/keywords/remove', payload_string).then(function(response) {
+                this.$http.put('/keywords/remove', JSON.stringify(payload)).then(function(response) {
                     this.messages = response.data.Messages
                     this.utks = response.data.Utks;
                     this.checks = [];

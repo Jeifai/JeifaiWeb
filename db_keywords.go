@@ -157,9 +157,6 @@ func SetDeletedAtInUserTargetKeywordMultiple(utks []UserTargetKeyword) (err erro
                 WHERE (%s));`
 
 	smt = fmt.Sprintf(smt, valueString)
-
-	fmt.Println(smt)
-
 	_, err = Db.Exec(smt)
 	if err != nil {
 		panic(err.Error())
