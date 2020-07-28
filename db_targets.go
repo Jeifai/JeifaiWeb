@@ -101,7 +101,7 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo, err error)
                                 FROM users u
                                 INNER JOIN userstargets ut ON(u.id = ut.userid) 
                                 INNER JOIN targets t ON(ut.targetid = t.id)
-                                INNER JOIN scrapers s ON(t.id = s.targetid)
+                                LEFT JOIN scrapers s ON(t.id = s.targetid)
                                 WHERE ut.deletedat IS NULL
                                 AND u.id=$1
                                 ORDER BY t.createdat DESC)
