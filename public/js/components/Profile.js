@@ -34,6 +34,13 @@ export default {
                 this.fields = response.data.User;
                 const select = mdc.select.MDCSelect.attachTo(document.querySelector('.mdc-select'));
                 select.value = response.data.User.Gender;
+
+                // Workaround https://github.com/material-components/material-components-web/issues/6290
+                const edtTexts = [].map.call(document.querySelectorAll('.mdc-floating-label'), function(el) {
+                    if (response.data.User[el.id] !== "") {
+                        el.classList.add('mdc-floating-label--float-above');
+                    }
+                });
             }).catch(function(error) {
                 console.log(error)
             });
