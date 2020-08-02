@@ -164,9 +164,6 @@ export default {
                         <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
                         <span class="mdc-button__label">Add keyword</span>
                     </button>
-                    <button class="mdc-button mdc-button--raised" v-on:click="sortRows('TargetName')">
-                        <span class="mdc-button__label">SORT TARGET</span>
-                    </button>
                 </div>
             </div>
             <div>
