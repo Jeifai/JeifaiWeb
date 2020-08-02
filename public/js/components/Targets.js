@@ -45,7 +45,7 @@ export default {
                 "selectedTargets": this.selectedTargets
                 }).then(function(response) {
                     this.messages = response.data.Messages
-                    this.targets = response.data.Targets
+                    this.fetchTargets()
                     this.newTarget = {}
             }).catch(function(error) {
                 console.log(error)

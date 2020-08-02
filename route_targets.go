@@ -136,17 +136,12 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 		messages = append(messages, temp_messages...)
 	}
 
-	targets, err := user.UsersTargetsByUser()
-	if err != nil {
-		panic(err.Error())
-	}
-
 	type TempStruct struct {
 		Messages []string
-		Targets  []Target
 	}
 
-	infos := TempStruct{messages, targets}
+	infos := TempStruct{messages}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
