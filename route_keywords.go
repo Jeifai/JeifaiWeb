@@ -138,18 +138,11 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 		messages = append(messages, temp_message)
 	}
 
-	var utks []UserTargetKeyword
-	utks, err = user.GetUserTargetKeyword()
-	if err != nil {
-		panic(err.Error())
-	}
-
 	type TempStruct struct {
 		Messages []string
-		Utks     []UserTargetKeyword
 	}
 
-	infos := TempStruct{messages, utks}
+	infos := TempStruct{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -186,22 +179,16 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 	err = SetDeletedAtInUserTargetKeywordMultiple(utks)
 	if err != nil {
 		panic(err.Error())
-	}
-
-	utks, err = user.GetUserTargetKeyword()
-	if err != nil {
-		panic(err.Error())
-	}
+    }
 
 	type TempStruct struct {
 		Messages []string
-		Utks     []UserTargetKeyword
 	}
 
 	var messages []string
 	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
 
-	infos := TempStruct{messages, utks}
+	infos := TempStruct{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

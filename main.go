@@ -46,7 +46,7 @@ func main() {
 
 	r.HandleFunc("/keywords", Keywords).Methods("GET")
 	r.HandleFunc("/keywords", PutKeyword).Methods("PUT")
-	r.HandleFunc("/keywords/remove", RemoveKeywords).Methods("PUT")
+	r.HandleFunc("/keywords", RemoveKeywords).Methods("DELETE")
 
 	r.HandleFunc("/matches", Matches)
 

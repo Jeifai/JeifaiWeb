@@ -51,7 +51,7 @@ export default {
                 "newKeyword": this.newKeyword
                 }).then(function(response) {
                     this.messages = response.data.Messages
-                    this.utks = response.data.Utks;
+                    this.fetchKeywords()
             }).catch(function(error) {
                 console.log(error)
             });
@@ -65,11 +65,11 @@ export default {
                         "KeywordText": this.filteredRows[this.checks[i]].KeywordText
                     })
                 }
-                this.$http.put('/keywords/remove', JSON.stringify(payload)).then(function(response) {
+                this.$http.delete('/keywords', JSON.stringify(payload)).then(function(response) {
                     this.messages = response.data.Messages
-                    this.utks = response.data.Utks;
-                    this.checks = [];
-                    this.checkAll = false;
+                    this.checks = []
+                    this.checkAll = false
+                    this.fetchKeywords()
                 }).catch(function(error) {
                     console.log(error)
                 });
