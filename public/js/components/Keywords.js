@@ -11,7 +11,10 @@ export default {
             selectedTargets: null,
             filter: '',
             checkAll: false,
-            checks: []
+            checks: [],
+            sorting: {
+                CreatedDate: true
+            }
         }
     },
     mounted() {
@@ -30,7 +33,15 @@ export default {
             .removeSelected {
                 --mdc-theme-primary: #ea5a3d;
                 --mdc-theme-secondary: #ea5a3d;
-            }`
+            }
+            .column-header {
+                font-weight: normal;
+                color: blue;
+            }
+            .column-header.active {
+                font-weight: bold;
+                color: black;
+            }            `
         document.head.appendChild(styleElem);
     },
     created () {
@@ -85,6 +96,21 @@ export default {
                     this.checks.push(i)
                 }
             }
+        },
+        sortRows: function(column) {
+            if (column == "CreatedDate") {
+                if (this.sorting[column]) {
+                    this.utks.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
+                    this.sorting[column] = false
+                } else {
+                    this.utks.sort((b,a) => (new Date(a[column]) - new Date(b[column])))
+                    this.sorting[column] = true
+                }
+            } else {
+                this.utks.sort(
+                    (a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0)
+                )
+            }
         }
     },
     computed: {
@@ -138,6 +164,9 @@ export default {
                         <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
                         <span class="mdc-button__label">Add keyword</span>
                     </button>
+                    <button class="mdc-button mdc-button--raised" v-on:click="sortRows('TargetName')">
+                        <span class="mdc-button__label">SORT TARGET</span>
+                    </button>
                 </div>
             </div>
             <div>
@@ -166,9 +195,21 @@ export default {
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <input type="checkbox" v-model="checkAll" @click="selectAll">
                                 </th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">CreatedAt</th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Keyword</th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Target</th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                    <a class="column-header" v-bind:class="{active: sorting.CreatedDate}" @click="sortRows('CreatedDate')">
+                                        CreatedAt
+                                    </a>
+                                </th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                    <a class="column-header" @click="sortRows('KeywordText')">
+                                        Keyword
+                                    </a>
+                                </th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                    <a class="column-header" @click="sortRows('TargetName')">
+                                        Target
+                                    </a>
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="mdc-data-table__content">
