@@ -52,10 +52,11 @@ export default {
             });
         },
         deleteTarget: function(index) {
-            payload = {"Name": this.targets[index].Name}
-            this.$http.put('/targets/remove', payload).then(function(response) {
-                this.messages = response.data.Messages
-                this.targets.splice(index, 1)
+            payload = 
+            this.$http.delete('/targets', {"Name": this.targets[index].Name}).then(
+                function(response) {
+                    this.messages = response.data.Messages
+                    this.fetchTargets()
             }).catch(function(error) {
                 console.log(error)
             });
