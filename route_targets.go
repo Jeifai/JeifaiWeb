@@ -109,15 +109,18 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 
 		if len(temp_messages) == 0 {
 
-			if err := target.CreateTarget(); err != nil { // Try to create a target
-				err := target.TargetByName() // If already exists, get its name
+			err := target.CreateTarget() // Try to create a target
+			if err == nil {
+				target.SendEmailToAdminAboutNewTarget()
+			} else { // If already exists, get its name
+				err := target.TargetByName()
 				if err != nil {
 					panic(err.Error())
 				}
 			}
 
 			// Before creating the relation user <-> target, check if it is not already present
-			_, err := user.UsersTargetsByUserAndName(target.Name)
+			_, err = user.UsersTargetsByUserAndName(target.Name)
 			if err != nil {
 				// If the relation does not exists create a new relation
 				target.CreateUserTarget(user)
