@@ -111,6 +111,7 @@ export default {
                     class="multiselect"
                     placeholder="Targets"
                     :taggable="true"
+                    :max-results="1000"
                 >
                 </vue-taggable-select><br>
                 <button class="mdc-button mdc-button--raised" v-on:click="createTarget">

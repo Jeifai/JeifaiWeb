@@ -158,6 +158,7 @@ export default {
                         :options="targets"
                         class="multiselect"
                         placeholder="Targets"
+                        :max-results="1000"
                     >
                     </vue-multi-select><br>
                     <button class="mdc-button mdc-button--raised" v-on:click="selectAllTargets">
