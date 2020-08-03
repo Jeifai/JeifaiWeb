@@ -127,8 +127,6 @@ export default {
                     <table class="mdc-data-table__table" aria-label="Created Targets">
                         <thead>
                             <tr class="mdc-data-table__header-row">
-
-
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('CreatedDate')">
                                         CreatedAt
