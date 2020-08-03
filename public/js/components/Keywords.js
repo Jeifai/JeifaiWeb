@@ -12,8 +12,11 @@ export default {
             filter: '',
             checkAll: false,
             checks: [],
+            sortedBy: "CreatedDate",
             sorting: {
-                CreatedDate: true
+                CreatedDate: true,
+                KeywordText: false,
+                TargetName: false
             }
         }
     },
@@ -34,14 +37,10 @@ export default {
                 --mdc-theme-primary: #ea5a3d;
                 --mdc-theme-secondary: #ea5a3d;
             }
-            .column-header {
-                font-weight: normal;
-                color: blue;
-            }
-            .column-header.active {
-                font-weight: bold;
-                color: black;
-            }            `
+            .material-icons {
+                font-size: 16px;
+                vertical-align: -3px;
+            }`
         document.head.appendChild(styleElem);
     },
     created () {
@@ -98,6 +97,7 @@ export default {
             }
         },
         sortRows: function(column) {
+            this.sortedBy = column
             if (column == "CreatedDate") {
                 if (this.sorting[column]) {
                     this.utks.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
@@ -107,9 +107,13 @@ export default {
                     this.sorting[column] = true
                 }
             } else {
-                this.utks.sort(
-                    (a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0)
-                )
+                if (this.sorting[column]) {
+                    this.utks.sort((a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.sorting[column] = false
+                } else {
+                    this.utks.sort((b,a) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.sorting[column] = true
+                }
             }
         }
     },
@@ -193,18 +197,24 @@ export default {
                                     <input type="checkbox" v-model="checkAll" @click="selectAll">
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                    <a class="column-header" v-bind:class="{active: sorting.CreatedDate}" @click="sortRows('CreatedDate')">
+                                    <a class="column-header" @click="sortRows('CreatedDate')">
                                         CreatedAt
+                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === true" class="material-icons">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === false" class="material-icons">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('KeywordText')">
                                         Keyword
+                                        <i v-if="sortedBy === 'KeywordText' && sorting['KeywordText'] === true" class="material-icons">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'KeywordText' && sorting['KeywordText'] === false" class="material-icons">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('TargetName')">
                                         Target
+                                        <i v-if="sortedBy === 'TargetName' && sorting['TargetName'] === true" class="material-icons">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'TargetName' && sorting['TargetName'] === false" class="material-icons">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                             </tr>
