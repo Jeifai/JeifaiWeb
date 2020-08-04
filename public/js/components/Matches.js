@@ -19,7 +19,7 @@ export default {
         const textFilter= mdc.textField.MDCTextField.attachTo(document.getElementById("Filter"));
         let styleElem = document.createElement('style');
         styleElem.textContent = `
-            .material-icons {
+            .column-sort {
                 font-size: 16px;
                 vertical-align: -3px;
             }`
@@ -92,22 +92,22 @@ export default {
                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                             <a class="column-header" @click="sortRows('CreatedDate')">
                                 CreatedAt
-                                <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === true" class="material-icons">keyboard_arrow_up</i>
-                                <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === false" class="material-icons">keyboard_arrow_down</i>
+                                <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                             </a>
                         </th>
                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                             <a class="column-header" @click="sortRows('Target')">
                                 Target
-                                <i v-if="sortedBy === 'Target' && sorting['Target'] === true" class="material-icons">keyboard_arrow_up</i>
-                                <i v-if="sortedBy === 'Target' && sorting['Target'] === false" class="material-icons">keyboard_arrow_down</i>
+                                <i v-if="sortedBy === 'Target' && sorting['Target'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                <i v-if="sortedBy === 'Target' && sorting['Target'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                             </a>
                         </th>
                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                             <a class="column-header" @click="sortRows('Title')">
                                 Job Title
-                                <i v-if="sortedBy === 'Title' && sorting['Title'] === true" class="material-icons">keyboard_arrow_up</i>
-                                <i v-if="sortedBy === 'Title' && sorting['Title'] === false" class="material-icons">keyboard_arrow_down</i>
+                                <i v-if="sortedBy === 'Title' && sorting['Title'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                <i v-if="sortedBy === 'Title' && sorting['Title'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                             </a>
                         </th>
                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Job Url</th>

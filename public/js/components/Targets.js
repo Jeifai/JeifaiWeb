@@ -36,7 +36,7 @@ export default {
             .taggableselectfield {
                 max-width: 35%;
             }
-            .material-icons {
+            .column-sort {
                 font-size: 16px;
                 vertical-align: -3px;
             }`
@@ -132,50 +132,50 @@ export default {
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('CreatedDate')">
                                         CreatedAt
-                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('LastExtractionDate')">
                                         LastExtractionAt
-                                        <i v-if="sortedBy === 'LastExtractionDate' && sorting['LastExtractionDate'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'LastExtractionDate' && sorting['LastExtractionDate'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'LastExtractionDate' && sorting['LastExtractionDate'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'LastExtractionDate' && sorting['LastExtractionDate'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('Name')">
                                         Target
-                                        <i v-if="sortedBy === 'Name' && sorting['Name'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'Name' && sorting['Name'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'Name' && sorting['Name'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'Name' && sorting['Name'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('JobsAll')">
                                         All Jobs
-                                        <i v-if="sortedBy === 'JobsAll' && sorting['JobsAll'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'JobsAll' && sorting['JobsAll'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'JobsAll' && sorting['JobsAll'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'JobsAll' && sorting['JobsAll'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('JobsNow')">
                                         Actual Jobs
-                                        <i v-if="sortedBy === 'JobsNow' && sorting['JobsNow'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'JobsNow' && sorting['JobsNow'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'JobsNow' && sorting['JobsNow'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'JobsNow' && sorting['JobsNow'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('Opened')">
                                         Opened Last 7 Days
-                                        <i v-if="sortedBy === 'Opened' && sorting['Opened'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'Opened' && sorting['Opened'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'Opened' && sorting['Opened'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'Opened' && sorting['Opened'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('Closed')">
                                         Closed Last 7 Days
-                                        <i v-if="sortedBy === 'Closed' && sorting['Closed'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'Closed' && sorting['Closed'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'Closed' && sorting['Closed'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'Closed' && sorting['Closed'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                             </tr>

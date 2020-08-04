@@ -37,7 +37,7 @@ export default {
                 --mdc-theme-primary: #ea5a3d;
                 --mdc-theme-secondary: #ea5a3d;
             }
-            .material-icons {
+            .column-sort {
                 font-size: 16px;
                 vertical-align: -3px;
             }`
@@ -200,22 +200,22 @@ export default {
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('CreatedDate')">
                                         CreatedAt
-                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('KeywordText')">
                                         Keyword
-                                        <i v-if="sortedBy === 'KeywordText' && sorting['KeywordText'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'KeywordText' && sorting['KeywordText'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'KeywordText' && sorting['KeywordText'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'KeywordText' && sorting['KeywordText'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('TargetName')">
                                         Target
-                                        <i v-if="sortedBy === 'TargetName' && sorting['TargetName'] === true" class="material-icons">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'TargetName' && sorting['TargetName'] === false" class="material-icons">keyboard_arrow_down</i>
+                                        <i v-if="sortedBy === 'TargetName' && sorting['TargetName'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'TargetName' && sorting['TargetName'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                             </tr>
