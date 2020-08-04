@@ -12,8 +12,8 @@ type Match struct {
 	Id          int
 	ScraperId   int
 	Title       string
-    Url         string
-    KeywordText string
+	Url         string
+	KeywordText string
 	CreatedAt   time.Time
 	CreatedDate string
 }
@@ -44,8 +44,8 @@ func (user *User) MatchesByUser() (matches []Match, err error) {
 		if err = rows.Scan(
 			&match.Target,
 			&match.CreatedAt,
-            &match.CreatedDate,
-            &match.KeywordText,
+			&match.CreatedDate,
+			&match.KeywordText,
 			&match.Title,
 			&match.Url); err != nil {
 			return

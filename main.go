@@ -50,6 +50,8 @@ func main() {
 
 	r.HandleFunc("/matches", Matches)
 
+	r.HandleFunc("/analytics", Analytics)
+
 	fmt.Println(Bold(Green("Application is running")))
 
 	server := &http.Server{
