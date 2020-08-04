@@ -36,10 +36,6 @@ export default {
             .removeSelected {
                 --mdc-theme-primary: #ea5a3d;
                 --mdc-theme-secondary: #ea5a3d;
-            }
-            .column-sort {
-                font-size: 16px;
-                vertical-align: -3px;
             }`
         document.head.appendChild(styleElem);
     },

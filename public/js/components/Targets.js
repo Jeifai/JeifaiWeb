@@ -35,10 +35,6 @@ export default {
             }
             .taggableselectfield {
                 max-width: 35%;
-            }
-            .column-sort {
-                font-size: 16px;
-                vertical-align: -3px;
             }`
         document.head.appendChild(styleElem);
     },

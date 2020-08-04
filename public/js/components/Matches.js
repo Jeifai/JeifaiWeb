@@ -18,13 +18,6 @@ export default {
     mounted() {
         this.$parent.selectedIndex = this.selectedIndex
         const textFilter= mdc.textField.MDCTextField.attachTo(document.getElementById("Filter"));
-        let styleElem = document.createElement('style');
-        styleElem.textContent = `
-            .column-sort {
-                font-size: 16px;
-                vertical-align: -3px;
-            }`
-        document.head.appendChild(styleElem);
     },
     created () {
         this.fetchMatches()

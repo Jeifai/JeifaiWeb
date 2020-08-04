@@ -61,6 +61,14 @@ var app = new Vue({
         const list = mdc.list.MDCList.attachTo(document.querySelector('.mdc-list'));
         list.singleSelection = true;
         list.selectedIndex = this.selectedIndex;
+
+        let styleElem = document.createElement('style');
+        styleElem.textContent = `
+            .column-sort {
+                font-size: 16px;
+                vertical-align: -3px;
+            }`
+        document.head.appendChild(styleElem);
     }
 })
 
