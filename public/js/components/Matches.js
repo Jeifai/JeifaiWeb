@@ -59,6 +59,9 @@ export default {
                     this.sorting[column] = true
                 }
             }
+        },
+        csvExport: function() {
+            this.$parent.csvExport(this.filteredRows, "matches.csv")
         }
     },
     computed: {
@@ -86,6 +89,11 @@ export default {
                     <span class="mdc-floating-label" id="Filter">Filter by any field</span>
                     <div class="mdc-line-ripple"></div>
                 </label>
+                <button class="mdc-button mdc-button--raised" v-on:click="csvExport">
+                    <div class="mdc-button__ripple"></div>
+                    <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_downward</i>
+                    <span class="mdc-button__label">Export table</span>
+                </button>
             </div>
             <table class="mdc-data-table__table" aria-label="Created Keywords">
                 <thead>

@@ -43,6 +43,20 @@ var app = new Vue({
             list.selectedIndex = val;
         }
     },
+    methods: {
+        csvExport(arrData, fileName) {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += [
+                Object.keys(arrData[0]).join(";"),
+                ...arrData.map(item => Object.values(item).join(";"))
+            ].join("\n").replace(/(^\[)|(\]$)/gm, "");
+            const data = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", data);
+            link.setAttribute("download", fileName);
+            link.click();
+        }
+    },
     mounted() {
         const list = mdc.list.MDCList.attachTo(document.querySelector('.mdc-list'));
         list.singleSelection = true;

@@ -94,6 +94,9 @@ export default {
                     this.sorting[column] = true
                 }
             }
+        },
+        csvExport: function() {
+            this.$parent.csvExport(this.targets, "targets.csv")
         }
     },
     template: `
@@ -119,6 +122,11 @@ export default {
                     <div class="mdc-button__ripple"></div>
                     <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
                     <span class="mdc-button__label">Add target</span>
+                </button>
+                <button class="mdc-button mdc-button--raised" v-on:click="csvExport">
+                    <div class="mdc-button__ripple"></div>
+                    <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_downward</i>
+                    <span class="mdc-button__label">Export table</span>
                 </button>
             </div>
             <div>

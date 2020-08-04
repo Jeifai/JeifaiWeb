@@ -115,6 +115,9 @@ export default {
                     this.sorting[column] = true
                 }
             }
+        },
+        csvExport: function() {
+            this.$parent.csvExport(this.filteredRows, "keywords.csv")
         }
     },
     computed: {
@@ -188,6 +191,11 @@ export default {
                         <div class="mdc-button__ripple"></div>
                         <i class="material-icons mdc-button__icon" aria-hidden="true">clear</i>
                         <span class="mdc-button__label">Remove selected</span>
+                    </button>
+                    <button class="mdc-button mdc-button--raised" v-on:click="csvExport">
+                        <div class="mdc-button__ripple"></div>
+                        <i class="material-icons mdc-button__icon" aria-hidden="true">arrow_downward</i>
+                        <span class="mdc-button__label">Export table</span>
                     </button>
                 </div><br>
                 <div class="mdc-data-table">
