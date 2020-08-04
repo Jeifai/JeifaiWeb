@@ -12,6 +12,7 @@ export default {
             sortedBy: "CreatedDate",
             sorting: {
                 CreatedDate: true,
+                LastExtractionDate: true,
                 Name: false,
                 JobsAll: false,
                 JobsNow: false,
@@ -76,7 +77,7 @@ export default {
         },
         sortRows: function(column) {
             this.sortedBy = column
-            if (column == "CreatedDate") {
+            if (column == "CreatedDate" || column == "LastExtractionDate" ) {
                 if (this.sorting[column]) {
                     this.targets.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
                     this.sorting[column] = false
@@ -136,6 +137,13 @@ export default {
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                    <a class="column-header" @click="sortRows('LastExtractionDate')">
+                                        LastExtractionAt
+                                        <i v-if="sortedBy === 'LastExtractionDate' && sorting['LastExtractionDate'] === true" class="material-icons">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'LastExtractionDate' && sorting['LastExtractionDate'] === false" class="material-icons">keyboard_arrow_down</i>
+                                    </a>
+                                </th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('Name')">
                                         Target
                                         <i v-if="sortedBy === 'Name' && sorting['Name'] === true" class="material-icons">keyboard_arrow_up</i>
@@ -175,6 +183,7 @@ export default {
                         <tbody class="mdc-data-table__content">
                             <tr v-for="(target, index) in targets" class="mdc-data-table__row">
                                 <td class="mdc-data-table__cell">[[ target.CreatedDate ]]</td>
+                                <td class="mdc-data-table__cell">[[ target.LastExtractionDate ]]</td>
                                 <td class="mdc-data-table__cell">[[ target.Name ]]</td>
                                 <td class="mdc-data-table__cell">[[ target.JobsAll ]]</td>
                                 <td class="mdc-data-table__cell">[[ target.JobsNow ]]</td>

@@ -41,7 +41,7 @@ func main() {
 	r.HandleFunc("/profile", UpdateProfile).Methods("PUT")
 
 	r.HandleFunc("/targets", Targets).Methods("GET")
-    r.HandleFunc("/targets", PutTarget).Methods("PUT")
+	r.HandleFunc("/targets", PutTarget).Methods("PUT")
 	r.HandleFunc("/targets", RemoveTarget).Methods("DELETE")
 
 	r.HandleFunc("/keywords", Keywords).Methods("GET")

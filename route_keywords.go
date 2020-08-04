@@ -179,7 +179,7 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 	err = SetDeletedAtInUserTargetKeywordMultiple(utks)
 	if err != nil {
 		panic(err.Error())
-    }
+	}
 
 	type TempStruct struct {
 		Messages []string

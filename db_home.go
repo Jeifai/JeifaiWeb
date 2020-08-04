@@ -54,7 +54,6 @@ func (user *User) GetHomeData() (home HomeData, err error) {
                                         s.scraperid,
                                         MAX(s.id) AS scrapingid
                                     FROM scrapings s
-                                    WHERE s.createdat::date >= current_timestamp::date
                                     GROUP BY 1)
                                 SELECT
                                     ut.userid,
@@ -72,7 +71,6 @@ func (user *User) GetHomeData() (home HomeData, err error) {
                                         s.scraperid,
                                         MAX(s.id) AS scrapingid
                                     FROM scrapings s
-                                    WHERE s.createdat::date >= current_timestamp::date
                                     GROUP BY 1)
                                 SELECT
                                     ut.userid,
