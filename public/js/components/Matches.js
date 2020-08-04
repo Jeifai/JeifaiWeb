@@ -10,7 +10,8 @@ export default {
             sorting: {
                 CreatedDate: true,
                 Target: false,
-                Title: false
+                Title: false,
+                KeywordText: false
             }
         }
     },
@@ -97,6 +98,13 @@ export default {
                             </a>
                         </th>
                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                            <a class="column-header" @click="sortRows('KeywordText')">
+                                Keyword
+                                <i v-if="sortedBy === 'KeywordText' && sorting['KeywordText'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                <i v-if="sortedBy === 'KeywordText' && sorting['KeywordText'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                            </a>
+                        </th>
+                        <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                             <a class="column-header" @click="sortRows('Target')">
                                 Target
                                 <i v-if="sortedBy === 'Target' && sorting['Target'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
@@ -116,6 +124,7 @@ export default {
                 <tbody class="mdc-data-table__content">
                     <tr v-for="(row, index) in filteredRows" class="mdc-data-table__row">
                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
+                        <td class="mdc-data-table__cell" v-html="row.KeywordText"></td>
                         <td class="mdc-data-table__cell" v-html="row.Target"></td>
                         <td class="mdc-data-table__cell" v-html="row.Title"></td>
                         <td class="mdc-data-table__cell">

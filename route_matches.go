@@ -26,7 +26,8 @@ func Matches(w http.ResponseWriter, r *http.Request) {
 		CreatedDate string
 		Target      string
 		Title       string
-		Url         string
+        Url         string
+        KeywordText string
 	}
 
 	var public_matches []PublicMatch
@@ -35,7 +36,8 @@ func Matches(w http.ResponseWriter, r *http.Request) {
 		public_match.CreatedDate = match.CreatedDate
 		public_match.Target = match.Target
 		public_match.Title = match.Title
-		public_match.Url = match.Url
+        public_match.Url = match.Url
+        public_match.KeywordText = match.KeywordText
 		public_matches = append(public_matches, public_match)
 	}
 
