@@ -63,7 +63,7 @@ func (user *User) GetHomeData() (home HomeData, err error) {
                                 LEFT JOIN scrapers s ON(ut.targetid = s.targetid)
                                 INNER JOIN latest_scraping ls ON(s.id = ls.scraperid)
                                 LEFT JOIN results r ON(ls.scrapingid = r.scrapingid)
-                                WHERE ut.userid=1
+                                WHERE ut.userid=$1
                                 AND ut.deletedat IS NULL
                                 GROUP BY 1),
                             closed_positions_last_7_days AS(
