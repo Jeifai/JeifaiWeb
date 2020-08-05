@@ -50,7 +50,8 @@ func main() {
 
 	r.HandleFunc("/matches", Matches)
 
-	r.HandleFunc("/analytics", Analytics)
+	r.HandleFunc("/analytics/getTargets", AnalyticsGetTargets).Methods("GET")
+	r.HandleFunc("/analytics/getJobsPerDayPerTarget/{target}", AnalyticsGetJobsPerDayPerTarget).Methods("GET")
 
 	fmt.Println(Bold(Green("Application is running")))
 
