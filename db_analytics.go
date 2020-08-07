@@ -43,7 +43,7 @@ func JobsPerDayPerTarget(target string) (jobs []Row) {
                                         consecutive_dates AS(
                                                 SELECT
                                                     date_trunc('day', dd)::date AS consdate
-                                                FROM generate_series((SELECT s.createdat FROM scrapers s WHERE s.name = $1), current_date, '1 day'::interval) dd)
+                                                FROM generate_series((SELECT MIN(s.createdat) FROM scrapers s WHERE s.name = $1), current_date, '1 day'::interval) dd)
                                     SELECT
                                         cd.consdate AS createdat,
                                         CASE WHEN jcr.countCreated IS NULL THEN 0 ELSE jcr.countCreated END AS countCreated,
