@@ -50,7 +50,7 @@ func JobsPerDayPerTarget(target string) (jobs []Row) {
                                         CASE WHEN jcl.countClosed IS NULL THEN 0 ELSE jcl.countClosed END AS countClosed
                                     FROM consecutive_dates cd
                                     LEFT JOIN jobs_created jcr ON(cd.consdate = jcr.createdat)
-                                    LEFT JOIN jobs_closed jcl ON(jcr.createdat = jcl.closedat)) AS t)
+                                    LEFT JOIN jobs_closed jcl ON(cd.consdate = jcl.closedat)) AS t)
                             SELECT
                                 createdat,
                                 countCreated,
