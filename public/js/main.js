@@ -45,7 +45,9 @@ var app = new Vue({
     },
     watch: {
         selectedIndex: function(val) {
-            list.selectedIndex = val;
+            if (typeof(list) !== 'undefined') {
+                list.selectedIndex = val;
+            }
         }
     },
     methods: {
