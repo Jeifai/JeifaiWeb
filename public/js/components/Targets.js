@@ -12,7 +12,8 @@ export default {
             sortedBy: "CreatedDate",
             sorting: {
                 CreatedDate: true,
-                LastExtractionDate: true,
+                LastExtractionDate: false,
+                Employees: false,
                 Name: false,
                 JobsAll: false,
                 JobsNow: false,
@@ -134,6 +135,13 @@ export default {
                         <thead>
                             <tr class="mdc-data-table__header-row">
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                    <a class="column-header" @click="sortRows('Name')">
+                                        Target
+                                        <i v-if="sortedBy === 'Name' && sorting['Name'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'Name' && sorting['Name'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                    </a>
+                                </th>
+                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('CreatedDate')">
                                         CreatedAt
                                         <i v-if="sortedBy === 'CreatedDate' && sorting['CreatedDate'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
@@ -148,10 +156,10 @@ export default {
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                    <a class="column-header" @click="sortRows('Name')">
-                                        Target
-                                        <i v-if="sortedBy === 'Name' && sorting['Name'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'Name' && sorting['Name'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                    <a class="column-header" @click="sortRows('Employees')">
+                                        Employees
+                                        <i v-if="sortedBy === 'Employees' && sorting['Employees'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'Employees' && sorting['Employees'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
@@ -186,9 +194,10 @@ export default {
                         </thead>
                         <tbody class="mdc-data-table__content">
                             <tr v-for="(target, index) in targets" class="mdc-data-table__row">
+                                <td class="mdc-data-table__cell">[[ target.Name ]]</td>
                                 <td class="mdc-data-table__cell">[[ target.CreatedDate ]]</td>
                                 <td class="mdc-data-table__cell">[[ target.LastExtractionDate ]]</td>
-                                <td class="mdc-data-table__cell">[[ target.Name ]]</td>
+                                <td class="mdc-data-table__cell">[[ target.Employees ]]</td>
                                 <td class="mdc-data-table__cell">[[ target.JobsAll ]]</td>
                                 <td class="mdc-data-table__cell">[[ target.JobsNow ]]</td>
                                 <td class="mdc-data-table__cell">[[ target.Opened ]]</td>

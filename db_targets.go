@@ -21,6 +21,7 @@ type TargetInfo struct {
 	Name               string
 	CreatedDate        string
 	LastExtractionDate string
+	Employees          int
 	JobsAll            int
 	JobsNow            int
 	Opened             int
@@ -96,6 +97,18 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo, err error)
 	fmt.Println(Gray(8-1, "Starting InfoUsersTargetsByUser..."))
 	rows, err := Db.Query(`
                             WITH
+                                linkedindata AS (
+                                    WITH latest_linkedin AS(
+                                        SELECT
+                                            l.targetid,
+                                            MAX(l.id) AS latest_id
+                                        FROM linkedin l
+                                        GROUP BY 1)
+                                    SELECT
+                                        l.targetid,
+                                        l.employees
+                                    FROM linkedin l
+                                    INNER JOIN latest_linkedin ll ON(l.id = ll.latest_id)),
                                 latest_scraping AS (
                                     SELECT
                                         s.scraperid,
@@ -107,17 +120,20 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo, err error)
                                     SELECT
                                         s.id AS scraperid,
                                         t.name,
-                                        TO_CHAR(t.createdat, 'YYYY-MM-DD') AS createdat
+                                        TO_CHAR(t.createdat, 'YYYY-MM-DD') AS createdat,
+                                        ld.employees
                                     FROM users u
                                     INNER JOIN userstargets ut ON(u.id = ut.userid) 
                                     INNER JOIN targets t ON(ut.targetid = t.id)
                                     LEFT JOIN scrapers s ON(t.id = s.targetid)
+                                    LEFT JOIN linkedindata ld ON(t.id = ld.targetid)
                                     WHERE ut.deletedat IS NULL
                                     AND u.id=$1
                                     ORDER BY t.createdat DESC)
                             SELECT
                                 ut.name,
                                 ut.createdat,
+                                CASE WHEN ut.employees IS NULL THEN 0 ELSE ut.employees END AS employees,
                                 TO_CHAR(MAX(ls.createdat), 'YYYY-MM-DD') AS last_extraction,
                                 COUNT(DISTINCT r.url) AS all_time_job,
                                 SUM(CASE WHEN r.scrapingid = ls.scrapingid THEN 1 ELSE 0 END) AS actual_job_opens,
@@ -126,7 +142,7 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo, err error)
                             FROM usertargets ut
                             LEFT JOIN results r ON(ut.scraperid = r.scraperid)
                             LEFT JOIN latest_scraping ls ON(r.scraperid = ls.scraperid)
-                            GROUP BY 1, 2
+                            GROUP BY 1, 2, 3
                             ORDER BY 2;`, user.Id)
 	if err != nil {
 		panic(err.Error())
@@ -136,6 +152,7 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo, err error)
 		if err = rows.Scan(
 			&targetinfo.Name,
 			&targetinfo.CreatedDate,
+			&targetinfo.Employees,
 			&targetinfo.LastExtractionDate,
 			&targetinfo.JobsAll,
 			&targetinfo.JobsNow,

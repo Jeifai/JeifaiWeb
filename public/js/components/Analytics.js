@@ -6,6 +6,7 @@ export default {
             selectedIndex: 4,
             jobs: [],
             jobsTotal: [],
+            hasJobs: false,
             targets: [],
             selectedTarget: null,
         }
@@ -43,6 +44,9 @@ export default {
                     jobsCreated[response.data.Jobs[key].Date] = response.data.Jobs[key].CountCreated;
                     this.jobsTotal[response.data.Jobs[key].Date] = response.data.Jobs[key].CountTotal;
                 }
+                if (Object.keys(this.jobsTotal).length > 0) {
+                    this.hasJobs = true;
+                }
                 this.jobs = [
                     {name: 'jobsClosed', data: jobsClosed, color: "#585858"},
                     {name: 'jobsCreated', data: jobsCreated, color: "#00CC66"}
@@ -61,17 +65,18 @@ export default {
                         v-model="selectedTarget"
                         :options="targets"
                         placeholder="Targets"
-                        :max-results="100000"
-                    >
+                        :max-results="100000">
                     </vue-single-select>
-                    <button class="mdc-button mdc-button--raised" v-on:click="fetchJobs">
-                        <div class="mdc-button__ripple"></div>
-                        <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
-                        <span class="mdc-button__label">Add target</span>
-                    </button>
                 </div>
+                <button class="mdc-button mdc-button--raised" v-on:click="fetchJobs">
+                    <div class="mdc-button__ripple"></div>
+                    <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
+                    <span class="mdc-button__label">Explore target</span>
+                </button>
             </div><br>
-            <area-chart :data="jobsTotal" width="95%" height="250px"></area-chart><br>
-            <column-chart :data="jobs" width="95%" height="250px"></column-chart>
+            <div v-if="hasJobs">
+                <area-chart :data="jobsTotal" width="95%" height="250px"></area-chart><br>
+                <column-chart :data="jobs" width="95%" height="250px"></column-chart>
+            </div>
         </div>`,
 };
