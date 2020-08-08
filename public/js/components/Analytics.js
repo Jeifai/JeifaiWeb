@@ -19,12 +19,17 @@ export default {
         let styleElem = document.createElement('style');
         styleElem.textContent = `
             .singleselectfield {
-                max-width: 50%;
+                max-width: 30%;
             }`
         document.head.appendChild(styleElem);
     },
     created () {
         this.fetchTargets()
+    },
+    watch: {
+        selectedTarget: function(val) {
+            this.fetchJobs()
+        }
     },
     methods: {
         fetchTargets: function() {
@@ -59,20 +64,14 @@ export default {
     template: `
         <div>
             <div class="taggableselectfield">
-                <span><br>Select a target.</span>
                 <div class="singleselectfield">
                     <vue-single-select
                         v-model="selectedTarget"
                         :options="targets"
-                        placeholder="Targets"
+                        placeholder="Select a target"
                         :max-results="100000">
                     </vue-single-select>
                 </div>
-                <button class="mdc-button mdc-button--raised" v-on:click="fetchJobs">
-                    <div class="mdc-button__ripple"></div>
-                    <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
-                    <span class="mdc-button__label">Explore target</span>
-                </button>
             </div><br>
             <div v-if="hasJobs">
                 <area-chart :data="jobsTotal" width="95%" height="250px"></area-chart><br>
