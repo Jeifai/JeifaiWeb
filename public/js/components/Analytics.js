@@ -6,7 +6,6 @@ export default {
             selectedIndex: 4,
             jobs: [],
             jobsTotal: [],
-            hasJobs: false,
             targets: [],
             selectedTarget: null,
         }
@@ -18,8 +17,13 @@ export default {
         document.head.appendChild(multiToggleScript)
         let styleElem = document.createElement('style');
         styleElem.textContent = `
+            .topSide {
+                display: flex;
+                align-items: center;
+            }
             .singleselectfield {
-                max-width: 30%;
+                max-width: 15%;
+                padding-right: 2%;
             }`
         document.head.appendChild(styleElem);
     },
@@ -49,9 +53,6 @@ export default {
                     jobsCreated[response.data.Jobs[key].Date] = response.data.Jobs[key].CountCreated;
                     this.jobsTotal[response.data.Jobs[key].Date] = response.data.Jobs[key].CountTotal;
                 }
-                if (Object.keys(this.jobsTotal).length > 0) {
-                    this.hasJobs = true;
-                }
                 this.jobs = [
                     {name: 'jobsClosed', data: jobsClosed, color: "#585858"},
                     {name: 'jobsCreated', data: jobsCreated, color: "#00CC66"}
@@ -63,7 +64,7 @@ export default {
     },
     template: `
         <div>
-            <div class="taggableselectfield">
+            <div class="topSide">
                 <div class="singleselectfield">
                     <vue-single-select
                         v-model="selectedTarget"
@@ -72,8 +73,11 @@ export default {
                         :max-results="100000">
                     </vue-single-select>
                 </div>
-            </div><br>
-            <div v-if="hasJobs">
+                <div v-if="selectedTarget">
+                    <img v-bind:src="'/static/images/targets/' + selectedTarget + '.png'" v-bind:alt="selectedTarget" height="50px" width="50px"><br>
+                </div>
+            </div>
+            <div v-if="selectedTarget">
                 <area-chart :data="jobsTotal" width="95%" height="250px"></area-chart><br>
                 <column-chart :data="jobs" width="95%" height="250px"></column-chart>
             </div>
