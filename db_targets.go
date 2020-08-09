@@ -195,13 +195,15 @@ func (user *User) NotSelectedUsersTargetsByUser() (targets []Target, err error) 
 	return
 }
 
-func (target *Target) TargetByName() (err error) {
+func (target *Target) TargetByName() {
 	fmt.Println(Gray(8-1, "Starting TargetByName..."))
-	err = Db.QueryRow(`SELECT
+	err := Db.QueryRow(`SELECT
                          t.id
                        FROM targets t
                        WHERE t.name=$1`, target.Name).Scan(&target.Id)
-	return
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func TargetsByNames(targetNames []string) (targets []Target, err error) {

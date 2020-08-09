@@ -113,10 +113,7 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 			if err == nil {
 				target.SendEmailToAdminAboutNewTarget()
 			} else { // If already exists, get its name
-				err := target.TargetByName()
-				if err != nil {
-					panic(err.Error())
-				}
+				target.TargetByName()
 			}
 
 			// Before creating the relation user <-> target, check if it is not already present

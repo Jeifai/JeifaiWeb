@@ -6,6 +6,7 @@ export default {
             selectedIndex: 4,
             jobs: [],
             jobsTotal: [],
+            companyInfo : '',
             targets: [],
             selectedTarget: null,
         }
@@ -24,6 +25,23 @@ export default {
             .singleselectfield {
                 max-width: 15%;
                 padding-right: 2%;
+            }
+            .topSideHeadline {
+                font-size: 10px;
+                vertical-align: sub;
+            }
+            .logoStyle {
+                float: left;
+                height: 50px;
+                width: auto;
+            }
+            .topSideContent {
+                float: left;
+                padding-left: 70px;
+            }
+            .topSideContentValue {
+                font-size:30px;
+                vertical-align: super;
             }`
         document.head.appendChild(styleElem);
     },
@@ -45,6 +63,9 @@ export default {
         },
         fetchJobs: function() {
             this.$http.get('/analytics/getJobsPerDayPerTarget/' + this.selectedTarget).then(function(response) {
+
+                this.companyInfo = response.data.CompanyInfo;
+
                 var jobsClosed = {};
                 var jobsCreated = {};
                 this.jobsTotal = {};
@@ -74,7 +95,11 @@ export default {
                     </vue-single-select>
                 </div>
                 <div v-if="selectedTarget">
-                    <img v-bind:src="'/static/images/targets/' + selectedTarget + '.png'" v-bind:alt="selectedTarget" height="50px" width="50px"><br>
+                    <img class="logoStyle" v-bind:src="'/static/images/targets/' + selectedTarget + '.png'" v-bind:alt="selectedTarget">
+                    <div class="topSideContent" div v-for="(value, name) in companyInfo">
+                        <div class="topSideHeadline">[[name]]</div>
+                        <div class="topSideContentValue">[[value]]</div>
+                    </div>
                 </div>
             </div>
             <div v-if="selectedTarget">

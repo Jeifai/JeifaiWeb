@@ -13,7 +13,14 @@ type Row struct {
 	CountTotal   int
 }
 
-func JobsPerDayPerTarget(target string) (jobs []Row) {
+type CompanyData struct {
+	Employees    int
+	Industry     string
+	Companysize  string
+	Headquarters string
+}
+
+func (target *Target) JobsPerDayPerTarget() (jobs []Row) {
 	fmt.Println(Gray(8-1, "Starting JobsPerDayPerTarget..."))
 	rows, err := Db.Query(`WITH view_ready AS (
                                 SELECT
@@ -43,7 +50,10 @@ func JobsPerDayPerTarget(target string) (jobs []Row) {
                                         consecutive_dates AS(
                                                 SELECT
                                                     date_trunc('day', dd)::date AS consdate
-                                                FROM generate_series((SELECT MIN(s.createdat) FROM scrapers s WHERE s.name = $1), current_date, '1 day'::interval) dd)
+                                                FROM generate_series(
+                                                    (SELECT MIN(s.createdat) FROM scrapers s WHERE s.name = $1),
+                                                    (SELECT MAX(r.updatedat) - INTERVAL '1 DAY' FROM scrapers s LEFT JOIN results r ON(s.id = r.scraperid) WHERE s.name = $1), 
+                                                    '1 day'::interval) dd)
                                     SELECT
                                         cd.consdate AS createdat,
                                         CASE WHEN jcr.countCreated IS NULL THEN 0 ELSE jcr.countCreated END AS countCreated,
@@ -57,7 +67,7 @@ func JobsPerDayPerTarget(target string) (jobs []Row) {
                                 countClosed,
                                 countTotal
                             FROM view_ready
-                            WHERE rn != 1;`, target)
+                            WHERE rn != 1;`, target.Name)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -73,5 +83,35 @@ func JobsPerDayPerTarget(target string) (jobs []Row) {
 		jobs = append(jobs, row)
 	}
 	rows.Close()
+	return
+}
+
+func (target *Target) LinkedinDataPerTarget() (linkedinData CompanyData) {
+	fmt.Println(Gray(8-1, "Starting LinkedinDataPerTarget..."))
+	err := Db.QueryRow(`
+        WITH latest_linkedin AS(
+            SELECT
+                l.targetid,
+                MAX(l.id) AS latest_id
+            FROM linkedin l
+            LEFT JOIN targets t ON(l.targetid = t.id)
+            WHERE t.id = $1
+            GROUP BY 1)
+        SELECT
+            l.employees,
+            l.industry,
+            l.companysize,
+            l.headquarters
+        FROM latest_linkedin ll
+        LEFT JOIN linkedin l ON(ll.latest_id = l.id)`, target.Id).
+		Scan(
+			&linkedinData.Employees,
+			&linkedinData.Industry,
+			&linkedinData.Companysize,
+			&linkedinData.Headquarters,
+		)
+	if err != nil {
+		panic(err.Error())
+	}
 	return
 }

@@ -49,15 +49,22 @@ func AnalyticsGetJobsPerDayPerTarget(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 
-	target, _ := mux.Vars(r)["target"]
+	targetName, _ := mux.Vars(r)["target"]
 
-	jobs := JobsPerDayPerTarget(target)
+	target := Target{
+		Name: targetName,
+	}
+	target.TargetByName()
+
+	jobs := target.JobsPerDayPerTarget()
+	linkedinData := target.LinkedinDataPerTarget()
 
 	type TempStruct struct {
-		Jobs []Row
+		Jobs        []Row
+		CompanyInfo CompanyData
 	}
 
-	infos := TempStruct{jobs}
+	infos := TempStruct{jobs, linkedinData}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
