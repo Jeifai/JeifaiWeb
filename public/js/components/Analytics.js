@@ -6,7 +6,9 @@ export default {
             selectedIndex: 4,
             jobs: [],
             jobsTotal: [],
-            companyInfo : '',
+            companyInfo: '',
+            employeesTrend: '',
+            minYEmployees: '',
             targets: [],
             selectedTarget: null,
         }
@@ -42,6 +44,9 @@ export default {
             .topSideContentValue {
                 font-size:30px;
                 vertical-align: super;
+            }
+            .middleCharts {
+                display: flex;
             }`
         document.head.appendChild(styleElem);
     },
@@ -50,7 +55,7 @@ export default {
     },
     watch: {
         selectedTarget: function(val) {
-            this.fetchJobs()
+            this.fetchData()
         }
     },
     methods: {
@@ -61,11 +66,9 @@ export default {
                 console.log(error)
             });
         },
-        fetchJobs: function() {
-            this.$http.get('/analytics/getJobsPerDayPerTarget/' + this.selectedTarget).then(function(response) {
-
+        fetchData: function() {
+            this.$http.get('/analytics/target/' + this.selectedTarget).then(function(response) {
                 this.companyInfo = response.data.CompanyInfo;
-
                 var jobsClosed = {};
                 var jobsCreated = {};
                 this.jobsTotal = {};
@@ -78,6 +81,18 @@ export default {
                     {name: 'jobsClosed', data: jobsClosed, color: "#585858"},
                     {name: 'jobsCreated', data: jobsCreated, color: "#00CC66"}
                 ]
+
+                this.employeesTrend = {};
+                for (var key in response.data.EmployeesTrend) {
+                    jobsClosed[response.data.Jobs[key].Date] = response.data.Jobs[key].CountClosed;
+                    this.employeesTrend[response.data.EmployeesTrend[key].Date] = response.data.EmployeesTrend[key].CountEmployees;
+                }
+
+                var tempEmployeesKeys = this.employeesTrend;
+                var employeesKeys = Object.keys(tempEmployeesKeys).sort(function(a,b) { return tempEmployeesKeys[a] - tempEmployeesKeys[b];});
+                this.minYEmployees = Math.floor(tempEmployeesKeys[employeesKeys[0]] * 0.96);
+                this.maxYEmployees = Math.floor(tempEmployeesKeys[employeesKeys[employeesKeys.length - 1]] * 1.04);
+
             }).catch(function(error) {
                 console.log(error)
             });
@@ -104,7 +119,10 @@ export default {
             </div>
             <div v-if="selectedTarget">
                 <area-chart :data="jobsTotal" width="95%" height="250px"></area-chart><br>
-                <column-chart :data="jobs" width="95%" height="250px"></column-chart>
+                <div class="middleCharts">
+                    <column-chart :data="jobs" height="250px"></column-chart>
+                    <line-chart :min="minYEmployees" :max="maxYEmployees" :data="employeesTrend" height="250px"></line-chart>
+                </div">
             </div>
         </div>`,
 };

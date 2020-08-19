@@ -41,8 +41,8 @@ func AnalyticsGetTargets(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(infos)
 }
 
-func AnalyticsGetJobsPerDayPerTarget(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting JobsPerDayPerTarget..."))
+func AnalyticsPerTarget(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting AnalyticsPerTarget..."))
 
 	_, err := GetSession(r)
 	if err != nil {
@@ -58,13 +58,15 @@ func AnalyticsGetJobsPerDayPerTarget(w http.ResponseWriter, r *http.Request) {
 
 	jobs := target.JobsPerDayPerTarget()
 	linkedinData := target.LinkedinDataPerTarget()
+	employeesTrend := target.EmployeesTrendPerTarget()
 
 	type TempStruct struct {
-		Jobs        []Row
-		CompanyInfo CompanyData
+		Jobs           []Row
+		CompanyInfo    CompanyData
+		EmployeesTrend []TargetEmployeesAtDate
 	}
 
-	infos := TempStruct{jobs, linkedinData}
+	infos := TempStruct{jobs, linkedinData, employeesTrend}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

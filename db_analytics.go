@@ -20,6 +20,11 @@ type CompanyData struct {
 	Headquarters string
 }
 
+type TargetEmployeesAtDate struct {
+	Date           string
+	CountEmployees int
+}
+
 func (target *Target) JobsPerDayPerTarget() (jobs []Row) {
 	fmt.Println(Gray(8-1, "Starting JobsPerDayPerTarget..."))
 	rows, err := Db.Query(`WITH view_ready AS (
@@ -113,5 +118,30 @@ func (target *Target) LinkedinDataPerTarget() (linkedinData CompanyData) {
 	if err != nil {
 		panic(err.Error())
 	}
+	return
+}
+
+func (target *Target) EmployeesTrendPerTarget() (targetEmployeesAtDates []TargetEmployeesAtDate) {
+	fmt.Println(Gray(8-1, "Starting EmployeesTrendPerTarget..."))
+	rows, err := Db.Query(`
+                    SELECT DISTINCT
+                        l.createdat::date,
+                        MAX(l.employees)
+                    FROM linkedin l
+                    WHERE targetid = $1
+                    GROUP BY 1;`, target.Id)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		row := TargetEmployeesAtDate{}
+		if err = rows.Scan(
+			&row.Date,
+			&row.CountEmployees); err != nil {
+			panic(err.Error())
+		}
+		targetEmployeesAtDates = append(targetEmployeesAtDates, row)
+	}
+	rows.Close()
 	return
 }
