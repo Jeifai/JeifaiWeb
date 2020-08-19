@@ -8,22 +8,22 @@ import (
 )
 
 type TargetJobsTrend struct {
-	CountTotalMinY int
-	CountCreated   json.RawMessage
-	CountClosed    json.RawMessage
-	CountTotal     json.RawMessage
+	CountTotalMinY      int
+	CountCreated        json.RawMessage
+	CountClosed         json.RawMessage
+	CountTotal          json.RawMessage
 }
 
 type CompanyData struct {
-	Employees    int
-	Industry     string
-	Companysize  string
-	Headquarters string
+	Employees           int
+	Industry            string
+	Companysize         string
+	Headquarters        string
 }
 
-type TargetEmployeesAtDate struct {
-	Date           string
-	CountEmployees int
+type TargetEmployeesTrend struct {
+    CountEmployeesMinY      int
+	CountEmployees          json.RawMessage
 }
 
 func (target *Target) GetTargetJobsTrend() (targetJobsTrend TargetJobsTrend) {
@@ -76,7 +76,7 @@ func (target *Target) GetTargetJobsTrend() (targetJobsTrend TargetJobsTrend) {
                             FROM view_ready
                             WHERE rn != 1)
                         SELECT
-                            (MIN(CASE WHEN countTotal > 0 THEN countTotal END) * 0.96)::numeric::integer,
+                            ROUND((MIN(CASE WHEN countTotal > 0 THEN countTotal END) * 0.96)::numeric::integer, -1),
                             json_object(array_agg(t.createdat::text), array_agg(t.countCreated::text)),
                             json_object(array_agg(t.createdat::text), array_agg(t.countClosed::text)),
                             json_object(array_agg(t.createdat::text), array_agg(t.countTotal::text))
@@ -122,27 +122,26 @@ func (target *Target) LinkedinDataPerTarget() (linkedinData CompanyData) {
 	return
 }
 
-func (target *Target) EmployeesTrendPerTarget() (targetEmployeesAtDates []TargetEmployeesAtDate) {
+func (target *Target) EmployeesTrendPerTarget() (targetEmployeesTrend TargetEmployeesTrend) {
 	fmt.Println(Gray(8-1, "Starting EmployeesTrendPerTarget..."))
-	rows, err := Db.Query(`
+	err := Db.QueryRow(`
+                WITH linkedin_data AS(
                     SELECT DISTINCT
                         l.createdat::date,
-                        MAX(l.employees)
+                        MAX(l.employees) AS count_employees
                     FROM linkedin l
                     WHERE targetid = $1
-                    GROUP BY 1;`, target.Id)
+                    GROUP BY 1)
+                SELECT
+                    ROUND((MIN(CASE WHEN count_employees > 0 THEN count_employees END) * 0.96)::numeric::integer, -1),
+                    json_object(array_agg(t.createdat::text), array_agg(t.count_employees::text))
+                FROM linkedin_data t;`, target.Id).
+                Scan(
+                    &targetEmployeesTrend.CountEmployeesMinY,
+                    &targetEmployeesTrend.CountEmployees,
+                )
 	if err != nil {
 		panic(err.Error())
 	}
-	for rows.Next() {
-		row := TargetEmployeesAtDate{}
-		if err = rows.Scan(
-			&row.Date,
-			&row.CountEmployees); err != nil {
-			panic(err.Error())
-		}
-		targetEmployeesAtDates = append(targetEmployeesAtDates, row)
-	}
-	rows.Close()
 	return
 }

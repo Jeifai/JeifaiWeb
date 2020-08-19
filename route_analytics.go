@@ -63,7 +63,7 @@ func AnalyticsPerTarget(w http.ResponseWriter, r *http.Request) {
 	type TempStruct struct {
 		Jobs           TargetJobsTrend
 		CompanyInfo    CompanyData
-		EmployeesTrend []TargetEmployeesAtDate
+		EmployeesTrend TargetEmployeesTrend
 	}
 
 	infos := TempStruct{jobs, linkedinData, employeesTrend}

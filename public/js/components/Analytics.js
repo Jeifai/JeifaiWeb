@@ -9,8 +9,7 @@ export default {
             jobsTotalMinY: '',
             companyInfo: '',
             employeesTrend: '',
-            minYEmployees: '',
-            maxYEmployees: '',
+            employeesTotalMinY: '',
             targets: [],
             selectedTarget: null,
             chartOptions: {
@@ -56,13 +55,11 @@ export default {
             .topSideContent {
                 float: left;
                 padding-left: 70px;
+
             }
             .topSideContentValue {
                 font-size:30px;
                 vertical-align: super;
-            }
-            .middleCharts {
-                display: flex;
             }`
         document.head.appendChild(styleElem);
     },
@@ -93,22 +90,8 @@ export default {
                     {name: 'jobsCreated', data: response.data.Jobs.CountCreated, color: "#00CC66"}
                 ];
                 this.jobsTotalMinY = response.data.Jobs.CountTotalMinY;
-
-
-
-
-                /** 
-                this.employeesTrend = {};
-                for (var key in response.data.EmployeesTrend) {
-                    jobsClosed[response.data.Jobs[key].Date] = response.data.Jobs[key].CountClosed;
-                    this.employeesTrend[response.data.EmployeesTrend[key].Date] = response.data.EmployeesTrend[key].CountEmployees;
-                }
-
-                var tempEmployeesKeys = this.employeesTrend;
-                var employeesKeys = Object.keys(tempEmployeesKeys).sort(function(a,b) { return tempEmployeesKeys[a] - tempEmployeesKeys[b];});
-                this.minYEmployees = Math.floor(tempEmployeesKeys[employeesKeys[0]] * 0.96);
-                this.maxYEmployees = Math.floor(tempEmployeesKeys[employeesKeys[employeesKeys.length - 1]] * 1.04);
-                 */
+                this.employeesTrend = response.data.EmployeesTrend.CountEmployees;
+                this.employeesTotalMinY = response.data.EmployeesTrend.CountEmployeesMinY;
 
             }).catch(function(error) {
                 console.log(error)
@@ -136,10 +119,8 @@ export default {
             </div>
             <div v-if="selectedTarget">
                 <area-chart :data="jobsTotal" :min="jobsTotalMinY"  width="95%" height="10%" :library="chartOptions"></area-chart><br>
-                <div class="middleCharts">
-                    <column-chart :data="jobs" height="250px"></column-chart>
-                    <line-chart :min="minYEmployees" :max="maxYEmployees" :data="employeesTrend" height="250px"></line-chart>
-                </div">
+                <area-chart :data="jobs" width="95%" height="10%" :library="chartOptions"></area-chart>
+                <line-chart :data="employeesTrend" width="95%" :min="employeesTotalMinY" height="10%" :library="chartOptions"></line-chart>
             </div>
         </div>`,
 };
