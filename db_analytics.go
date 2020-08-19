@@ -1,16 +1,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	. "github.com/logrusorgru/aurora"
 )
 
-type Row struct {
-	Date         string
-	CountCreated int
-	CountClosed  int
-	CountTotal   int
+type TargetJobsTrend struct {
+	CountTotalMinY int
+	CountCreated   json.RawMessage
+	CountClosed    json.RawMessage
+	CountTotal     json.RawMessage
 }
 
 type CompanyData struct {
@@ -25,9 +26,10 @@ type TargetEmployeesAtDate struct {
 	CountEmployees int
 }
 
-func (target *Target) JobsPerDayPerTarget() (jobs []Row) {
+func (target *Target) GetTargetJobsTrend() (targetJobsTrend TargetJobsTrend) {
 	fmt.Println(Gray(8-1, "Starting JobsPerDayPerTarget..."))
-	rows, err := Db.Query(`WITH view_ready AS (
+	err := Db.QueryRow(`WITH table_ready AS (
+                            WITH view_ready AS (
                                 SELECT
                                     t.createdat,
                                     t.countCreated,
@@ -72,22 +74,21 @@ func (target *Target) JobsPerDayPerTarget() (jobs []Row) {
                                 countClosed,
                                 countTotal
                             FROM view_ready
-                            WHERE rn != 1;`, target.Name)
+                            WHERE rn != 1)
+                        SELECT
+                            (MIN(CASE WHEN countTotal > 0 THEN countTotal END) * 0.96)::numeric::integer,
+                            json_object(array_agg(t.createdat::text), array_agg(t.countCreated::text)),
+                            json_object(array_agg(t.createdat::text), array_agg(t.countClosed::text)),
+                            json_object(array_agg(t.createdat::text), array_agg(t.countTotal::text))
+                        FROM table_ready t`, target.Name).
+		Scan(
+			&targetJobsTrend.CountTotalMinY,
+			&targetJobsTrend.CountCreated,
+			&targetJobsTrend.CountClosed,
+			&targetJobsTrend.CountTotal)
 	if err != nil {
 		panic(err.Error())
 	}
-	for rows.Next() {
-		row := Row{}
-		if err = rows.Scan(
-			&row.Date,
-			&row.CountCreated,
-			&row.CountClosed,
-			&row.CountTotal); err != nil {
-			panic(err.Error())
-		}
-		jobs = append(jobs, row)
-	}
-	rows.Close()
 	return
 }
 

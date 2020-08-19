@@ -56,12 +56,12 @@ func AnalyticsPerTarget(w http.ResponseWriter, r *http.Request) {
 	}
 	target.TargetByName()
 
-	jobs := target.JobsPerDayPerTarget()
+	jobs := target.GetTargetJobsTrend()
 	linkedinData := target.LinkedinDataPerTarget()
 	employeesTrend := target.EmployeesTrendPerTarget()
 
 	type TempStruct struct {
-		Jobs           []Row
+		Jobs           TargetJobsTrend
 		CompanyInfo    CompanyData
 		EmployeesTrend []TargetEmployeesAtDate
 	}

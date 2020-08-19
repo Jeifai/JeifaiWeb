@@ -6,11 +6,27 @@ export default {
             selectedIndex: 4,
             jobs: [],
             jobsTotal: [],
+            jobsTotalMinY: '',
             companyInfo: '',
             employeesTrend: '',
             minYEmployees: '',
+            maxYEmployees: '',
             targets: [],
             selectedTarget: null,
+            chartOptions: {
+                elements: {
+                    point:{
+                        radius: 0.8
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        gridLines: {
+                            display: false
+                        }
+                    }]
+                }
+            }
         }
     },
     mounted() {
@@ -55,7 +71,9 @@ export default {
     },
     watch: {
         selectedTarget: function(val) {
-            this.fetchData()
+            if (this.selectedTarget !== null) {
+                this.fetchData();
+            }
         }
     },
     methods: {
@@ -69,19 +87,17 @@ export default {
         fetchData: function() {
             this.$http.get('/analytics/target/' + this.selectedTarget).then(function(response) {
                 this.companyInfo = response.data.CompanyInfo;
-                var jobsClosed = {};
-                var jobsCreated = {};
-                this.jobsTotal = {};
-                for (var key in response.data.Jobs) {
-                    jobsClosed[response.data.Jobs[key].Date] = response.data.Jobs[key].CountClosed;
-                    jobsCreated[response.data.Jobs[key].Date] = response.data.Jobs[key].CountCreated;
-                    this.jobsTotal[response.data.Jobs[key].Date] = response.data.Jobs[key].CountTotal;
-                }
+                this.jobsTotal = response.data.Jobs.CountTotal;
                 this.jobs = [
-                    {name: 'jobsClosed', data: jobsClosed, color: "#585858"},
-                    {name: 'jobsCreated', data: jobsCreated, color: "#00CC66"}
-                ]
+                    {name: 'jobsClosed', data: response.data.Jobs.CountClosed, color: "#585858"},
+                    {name: 'jobsCreated', data: response.data.Jobs.CountCreated, color: "#00CC66"}
+                ];
+                this.jobsTotalMinY = response.data.Jobs.CountTotalMinY;
 
+
+
+
+                /** 
                 this.employeesTrend = {};
                 for (var key in response.data.EmployeesTrend) {
                     jobsClosed[response.data.Jobs[key].Date] = response.data.Jobs[key].CountClosed;
@@ -92,6 +108,7 @@ export default {
                 var employeesKeys = Object.keys(tempEmployeesKeys).sort(function(a,b) { return tempEmployeesKeys[a] - tempEmployeesKeys[b];});
                 this.minYEmployees = Math.floor(tempEmployeesKeys[employeesKeys[0]] * 0.96);
                 this.maxYEmployees = Math.floor(tempEmployeesKeys[employeesKeys[employeesKeys.length - 1]] * 1.04);
+                 */
 
             }).catch(function(error) {
                 console.log(error)
@@ -118,7 +135,7 @@ export default {
                 </div>
             </div>
             <div v-if="selectedTarget">
-                <area-chart :data="jobsTotal" width="95%" height="250px"></area-chart><br>
+                <area-chart :data="jobsTotal" :min="jobsTotalMinY"  width="95%" height="10%" :library="chartOptions"></area-chart><br>
                 <div class="middleCharts">
                     <column-chart :data="jobs" height="250px"></column-chart>
                     <line-chart :min="minYEmployees" :max="maxYEmployees" :data="employeesTrend" height="250px"></line-chart>
