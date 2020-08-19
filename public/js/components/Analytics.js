@@ -24,6 +24,9 @@ export default {
                             display: false
                         }
                     }]
+                },
+                legend: {
+                    display: true,
                 }
             }
         }
@@ -84,13 +87,14 @@ export default {
         fetchData: function() {
             this.$http.get('/analytics/target/' + this.selectedTarget).then(function(response) {
                 this.companyInfo = response.data.CompanyInfo;
-                this.jobsTotal = response.data.Jobs.CountTotal;
+                this.jobsTotal = [{name: 'TotalJobs', data: response.data.Jobs.CountTotal}];
                 this.jobs = [
-                    {name: 'jobsClosed', data: response.data.Jobs.CountClosed, color: "#585858"},
-                    {name: 'jobsCreated', data: response.data.Jobs.CountCreated, color: "#00CC66"}
+                    {name: 'jobsClosed', data: response.data.Jobs.CountClosed, color: "#ffadad"},
+                    {name: 'jobsCreated', data: response.data.Jobs.CountCreated, color: "#caffbf"}
                 ];
                 this.jobsTotalMinY = response.data.Jobs.CountTotalMinY;
                 this.employeesTrend = response.data.EmployeesTrend.CountEmployees;
+                this.employeesTrend = [{name: 'EmployeesTrend', data: response.data.EmployeesTrend.CountEmployees}];
                 this.employeesTotalMinY = response.data.EmployeesTrend.CountEmployeesMinY;
 
             }).catch(function(error) {
@@ -118,9 +122,9 @@ export default {
                 </div>
             </div>
             <div v-if="selectedTarget">
-                <area-chart :data="jobsTotal" :min="jobsTotalMinY"  width="95%" height="10%" :library="chartOptions"></area-chart><br>
-                <area-chart :data="jobs" width="95%" height="10%" :library="chartOptions"></area-chart>
-                <line-chart :data="employeesTrend" width="95%" :min="employeesTotalMinY" height="10%" :library="chartOptions"></line-chart>
+                <area-chart :data="jobsTotal" :min="jobsTotalMinY" width="95%" height="10%" :library="chartOptions" :colors="['#a0c4ff']"></area-chart><br>
+                <area-chart :data="jobs"  width="95%" height="10%" :library="chartOptions"></area-chart>
+                <area-chart :data="employeesTrend" :min="employeesTotalMinY" width="95%" height="10%" :library="chartOptions" :colors="['#ffc6ff']"></area-chart>
             </div>
         </div>`,
 };

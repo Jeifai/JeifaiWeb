@@ -76,7 +76,7 @@ func (target *Target) GetTargetJobsTrend() (targetJobsTrend TargetJobsTrend) {
                             FROM view_ready
                             WHERE rn != 1)
                         SELECT
-                            ROUND((MIN(CASE WHEN countTotal > 0 THEN countTotal END) * 0.96)::numeric::integer, -1),
+                            CASE WHEN MIN(countTotal) < 10 THEN 0 ELSE ROUND((MIN(countTotal) * 0.96)::numeric::integer, -1) END,
                             json_object(array_agg(t.createdat::text), array_agg(t.countCreated::text)),
                             json_object(array_agg(t.createdat::text), array_agg(t.countClosed::text)),
                             json_object(array_agg(t.createdat::text), array_agg(t.countTotal::text))
@@ -133,7 +133,7 @@ func (target *Target) EmployeesTrendPerTarget() (targetEmployeesTrend TargetEmpl
                     WHERE targetid = $1
                     GROUP BY 1)
                 SELECT
-                    ROUND((MIN(CASE WHEN count_employees > 0 THEN count_employees END) * 0.96)::numeric::integer, -1),
+                    ROUND((MIN(CASE WHEN count_employees > 0 THEN count_employees END) * 0.90)::numeric::integer, -1),
                     json_object(array_agg(t.createdat::text), array_agg(t.count_employees::text))
                 FROM linkedin_data t;`, target.Id).
                 Scan(
