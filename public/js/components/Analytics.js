@@ -10,6 +10,8 @@ export default {
             companyInfo: '',
             employeesTrend: '',
             employeesTotalMinY: '',
+            jobTitlesWords: '',
+            jobsTitlesMaxCount: '',
             targets: [],
             selectedTarget: null,
             chartOptions: {
@@ -22,6 +24,13 @@ export default {
                     yAxes: [{
                         gridLines: {
                             display: false
+                        },
+                        ticks: {
+                            callback: function(value, index, values) {
+                                if (index === values.length - 1) return Math.min.apply(this, values);
+                                else if (index === 0) return Math.max.apply(this,  values);
+                                else return '';
+                            }
                         }
                     }]
                 },
@@ -96,6 +105,8 @@ export default {
                 this.employeesTrend = response.data.EmployeesTrend.CountEmployees;
                 this.employeesTrend = [{name: 'EmployeesTrend', data: response.data.EmployeesTrend.CountEmployees}];
                 this.employeesTotalMinY = response.data.EmployeesTrend.CountEmployeesMinY;
+                this.jobTitlesWords = [{name: 'JobTitlesWords', data: response.data.JobTitlesWords.Words}];
+                this.jobsTitlesMaxCount = response.data.JobTitlesWords.MaxCount;
 
             }).catch(function(error) {
                 console.log(error)
@@ -122,9 +133,10 @@ export default {
                 </div>
             </div>
             <div v-if="selectedTarget">
-                <area-chart :data="jobsTotal" :min="jobsTotalMinY" width="95%" height="10%" :library="chartOptions" :colors="['#a0c4ff']"></area-chart><br>
-                <area-chart :data="jobs"  width="95%" height="10%" :library="chartOptions"></area-chart>
-                <area-chart :data="employeesTrend" :min="employeesTotalMinY" width="95%" height="10%" :library="chartOptions" :colors="['#ffc6ff']"></area-chart>
+                <area-chart :data="jobsTotal" :min="jobsTotalMinY" width="95%" height="8%" :library="chartOptions" :colors="['#a0c4ff']"></area-chart><br>
+                <area-chart :data="jobs" width="95%" height="8%" :library="chartOptions"></area-chart>
+                <area-chart :data="employeesTrend" :min="employeesTotalMinY" width="95%" height="8%" :library="chartOptions" :colors="['#ffc6ff']"></area-chart>
+                <column-chart :data="jobTitlesWords" :max="jobsTitlesMaxCount" width="95%" height="8%" :library="chartOptions" :colors="['#ffd6a5']"></column-chart>
             </div>
         </div>`,
 };

@@ -8,25 +8,30 @@ import (
 )
 
 type TargetJobsTrend struct {
-	CountTotalMinY      int
-	CountCreated        json.RawMessage
-	CountClosed         json.RawMessage
-	CountTotal          json.RawMessage
+	CountTotalMinY int
+	CountCreated   json.RawMessage
+	CountClosed    json.RawMessage
+	CountTotal     json.RawMessage
 }
 
 type CompanyData struct {
-	Employees           int
-	Industry            string
-	Companysize         string
-	Headquarters        string
+	Employees    int
+	Industry     string
+	Companysize  string
+	Headquarters string
 }
 
 type TargetEmployeesTrend struct {
-    CountEmployeesMinY      int
-	CountEmployees          json.RawMessage
+	CountEmployeesMinY int
+	CountEmployees     json.RawMessage
 }
 
-func (target *Target) GetTargetJobsTrend() (targetJobsTrend TargetJobsTrend) {
+type TargetJobTitlesWords struct {
+	MaxCount int
+	Words    json.RawMessage
+}
+
+func (jobs *TargetJobsTrend) GetTargetJobsTrend(target Target) {
 	fmt.Println(Gray(8-1, "Starting JobsPerDayPerTarget..."))
 	err := Db.QueryRow(`WITH table_ready AS (
                             WITH view_ready AS (
@@ -82,17 +87,16 @@ func (target *Target) GetTargetJobsTrend() (targetJobsTrend TargetJobsTrend) {
                             json_object(array_agg(t.createdat::text), array_agg(t.countTotal::text))
                         FROM table_ready t`, target.Name).
 		Scan(
-			&targetJobsTrend.CountTotalMinY,
-			&targetJobsTrend.CountCreated,
-			&targetJobsTrend.CountClosed,
-			&targetJobsTrend.CountTotal)
+			&jobs.CountTotalMinY,
+			&jobs.CountCreated,
+			&jobs.CountClosed,
+			&jobs.CountTotal)
 	if err != nil {
 		panic(err.Error())
 	}
-	return
 }
 
-func (target *Target) LinkedinDataPerTarget() (linkedinData CompanyData) {
+func (linkedinData *CompanyData) LinkedinDataPerTarget(target Target) {
 	fmt.Println(Gray(8-1, "Starting LinkedinDataPerTarget..."))
 	err := Db.QueryRow(`
         WITH latest_linkedin AS(
@@ -119,10 +123,9 @@ func (target *Target) LinkedinDataPerTarget() (linkedinData CompanyData) {
 	if err != nil {
 		panic(err.Error())
 	}
-	return
 }
 
-func (target *Target) EmployeesTrendPerTarget() (targetEmployeesTrend TargetEmployeesTrend) {
+func (targetEmployeesTrend *TargetEmployeesTrend) EmployeesTrendPerTarget(target Target) {
 	fmt.Println(Gray(8-1, "Starting EmployeesTrendPerTarget..."))
 	err := Db.QueryRow(`
                 WITH linkedin_data AS(
@@ -136,12 +139,54 @@ func (target *Target) EmployeesTrendPerTarget() (targetEmployeesTrend TargetEmpl
                     ROUND((MIN(CASE WHEN count_employees > 0 THEN count_employees END) * 0.90)::numeric::integer, -1),
                     json_object(array_agg(t.createdat::text), array_agg(t.count_employees::text))
                 FROM linkedin_data t;`, target.Id).
-                Scan(
-                    &targetEmployeesTrend.CountEmployeesMinY,
-                    &targetEmployeesTrend.CountEmployees,
-                )
+		Scan(
+			&targetEmployeesTrend.CountEmployeesMinY,
+			&targetEmployeesTrend.CountEmployees,
+		)
 	if err != nil {
 		panic(err.Error())
 	}
-	return
+}
+
+func (targetJobTitlesWords *TargetJobTitlesWords) JobTitlesWordsPerTarget(target Target) {
+	fmt.Println(Gray(8-1, "Starting JobTitlesWordsPerTarget..."))
+	err := Db.QueryRow(`
+                    WITH view_ready AS(
+                        WITH
+                            titles_words AS(
+                                SELECT 
+                                    unnest(
+                                        regexp_split_to_array(
+                                            string_agg(
+                                                trim(
+                                                    regexp_replace(
+                                                        regexp_replace(r.title, '[^a-zA-Z]', ' ', 'g'),
+                                                    '\s+', ' ', 'g')
+                                                ),
+                                            ' '),
+                                        ' ')
+                                    ) AS word
+                                FROM results r
+                                LEFT JOIN scrapers s ON(r.scraperid = s.id)
+                                WHERE s.name=$1)
+                        SELECT
+                            word,
+                            COUNT(word) AS count_words
+                        FROM titles_words
+                        WHERE LENGTH(word) > 2
+                        AND word != $1
+                        GROUP BY 1
+                        ORDER BY 2 DESC
+                        LIMIT 20)
+                    SELECT
+                        MAX(count_words) + 1,
+                        json_object(array_agg(word::text), array_agg(count_words::text))
+                    FROM view_ready;`, target.Name).
+		Scan(
+			&targetJobTitlesWords.MaxCount,
+			&targetJobTitlesWords.Words,
+		)
+	if err != nil {
+		panic(err.Error())
+	}
 }
