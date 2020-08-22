@@ -13,10 +13,8 @@ import (
 func AnalyticsGetTargets(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting AnalyticsGetTargets..."))
 
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	sess := GetSession(r)
+
 	user := User{
 		Id: sess.UserId,
 	}
@@ -37,10 +35,7 @@ func AnalyticsGetTargets(w http.ResponseWriter, r *http.Request) {
 func AnalyticsPerTarget(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting AnalyticsPerTarget..."))
 
-	_, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	_ = GetSession(r)
 
 	targetName, _ := mux.Vars(r)["target"]
 

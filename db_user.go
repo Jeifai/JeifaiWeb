@@ -39,13 +39,16 @@ type Session struct {
 	CreatedAt time.Time
 }
 
-func GetSession(request *http.Request) (sess Session, err error) {
+func GetSession(request *http.Request) (sess Session) {
 	cookie, err := request.Cookie("_cookie")
 	if err == nil {
 		sess = Session{Uuid: cookie.Value}
 		if ok, _ := sess.CheckSession(); !ok {
 			panic(err.Error())
 		}
+	}
+	if err != nil {
+		return Session{}
 	}
 	return
 }

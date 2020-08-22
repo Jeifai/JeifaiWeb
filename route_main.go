@@ -11,8 +11,8 @@ import (
 
 func Home(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Home..."))
-	_, err := GetSession(r)
-	if err != nil {
+	sess := GetSession(r)
+	if sess == (Session{}) {
 		fmt.Println(Yellow("User not logged in..."))
 		templates := template.Must(template.ParseFiles(
 			"templates/OUT_layout.html",
@@ -28,7 +28,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 func GetHome(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Home..."))
-	sess, err := GetSession(r)
+	sess := GetSession(r)
 	user := User{
 		Id: sess.UserId,
 	}

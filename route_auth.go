@@ -48,10 +48,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 
 func Logout(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Logout..."))
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	sess := GetSession(r)
 	sess.SetSessionDeletedAtByUUID()
 
 	// Delete cookie setting it in the past

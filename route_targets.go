@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/go-playground/validator"
 	. "github.com/logrusorgru/aurora"
@@ -12,18 +13,27 @@ import (
 func Targets(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Targets..."))
 
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	sess := GetSession(r)
+
 	user := User{
 		Id: sess.UserId,
 	}
 	user.UserById()
 
-	infoUserTargets := user.InfoUsersTargetsByUser()
+	var infoUserTargets []TargetInfo
+	var notSelectedTargetsNames []string
 
-	notSelectedTargetsNames := user.NotSelectedTargetsNamesByUser()
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go func() {
+		infoUserTargets = user.InfoUsersTargetsByUser()
+		wg.Done()
+	}()
+	go func() {
+		notSelectedTargetsNames = user.NotSelectedTargetsNamesByUser()
+		wg.Done()
+	}()
+	wg.Wait()
 
 	type TempStruct struct {
 		Targets     []TargetInfo
@@ -39,10 +49,7 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 func PutTarget(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting PutTarget..."))
 
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	sess := GetSession(r)
 
 	user := User{
 		Id: sess.UserId,
@@ -55,7 +62,7 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 
 	response := TempResponse{}
 
-	err = json.NewDecoder(r.Body).Decode(&response)
+	err := json.NewDecoder(r.Body).Decode(&response)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -134,10 +141,7 @@ func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 	var target Target
 	err := json.NewDecoder(r.Body).Decode(&target)
 
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	sess := GetSession(r)
 
 	user := User{
 		Id: sess.UserId,

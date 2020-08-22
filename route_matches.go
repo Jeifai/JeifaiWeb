@@ -11,16 +11,14 @@ import (
 func Matches(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Matches..."))
 
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	sess := GetSession(r)
+
 	user := User{
 		Id: sess.UserId,
 	}
 	user.UserById()
 
-	matches, err := user.MatchesByUser()
+	matches := user.MatchesByUser()
 
 	type PublicMatch struct {
 		CreatedDate string

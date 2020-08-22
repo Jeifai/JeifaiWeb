@@ -13,10 +13,9 @@ import (
 
 func Keywords(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Keywords..."))
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+
+	sess := GetSession(r)
+
 	user := User{
 		Id: sess.UserId,
 	}
@@ -56,10 +55,9 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 
 func PutKeyword(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting PutKeyword..."))
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+
+	sess := GetSession(r)
+
 	user := User{
 		Id: sess.UserId,
 	}
@@ -72,7 +70,7 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 
 	response := TempResponse{}
 
-	err = json.NewDecoder(r.Body).Decode(&response)
+	err := json.NewDecoder(r.Body).Decode(&response)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -143,10 +141,8 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting RemoveKeywords..."))
 
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	sess := GetSession(r)
+
 	user := User{
 		Id: sess.UserId,
 	}

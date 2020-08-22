@@ -26,10 +26,8 @@ type PublicUser struct {
 func Profile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Profile..."))
 
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	sess := GetSession(r)
+
 	user := User{
 		Id: sess.UserId,
 	}
@@ -59,10 +57,8 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting UpdateProfile..."))
 
-	sess, err := GetSession(r)
-	if err != nil {
-		panic(err.Error())
-	}
+	sess := GetSession(r)
+
 	user := User{
 		Id: sess.UserId,
 	}
@@ -70,8 +66,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 
 	var publicUser PublicUser
 
-	err = json.NewDecoder(r.Body).Decode(&publicUser)
-
+	err := json.NewDecoder(r.Body).Decode(&publicUser)
 	if err != nil {
 		panic(err.Error())
 	}

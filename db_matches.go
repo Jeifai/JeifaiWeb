@@ -18,7 +18,7 @@ type Match struct {
 	CreatedDate string
 }
 
-func (user *User) MatchesByUser() (matches []Match, err error) {
+func (user *User) MatchesByUser() (matches []Match) {
 	fmt.Println(Gray(8-1, "Starting MatchesByUser..."))
 	rows, err := Db.Query(`SELECT DISTINCT
                             s.name,
@@ -53,5 +53,8 @@ func (user *User) MatchesByUser() (matches []Match, err error) {
 		matches = append(matches, match)
 	}
 	rows.Close()
+	if err != nil {
+		panic(err.Error())
+	}
 	return
 }
