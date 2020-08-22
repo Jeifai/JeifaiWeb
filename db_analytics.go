@@ -174,7 +174,7 @@ func (targetJobTitlesWords *TargetJobTitlesWords) JobTitlesWordsPerTarget(target
                             COUNT(word) AS count_words
                         FROM titles_words
                         WHERE LENGTH(word) > 2
-                        AND word != $1
+                        AND word NOT IN($1, 'and', 'for')
                         GROUP BY 1
                         ORDER BY 2 DESC
                         LIMIT 20)
