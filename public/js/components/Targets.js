@@ -171,7 +171,7 @@ export default {
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('JobsNow')">
-                                        Actual Jobs
+                                        Current Jobs
                                         <i v-if="sortedBy === 'JobsNow' && sorting['JobsNow'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                         <i v-if="sortedBy === 'JobsNow' && sorting['JobsNow'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
