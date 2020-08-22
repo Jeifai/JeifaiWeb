@@ -17,10 +17,6 @@ type Target struct {
 	CreatedDate string
 }
 
-type TargetsNames struct {
-	Names []string
-}
-
 type TargetInfo struct {
 	Name               string
 	CreatedDate        string
@@ -65,8 +61,9 @@ func (target *Target) CreateUserTarget(user User) {
 	stmt.QueryRow(user.Id, target.Id, time.Now())
 }
 
-func (user *User) TargetsNamesByUser() (targetsNames TargetsNames) {
+func (user *User) TargetsNamesByUser() (targetsNames []string) {
 	fmt.Println(Gray(8-1, "Starting TargetsNamesByUser..."))
+
 	err := Db.QueryRow(`
                 SELECT
                   ARRAY_AGG(t.name)
@@ -76,7 +73,7 @@ func (user *User) TargetsNamesByUser() (targetsNames TargetsNames) {
                 WHERE ut.deletedat IS NULL
                 AND u.id=$1;`, user.Id).
 		Scan(
-			pq.Array(&targetsNames.Names),
+			pq.Array(&targetsNames),
 		)
 	if err != nil {
 		panic(err.Error())
@@ -84,8 +81,11 @@ func (user *User) TargetsNamesByUser() (targetsNames TargetsNames) {
 	return
 }
 
-func (user *User) NotSelectedTargetsNamesByUser() (targetsNames TargetsNames) {
+func (user *User) NotSelectedTargetsNamesByUser(targetsNames *[]string) {
 	fmt.Println(Gray(8-1, "Starting NotSelectedTargetsNamesByUser..."))
+
+	var temp []string
+
 	err := Db.QueryRow(`
                 WITH usertargets AS (
 				  SELECT
@@ -100,12 +100,13 @@ func (user *User) NotSelectedTargetsNamesByUser() (targetsNames TargetsNames) {
 				WHERE ut.targetid IS NULL
 				ORDER BY 1;`, user.Id).
 		Scan(
-			pq.Array(&targetsNames.Names),
+			pq.Array(temp),
 		)
 	if err != nil {
 		panic(err.Error())
 	}
-	return
+
+	*targetsNames = temp
 }
 
 func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo) {

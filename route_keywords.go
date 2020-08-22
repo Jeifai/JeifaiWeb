@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sync"
 
 	"github.com/go-playground/validator"
 	. "github.com/logrusorgru/aurora"
@@ -21,37 +22,33 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserById()
 
-	targetsNames := user.TargetsNamesByUser()
+	var targetsNames []string
+	var infoUserKeywords []KeywordInfo
+	var utks []UserTargetKeyword
 
-	infoUserKeywords := user.InfoKeywordsByUser()
-
-	utks, err := user.GetUserTargetKeyword()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	type PublicTargetKeyword struct {
-		CreatedDate string
-		KeywordText string
-		TargetName  string
-	}
-
-	var public_utks []PublicTargetKeyword
-	for _, utk := range utks {
-		var public_utk PublicTargetKeyword
-		public_utk.CreatedDate = utk.CreatedDate
-		public_utk.KeywordText = utk.KeywordText
-		public_utk.TargetName = utk.TargetName
-		public_utks = append(public_utks, public_utk)
-	}
+	var wg sync.WaitGroup
+	wg.Add(3)
+	go func() {
+		targetsNames = user.TargetsNamesByUser()
+		wg.Done()
+	}()
+	go func() {
+		infoUserKeywords = user.InfoKeywordsByUser()
+		wg.Done()
+	}()
+	go func() {
+		utks = user.GetUserTargetKeyword()
+		wg.Done()
+	}()
+	wg.Wait()
 
 	type TempStruct struct {
 		Targets      []string
-		Utks         []PublicTargetKeyword
+		Utks         []UserTargetKeyword
 		KeywordsInfo []KeywordInfo
 	}
 
-	infos := TempStruct{targetsNames.Names, public_utks, infoUserKeywords}
+	infos := TempStruct{targetsNames, utks, infoUserKeywords}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -167,14 +164,7 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 		panic(err.Error())
 	}
 
-	for i := range utks {
-		utks[i].UserId = sess.UserId
-	}
-
-	err = SetDeletedAtInUserTargetKeywordMultiple(utks)
-	if err != nil {
-		panic(err.Error())
-	}
+	user.SetDeletedAtInUserTargetKeywordMultiple(utks)
 
 	type TempStruct struct {
 		Messages []string

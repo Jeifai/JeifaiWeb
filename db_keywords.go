@@ -16,24 +16,18 @@ type Keyword struct {
 }
 
 type UserTargetKeyword struct {
-	Id          int
-	UserId      int
-	TargetId    int
-	KeywordId   int
-	CreatedAt   time.Time
 	CreatedDate string
-	UpdatedAt   time.Time
 	KeywordText string
-	TargetUrl   string
 	TargetName  string
 }
 
 type KeywordInfo struct {
-	Name          string
-	CreatedDate   string
-	CountTargets  int
-	CountMatches  int
-	AvgMatchesDay float32
+	Name            string
+	CreatedDate     string
+	CountTargets    int
+	LastWeekMatches int
+	TotalMatches    int
+	AvgMatchesDay   float32
 }
 
 func (keyword *Keyword) CreateKeyword() (err error) {
@@ -64,18 +58,11 @@ func (keyword *Keyword) KeywordByText() (err error) {
 	return
 }
 
-func (user *User) GetUserTargetKeyword() (
-	utks []UserTargetKeyword, err error) {
+func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
 	fmt.Println(Gray(8-1, "Starting GetUserTargetKeyword..."))
 
 	rows, err := Db.Query(`SELECT
-                                utk.id,
-                                utk.userid,
-                                utk.targetid,
-                                utk.keywordid,
-                                utk.createdat,
                                 TO_CHAR(utk.createdat, 'YYYY-MM-DD'),
-                                utk.updatedat,
                                 k.text,
                                 t.name
                             FROM userstargetskeywords utk
@@ -90,16 +77,12 @@ func (user *User) GetUserTargetKeyword() (
 	for rows.Next() {
 		utk := UserTargetKeyword{}
 		if err = rows.Scan(
-			&utk.Id,
-			&utk.UserId,
-			&utk.TargetId,
-			&utk.KeywordId,
-			&utk.CreatedAt,
 			&utk.CreatedDate,
-			&utk.UpdatedAt,
 			&utk.KeywordText,
 			&utk.TargetName); err != nil {
-			return
+			if err != nil {
+				panic(err.Error())
+			}
 		}
 		utks = append(utks, utk)
 	}
@@ -110,15 +93,19 @@ func (user *User) GetUserTargetKeyword() (
 func (user *User) InfoKeywordsByUser() (keywordsInfo []KeywordInfo) {
 	fmt.Println(Gray(8-1, "Starting InfoKeywordsByUser..."))
 	rows, err := Db.Query(`
-						SELECT DISTINCT
+						SELECT
 							k.text,
-							MAX(utk.createdat::date),
+							TO_CHAR(MIN(utk.createdat), 'YYYY-MM-DD'),
 							COUNT(DISTINCT utk.targetid),
+							COUNT(DISTINCT CASE WHEN m.createdat >= now() - interval '1 week' THEN m.id END),
 							COUNT(DISTINCT m.id),
-							ROUND(1.0 * COUNT(DISTINCT m.id) / COUNT(DISTINCT m.createdat::date), 1)
+							CASE 
+								WHEN COUNT(DISTINCT m.id) = 0 THEN 0
+								ELSE ROUND(1.0 * COUNT(DISTINCT m.id) / COUNT(DISTINCT m.createdat::date), 1)
+							END
 						FROM userstargetskeywords utk
 						LEFT JOIN keywords k ON(utk.keywordid = k.id)
-						LEFT JOIN matches m ON(m.keywordid = k.id AND m.createdat > utk.createdat)
+						LEFT JOIN matches m ON(utk.keywordid = m.keywordid AND utk.createdat < m.createdat)
 						WHERE utk.userid = $1
 						AND utk.deletedat IS NULL
 						GROUP BY 1;`, user.Id)
@@ -131,7 +118,8 @@ func (user *User) InfoKeywordsByUser() (keywordsInfo []KeywordInfo) {
 			&keywordInfo.Name,
 			&keywordInfo.CreatedDate,
 			&keywordInfo.CountTargets,
-			&keywordInfo.CountMatches,
+			&keywordInfo.LastWeekMatches,
+			&keywordInfo.TotalMatches,
 			&keywordInfo.AvgMatchesDay); err != nil {
 			panic(err.Error())
 		}
@@ -178,14 +166,14 @@ func SetUserTargetKeyword(
 	return
 }
 
-func SetDeletedAtInUserTargetKeywordMultiple(utks []UserTargetKeyword) (err error) {
+func (user *User) SetDeletedAtInUserTargetKeywordMultiple(utks []UserTargetKeyword) {
 	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUserTargetKeywordMultiple..."))
 
 	valueArray := []string{}
 	timeNow := time.Now()
 	_ = timeNow
 	for _, elem := range utks {
-		str1 := "(userid=" + strconv.Itoa(elem.UserId) + " AND "
+		str1 := "(userid=" + strconv.Itoa(user.Id) + " AND "
 		str2 := "keywordid=(SELECT id FROM keywords WHERE text='" + elem.KeywordText + "') AND "
 		str3 := "targetid=(SELECT id FROM targets WHERE name='" + elem.TargetName + "'))"
 		str_n := str1 + str2 + str3
@@ -202,9 +190,8 @@ func SetDeletedAtInUserTargetKeywordMultiple(utks []UserTargetKeyword) (err erro
                 WHERE (%s));`
 
 	smt = fmt.Sprintf(smt, valueString)
-	_, err = Db.Exec(smt)
+	_, err := Db.Exec(smt)
 	if err != nil {
 		panic(err.Error())
 	}
-	return
 }

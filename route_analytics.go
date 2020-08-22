@@ -28,7 +28,7 @@ func AnalyticsGetTargets(w http.ResponseWriter, r *http.Request) {
 		Targets []string
 	}
 
-	infos := TempStruct{targetsNames.Names}
+	infos := TempStruct{targetsNames}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
