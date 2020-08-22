@@ -6,6 +6,7 @@ export default {
             selectedIndex: 2,
             messages: '',
             targets: [],
+            keywordsInfo: [],
             utks: [],
             newKeyword: {},
             selectedTargets: null,
@@ -46,7 +47,8 @@ export default {
         fetchKeywords: function() {
             this.$http.get('/keywords').then(function(response) {
                 this.targets = response.data.Targets,
-                this.utks = response.data.Utks
+                this.utks = response.data.Utks,
+                this.keywordsInfo = response.data.KeywordsInfo
             }).catch(function(error) {
                 console.log(error)
             });
@@ -135,6 +137,48 @@ export default {
     },
     template: `
         <div>
+            <div>
+                <table class="mdc-data-table__table" aria-label="Your Keywords">
+                    <thead>
+                        <tr class="mdc-data-table__header-row">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header">
+                                    CreatedAt
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header">
+                                    Keyword Text
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header">
+                                    Count Targets
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header">
+                                    Count Matches
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header">
+                                    Avg Matches / Day
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="mdc-data-table__content">
+                        <tr v-for="(row, index) in keywordsInfo" class="mdc-data-table__row">
+                            <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
+                            <td class="mdc-data-table__cell" v-html="row.Name"></td>
+                            <td class="mdc-data-table__cell" v-html="row.CountTargets"></td>
+                            <td class="mdc-data-table__cell" v-html="row.CountMatches"></td>
+                            <td class="mdc-data-table__cell" v-html="row.AvgMatchesDay"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="addkeyword"> 
                 <h1>
                     Add a new keyword

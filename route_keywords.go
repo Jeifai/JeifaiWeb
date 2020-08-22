@@ -23,6 +23,8 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 
 	targetsNames := user.TargetsNamesByUser()
 
+	infoUserKeywords := user.InfoKeywordsByUser()
+
 	utks, err := user.GetUserTargetKeyword()
 	if err != nil {
 		panic(err.Error())
@@ -44,11 +46,12 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type TempStruct struct {
-		Targets []string
-		Utks    []PublicTargetKeyword
+		Targets      []string
+		Utks         []PublicTargetKeyword
+		KeywordsInfo []KeywordInfo
 	}
 
-	infos := TempStruct{targetsNames.Names, public_utks}
+	infos := TempStruct{targetsNames.Names, public_utks, infoUserKeywords}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

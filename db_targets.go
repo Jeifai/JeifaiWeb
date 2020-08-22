@@ -18,7 +18,7 @@ type Target struct {
 }
 
 type TargetsNames struct {
-	Names   []string
+	Names []string
 }
 
 type TargetInfo struct {
@@ -32,7 +32,6 @@ type TargetInfo struct {
 	Closed             int
 }
 
-// Add a new target
 func (target *Target) CreateTarget() (err error) {
 	fmt.Println(Gray(8-1, "Starting CreateTarget..."))
 	statement := `INSERT INTO targets (name, createdat)
@@ -108,7 +107,6 @@ func (user *User) NotSelectedTargetsNamesByUser() (targetsNames TargetsNames) {
 	}
 	return
 }
-
 
 func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo) {
 	fmt.Println(Gray(8-1, "Starting InfoUsersTargetsByUser..."))
@@ -234,7 +232,6 @@ func (user *User) UsersTargetsByUserAndName(name string) (target Target, err err
 	return
 }
 
-// Update userstargets in column deletedat
 func (target *Target) SetDeletedAtInUsersTargetsByUserAndTarget(
 	user User) (err error) {
 	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUsersTargetsByUserAndTarget..."))

@@ -21,7 +21,7 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserById()
 
-	user_targets_info := user.InfoUsersTargetsByUser()
+	infoUserTargets := user.InfoUsersTargetsByUser()
 
 	notSelectedTargetsNames := user.NotSelectedTargetsNamesByUser()
 	if len(notSelectedTargetsNames.Names) == 0 { // vue-taggable-select does not work if name_targets is empty
@@ -33,7 +33,7 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 		NameTargets []string
 	}
 
-	infos := TempStruct{user_targets_info, notSelectedTargetsNames.Names}
+	infos := TempStruct{infoUserTargets, notSelectedTargetsNames.Names}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

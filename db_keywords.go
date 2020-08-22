@@ -28,6 +28,14 @@ type UserTargetKeyword struct {
 	TargetName  string
 }
 
+type KeywordInfo struct {
+	Name          string
+	CreatedDate   string
+	CountTargets  int
+	CountMatches  int
+	AvgMatchesDay float32
+}
+
 func (keyword *Keyword) CreateKeyword() (err error) {
 	fmt.Println(Gray(8-1, "Starting CreateKeyword..."))
 	statement := `INSERT INTO keywords (text, createdat)
@@ -96,6 +104,43 @@ func (user *User) GetUserTargetKeyword() (
 		utks = append(utks, utk)
 	}
 	rows.Close()
+	return
+}
+
+func (user *User) InfoKeywordsByUser() (keywordsInfo []KeywordInfo) {
+	fmt.Println(Gray(8-1, "Starting InfoKeywordsByUser..."))
+	rows, err := Db.Query(`
+						SELECT DISTINCT
+							k.text,
+							MAX(utk.createdat::date),
+							COUNT(DISTINCT utk.targetid),
+							COUNT(DISTINCT m.id),
+							ROUND(1.0 * COUNT(DISTINCT m.id) / COUNT(DISTINCT m.createdat::date), 1)
+						FROM userstargetskeywords utk
+						LEFT JOIN keywords k ON(utk.keywordid = k.id)
+						LEFT JOIN matches m ON(m.keywordid = k.id AND m.createdat > utk.createdat)
+						WHERE utk.userid = $1
+						AND utk.deletedat IS NULL
+						GROUP BY 1;`, user.Id)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		keywordInfo := KeywordInfo{}
+		if err = rows.Scan(
+			&keywordInfo.Name,
+			&keywordInfo.CreatedDate,
+			&keywordInfo.CountTargets,
+			&keywordInfo.CountMatches,
+			&keywordInfo.AvgMatchesDay); err != nil {
+			panic(err.Error())
+		}
+		keywordsInfo = append(keywordsInfo, keywordInfo)
+	}
+	rows.Close()
+	if err != nil {
+		panic(err.Error())
+	}
 	return
 }
 
