@@ -114,7 +114,7 @@ export default {
                     :taggable="true"
                     :max-results="1000"
                 >
-                </vue-taggable-select><br>
+                </vue-taggable-select>
                 <button class="mdc-button mdc-button--raised" v-on:click="createTarget">
                     <div class="mdc-button__ripple"></div>
                     <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>

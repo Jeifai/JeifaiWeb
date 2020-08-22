@@ -23,11 +23,7 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 
 	infoUserTargets := user.InfoUsersTargetsByUser()
 
-	var notSelectedTargetsNames []string
-	user.NotSelectedTargetsNamesByUser(&notSelectedTargetsNames)
-	if len(notSelectedTargetsNames) == 0 { // vue-taggable-select does not work if name_targets is empty
-		notSelectedTargetsNames = []string{" "}
-	}
+	notSelectedTargetsNames := user.NotSelectedTargetsNamesByUser()
 
 	type TempStruct struct {
 		Targets     []TargetInfo

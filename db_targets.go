@@ -81,10 +81,8 @@ func (user *User) TargetsNamesByUser() (targetsNames []string) {
 	return
 }
 
-func (user *User) NotSelectedTargetsNamesByUser(targetsNames *[]string) {
+func (user *User) NotSelectedTargetsNamesByUser() (notSelectedTargetsNames []string) {
 	fmt.Println(Gray(8-1, "Starting NotSelectedTargetsNamesByUser..."))
-
-	var temp []string
 
 	err := Db.QueryRow(`
                 WITH usertargets AS (
@@ -100,13 +98,15 @@ func (user *User) NotSelectedTargetsNamesByUser(targetsNames *[]string) {
 				WHERE ut.targetid IS NULL
 				ORDER BY 1;`, user.Id).
 		Scan(
-			pq.Array(temp),
+			pq.Array(&notSelectedTargetsNames),
 		)
+	if len(notSelectedTargetsNames) == 0 { // vue-taggable-select does not work if name_targets is empty
+		notSelectedTargetsNames = []string{" "}
+	}
 	if err != nil {
 		panic(err.Error())
 	}
-
-	*targetsNames = temp
+	return
 }
 
 func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo) {
