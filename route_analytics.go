@@ -14,11 +14,7 @@ func AnalyticsGetTargets(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting AnalyticsGetTargets..."))
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	targetsNames := user.TargetsNamesByUser()
 

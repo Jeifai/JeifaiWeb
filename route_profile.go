@@ -27,11 +27,7 @@ func Profile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Profile..."))
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	type TempStruct struct {
 		User PublicUser
@@ -58,11 +54,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting UpdateProfile..."))
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	var publicUser PublicUser
 
@@ -82,9 +74,6 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	user.CurrentPassword = publicUser.CurrentPassword
 	user.NewPassword = publicUser.NewPassword
 	user.RepeatNewPassword = publicUser.RepeatNewPassword
-
-	fmt.Println("user.CurrentPassword")
-	fmt.Println(user.CurrentPassword)
 
 	if user.CurrentPassword != "" {
 		user.CurrentPassword = Encrypt(user.CurrentPassword)

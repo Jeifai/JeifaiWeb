@@ -28,11 +28,9 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 func GetHome(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Home..."))
+
 	sess := GetSession(r)
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	home, err := user.GetHomeData()
 	if err != nil {

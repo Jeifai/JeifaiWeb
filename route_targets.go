@@ -14,11 +14,7 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Targets..."))
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	var infoUserTargets []TargetInfo
 	var notSelectedTargetsNames []string
@@ -50,11 +46,7 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting PutTarget..."))
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	type TempResponse struct {
 		SelectedTargets []string
@@ -142,11 +134,7 @@ func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&target)
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	target, err = user.UsersTargetsByUserAndName(target.Name)
 	if err != nil {

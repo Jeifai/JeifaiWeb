@@ -184,10 +184,9 @@ func (user *User) UserByEmail() (err error) {
 	return
 }
 
-// Get a single user given the email
-func (user *User) UserById() (err error) {
+func UserById(userId int) (user User) {
 	fmt.Println(Gray(8-1, "Starting UserById..."))
-	err = Db.QueryRow(`SELECT
+	err := Db.QueryRow(`SELECT
                         id,
                         username,
                         email,
@@ -201,9 +200,7 @@ func (user *User) UserById() (err error) {
                         city,
                         gender
                       FROM users
-                      WHERE id = $1`,
-		user.Id,
-	).
+                      WHERE id = $1`, userId).
 		Scan(
 			&user.Id,
 			&user.UserName,
@@ -218,6 +215,9 @@ func (user *User) UserById() (err error) {
 			&user.City,
 			&user.Gender,
 		)
+	if err != nil {
+		panic(err.Error())
+	}
 	return
 }
 

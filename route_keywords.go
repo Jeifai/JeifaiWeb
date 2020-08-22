@@ -15,11 +15,7 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Keywords..."))
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	var targetsNames []string
 	var infoUserKeywords []KeywordInfo
@@ -57,11 +53,7 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting PutKeyword..."))
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	type TempResponse struct {
 		SelectedTargets []string `json:"selectedTargets" validate:"required"`
@@ -142,11 +134,7 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting RemoveKeywords..."))
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

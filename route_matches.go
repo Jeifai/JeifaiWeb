@@ -12,11 +12,7 @@ func Matches(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Matches..."))
 
 	sess := GetSession(r)
-
-	user := User{
-		Id: sess.UserId,
-	}
-	user.UserById()
+	user := UserById(sess.UserId)
 
 	matches := user.MatchesByUser()
 
