@@ -17,6 +17,10 @@ type Target struct {
 	CreatedDate string
 }
 
+type TargetsNames struct {
+	Names   []string
+}
+
 type TargetInfo struct {
 	Name               string
 	CreatedDate        string
@@ -62,38 +66,51 @@ func (target *Target) CreateUserTarget(user User) {
 	stmt.QueryRow(user.Id, target.Id, time.Now())
 }
 
-func (user *User) UsersTargetsByUser() (targets []Target, err error) {
-	fmt.Println(Gray(8-1, "Starting UsersTargetsByUser..."))
-	rows, err := Db.Query(`SELECT
-                            t.id,
-                            t.name,
-                            t.createdat,
-                            TO_CHAR(t.createdat, 'YYYY-MM-DD')
-                           FROM users u
-                           INNER JOIN userstargets ut ON(u.id = ut.userid) 
-                           INNER JOIN targets t ON(ut.targetid = t.id)
-                           WHERE ut.deletedat IS NULL
-                           AND u.id=$1
-                           ORDER BY t.createdat DESC`, user.Id)
+func (user *User) TargetsNamesByUser() (targetsNames TargetsNames) {
+	fmt.Println(Gray(8-1, "Starting TargetsNamesByUser..."))
+	err := Db.QueryRow(`
+                SELECT
+                  ARRAY_AGG(t.name)
+                FROM users u
+                INNER JOIN userstargets ut ON(u.id = ut.userid) 
+                INNER JOIN targets t ON(ut.targetid = t.id)
+                WHERE ut.deletedat IS NULL
+                AND u.id=$1;`, user.Id).
+		Scan(
+			pq.Array(&targetsNames.Names),
+		)
 	if err != nil {
 		panic(err.Error())
 	}
-	for rows.Next() {
-		target := Target{}
-		if err = rows.Scan(
-			&target.Id,
-			&target.Name,
-			&target.CreatedAt,
-			&target.CreatedDate); err != nil {
-			panic(err.Error())
-		}
-		targets = append(targets, target)
-	}
-	rows.Close()
 	return
 }
 
-func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo, err error) {
+func (user *User) NotSelectedTargetsNamesByUser() (targetsNames TargetsNames) {
+	fmt.Println(Gray(8-1, "Starting NotSelectedTargetsNamesByUser..."))
+	err := Db.QueryRow(`
+                WITH usertargets AS (
+				  SELECT
+				      ut.targetid
+				  FROM userstargets ut
+				  WHERE ut.deletedat IS NULL
+				  AND ut.userid=$1)
+				SELECT
+				  ARRAY_AGG(t.name)
+				FROM targets t
+				LEFT JOIN usertargets ut ON(t.id = ut.targetid)
+				WHERE ut.targetid IS NULL
+				ORDER BY 1;`, user.Id).
+		Scan(
+			pq.Array(&targetsNames.Names),
+		)
+	if err != nil {
+		panic(err.Error())
+	}
+	return
+}
+
+
+func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo) {
 	fmt.Println(Gray(8-1, "Starting InfoUsersTargetsByUser..."))
 	rows, err := Db.Query(`
                             WITH
@@ -163,35 +180,9 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo, err error)
 		targetsinfo = append(targetsinfo, targetinfo)
 	}
 	rows.Close()
-	return
-}
-
-func (user *User) NotSelectedUsersTargetsByUser() (targets []Target, err error) {
-	fmt.Println(Gray(8-1, "Starting NotSelectedUsersTargetsByUser..."))
-	rows, err := Db.Query(`WITH usertargets AS (
-                                SELECT
-                                    ut.targetid
-                                FROM userstargets ut
-                                WHERE ut.deletedat IS NULL
-                                AND ut.userid=$1)
-                            SELECT
-                            t.name
-                            FROM targets t
-                            LEFT JOIN usertargets ut ON(t.id = ut.targetid)
-                            WHERE ut.targetid IS NULL
-                            ORDER BY 1;`, user.Id)
 	if err != nil {
 		panic(err.Error())
 	}
-	for rows.Next() {
-		target := Target{}
-		if err = rows.Scan(
-			&target.Name); err != nil {
-			panic(err.Error())
-		}
-		targets = append(targets, target)
-	}
-	rows.Close()
 	return
 }
 

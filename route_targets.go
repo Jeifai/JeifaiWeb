@@ -21,23 +21,11 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserById()
 
-	user_targets_info, err := user.InfoUsersTargetsByUser()
-	if err != nil {
-		panic(err.Error())
-	}
+	user_targets_info := user.InfoUsersTargetsByUser()
 
-	var name_targets []string
-	not_selected_targets, err := user.NotSelectedUsersTargetsByUser()
-	if err != nil {
-		panic(err.Error())
-	}
-	for _, v := range not_selected_targets {
-		name_targets = append(name_targets, v.Name)
-	}
-
-	// vue-taggable-select does not work if name_targets is empty
-	if len(name_targets) == 0 {
-		name_targets = []string{" "}
+	notSelectedTargetsNames := user.NotSelectedTargetsNamesByUser()
+	if len(notSelectedTargetsNames.Names) == 0 { // vue-taggable-select does not work if name_targets is empty
+		notSelectedTargetsNames.Names = []string{" "}
 	}
 
 	type TempStruct struct {
@@ -45,7 +33,7 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 		NameTargets []string
 	}
 
-	infos := TempStruct{user_targets_info, name_targets}
+	infos := TempStruct{user_targets_info, notSelectedTargetsNames.Names}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

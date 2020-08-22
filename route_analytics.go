@@ -22,21 +22,13 @@ func AnalyticsGetTargets(w http.ResponseWriter, r *http.Request) {
 	}
 	user.UserById()
 
-	struct_targets, err := user.UsersTargetsByUser()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	var arr_targets []string
-	for _, v := range struct_targets {
-		arr_targets = append(arr_targets, v.Name)
-	}
+	targetsNames := user.TargetsNamesByUser()
 
 	type TempStruct struct {
 		Targets []string
 	}
 
-	infos := TempStruct{arr_targets}
+	infos := TempStruct{targetsNames.Names}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
