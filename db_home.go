@@ -17,9 +17,9 @@ type HomeData struct {
 	CountOpenPositions           int
 }
 
-func (user *User) GetHomeData() (home HomeData, err error) {
+func (user *User) GetHomeData() (home HomeData) {
 	fmt.Println(Gray(8-1, "Starting GetHomeData..."))
-	err = Db.QueryRow(`
+	err := Db.QueryRow(`
                         WITH
                             into_user_targets AS(
                                 SELECT
@@ -103,12 +103,14 @@ func (user *User) GetHomeData() (home HomeData, err error) {
                             CASE WHEN rld.count_results_last_7_days IS NULL THEN 0 ELSE rld.count_results_last_7_days END,
                             CASE WHEN cpld.count_closed_positions_last_7_days IS NULL THEN 0 ELSE cpld.count_closed_positions_last_7_days END,
                             CASE WHEN it.count_open_positions IS NULL THEN 0 ELSE it.count_open_positions END
-                        FROM into_user_targets iut
+                        FROM users u
+                        LEFT JOIN into_user_targets iut ON(u.id = iut.userid)
                         LEFT JOIN info_user_keywords iuk ON(iut.userid = iuk.userid)
                         LEFT JOIN info_targets it ON(iuk.userid = it.userid)
                         LEFT JOIN results_last_7_days rld ON(iuk.userid = rld.userid)
                         LEFT JOIN matches_last_7_days mld ON(rld.userid = mld.userid)
-                        LEFT JOIN closed_positions_last_7_days cpld ON(mld.userid = cpld.userid)`, user.Id).
+                        LEFT JOIN closed_positions_last_7_days cpld ON(mld.userid = cpld.userid)
+                        WHERE u.id=$1;`, user.Id).
 		Scan(
 			&home.CountKeywords,
 			&home.CountTargets,
@@ -118,5 +120,8 @@ func (user *User) GetHomeData() (home HomeData, err error) {
 			&home.CountClosedPositionLast7Days,
 			&home.CountOpenPositions,
 		)
+	if err != nil {
+		panic(err.Error())
+	}
 	return
 }
