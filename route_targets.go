@@ -31,7 +31,7 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	}()
 	wg.Wait()
 
-	infos := struct{
+	infos := struct {
 		Targets     []TargetInfo
 		NameTargets []string
 	}{
@@ -117,7 +117,7 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 		}
 		messages = append(messages, temp_messages...)
 	}
-	infos := struct{Messages []string}{messages}
+	infos := struct{ Messages []string }{messages}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -141,8 +141,7 @@ func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 
 	var messages []string
 	messages = append(messages, `<p style="color:green">Target successfully removed</p>`)
-	infos := struct{Messages []string}{messages}
-
+	infos := struct{ Messages []string }{messages}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

@@ -16,7 +16,7 @@ func AnalyticsGetTargets(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 	targetsNames := user.TargetsNamesByUser()
-	infos := struct{Targets []string}{targetsNames}
+	infos := struct{ Targets []string }{targetsNames}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -60,15 +60,15 @@ func AnalyticsPerTarget(w http.ResponseWriter, r *http.Request) {
 	}()
 	wg.Wait()
 
-	infos := struct{
+	infos := struct {
 		Jobs           TargetJobsTrend
 		CompanyInfo    CompanyData
 		EmployeesTrend TargetEmployeesTrend
 		JobTitlesWords TargetJobTitlesWords
 	}{
-		jobs, 
-		linkedinData, 
-		employeesTrend, 
+		jobs,
+		linkedinData,
+		employeesTrend,
 		jobTitlesWords,
 	}
 

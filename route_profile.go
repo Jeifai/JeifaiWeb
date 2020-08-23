@@ -128,7 +128,7 @@ func UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		temp_message := `<p style="color:green">Changes saved</p>`
 		messages = append(messages, temp_message)
 	}
-	infos := struct{Messages []string}{messages}
+	infos := struct{ Messages []string }{messages}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

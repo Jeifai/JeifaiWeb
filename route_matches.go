@@ -14,8 +14,8 @@ func Matches(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 	matches := user.MatchesByUser()
-	infos := struct{Data []Match}{matches}
-	
+	infos := struct{ Data []Match }{matches}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

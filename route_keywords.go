@@ -37,7 +37,7 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 	}()
 	wg.Wait()
 
-	infos := struct{
+	infos := struct {
 		Targets      []string
 		Utks         []UserTargetKeyword
 		KeywordsInfo []KeywordInfo
@@ -116,7 +116,7 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 		temp_message := `<p style="color:green">Successfully added</p>`
 		messages = append(messages, temp_message)
 	}
-	infos := struct{Messages []string}{messages}
+	infos := struct{ Messages []string }{messages}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -145,7 +145,7 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 
 	var messages []string
 	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
-	infos := struct{Messages []string}{messages}
+	infos := struct{ Messages []string }{messages}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
