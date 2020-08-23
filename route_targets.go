@@ -31,12 +31,14 @@ func Targets(w http.ResponseWriter, r *http.Request) {
 	}()
 	wg.Wait()
 
-	type TempStruct struct {
+	infos := struct{
 		Targets     []TargetInfo
 		NameTargets []string
+	}{
+		infoUserTargets,
+		notSelectedTargetsNames,
 	}
 
-	infos := TempStruct{infoUserTargets, notSelectedTargetsNames}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -115,12 +117,7 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 		}
 		messages = append(messages, temp_messages...)
 	}
-
-	type TempStruct struct {
-		Messages []string
-	}
-
-	infos := TempStruct{messages}
+	infos := struct{Messages []string}{messages}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -142,10 +139,11 @@ func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 	target.SetDeletedAtInUsersTargetsByUserAndTarget(user)
 	target.SetDeletedAtIntUserTargetKeywordByUserAndTarget(user)
 
-	type TempStruct struct{ Messages []string }
 	var messages []string
 	messages = append(messages, `<p style="color:green">Target successfully removed</p>`)
-	infos := TempStruct{messages}
+	infos := struct{Messages []string}{messages}
+
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

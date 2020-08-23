@@ -138,11 +138,8 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 			messages = append(messages, green_1+"otherwise just straight to log in!"+green_2)
 		}
 	}
+	infos := struct{Messages []string}{messages}
 
-	type TempStruct struct {
-		Messages []string
-	}
-	infos := TempStruct{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -188,10 +185,8 @@ func SetForgotPassword(w http.ResponseWriter, r *http.Request) {
 		green_2 := `</p>`
 		messages = append(messages, green_1+"We have just sent you an email"+green_2)
 	}
-	type TempStruct struct {
-		Messages []string
-	}
-	infos := TempStruct{messages}
+	infos := struct{Messages []string}{messages}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -254,10 +249,8 @@ func SetResetPassword(w http.ResponseWriter, r *http.Request) {
 		messages = append(messages, red_1+"Something got wrong. Please try again."+red_2)
 		messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
 	}
-	type TempStruct struct {
-		Messages []string
-	}
-	infos := TempStruct{messages}
+	infos := struct{Messages []string}{messages}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

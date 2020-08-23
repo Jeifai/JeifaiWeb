@@ -91,12 +91,8 @@ func SubmitInvitation(w http.ResponseWriter, r *http.Request) {
 			messages = append(messages, temp_message)
 		}
 	}
+	infos := struct{Messages []string}{messages}
 
-	type TempStruct struct {
-		Messages []string
-	}
-
-	infos := TempStruct{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

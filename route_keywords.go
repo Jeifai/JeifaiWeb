@@ -37,13 +37,16 @@ func Keywords(w http.ResponseWriter, r *http.Request) {
 	}()
 	wg.Wait()
 
-	type TempStruct struct {
+	infos := struct{
 		Targets      []string
 		Utks         []UserTargetKeyword
 		KeywordsInfo []KeywordInfo
+	}{
+		targetsNames,
+		utks,
+		infoUserKeywords,
 	}
 
-	infos := TempStruct{targetsNames, utks, infoUserKeywords}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -113,12 +116,8 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 		temp_message := `<p style="color:green">Successfully added</p>`
 		messages = append(messages, temp_message)
 	}
+	infos := struct{Messages []string}{messages}
 
-	type TempStruct struct {
-		Messages []string
-	}
-
-	infos := TempStruct{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -144,14 +143,10 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 
 	user.SetDeletedAtInUserTargetKeywordMultiple(utks)
 
-	type TempStruct struct {
-		Messages []string
-	}
-
 	var messages []string
 	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
+	infos := struct{Messages []string}{messages}
 
-	infos := TempStruct{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)

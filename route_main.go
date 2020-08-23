@@ -34,10 +34,8 @@ func GetHome(w http.ResponseWriter, r *http.Request) {
 
 	home := user.GetHomeData()
 	home.UserName = user.UserName
-	type TempStruct struct {
-		Home HomeData
-	}
-	infos := TempStruct{home}
+	infos := struct{Home HomeData}{home}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
