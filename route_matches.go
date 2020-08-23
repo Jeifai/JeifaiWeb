@@ -16,30 +16,11 @@ func Matches(w http.ResponseWriter, r *http.Request) {
 
 	matches := user.MatchesByUser()
 
-	type PublicMatch struct {
-		CreatedDate string
-		Target      string
-		Title       string
-		Url         string
-		KeywordText string
-	}
-
-	var public_matches []PublicMatch
-	for _, match := range matches {
-		var public_match PublicMatch
-		public_match.CreatedDate = match.CreatedDate
-		public_match.Target = match.Target
-		public_match.Title = match.Title
-		public_match.Url = match.Url
-		public_match.KeywordText = match.KeywordText
-		public_matches = append(public_matches, public_match)
-	}
-
 	type TempStruct struct {
-		Data []PublicMatch
+		Data []Match
 	}
 
-	infos := TempStruct{public_matches}
+	infos := TempStruct{matches}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
