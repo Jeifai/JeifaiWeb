@@ -81,11 +81,24 @@ func (jobs *TargetJobsTrend) GetTargetJobsTrend(target Target) {
                             FROM view_ready
                             WHERE rn != 1)
                         SELECT
-                            CASE WHEN MIN(countTotal) < 10 THEN 0 ELSE ROUND((MIN(countTotal) * 0.96)::numeric::integer, -1) END,
-                            json_object(array_agg(t.createdat::text), array_agg(t.countCreated::text)),
-                            json_object(array_agg(t.createdat::text), array_agg(t.countClosed::text)),
-                            json_object(array_agg(t.createdat::text), array_agg(t.countTotal::text))
-                        FROM table_ready t`, target.Name).
+                            CASE
+                                WHEN MIN(countTotal) IS NULL THEN 0
+                                WHEN MIN(countTotal) < 10 THEN 0
+                                ELSE ROUND((MIN(countTotal) * 0.96)::numeric::integer, -1)
+                            END,
+                            CASE
+                                WHEN json_object(array_agg(t.createdat::text), array_agg(t.countCreated::text)) IS NULL THEN '{}'::json
+                                ELSE json_object(array_agg(t.createdat::text), array_agg(t.countCreated::text))
+                            END,
+                            CASE
+                                WHEN json_object(array_agg(t.createdat::text), array_agg(t.countClosed::text)) IS NULL THEN '{}'::json
+                                ELSE json_object(array_agg(t.createdat::text), array_agg(t.countClosed::text))
+                            END,
+                            CASE
+                                WHEN json_object(array_agg(t.createdat::text), array_agg(t.countTotal::text)) IS NULL THEN '{}'::json
+                                ELSE json_object(array_agg(t.createdat::text), array_agg(t.countTotal::text))
+                            END
+                        FROM table_ready t;`, target.Name).
 		Scan(
 			&jobs.CountTotalMinY,
 			&jobs.CountCreated,
