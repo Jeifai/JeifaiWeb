@@ -100,22 +100,16 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 
 		// Before creating the relation user <-> target,
 		// check if it is not already present
-		err = response.Keyword.KeywordByText()
-
+		err := response.Keyword.KeywordByText()
 		// If keyword does not exist, create it
-		if response.Keyword.Id == 0 {
+		if err != nil {
 			response.Keyword.CreateKeyword()
 		}
 
-		targets, err := TargetsByNames(response.SelectedTargets)
-		if err != nil {
-			panic(err.Error())
-		}
+		targets := TargetsByNames(response.SelectedTargets)
 
-		err = SetUserTargetKeyword(user, targets, response.Keyword)
-		if err != nil {
-			panic(err.Error())
-		}
+		SetUserTargetKeyword(user, targets, response.Keyword)
+
 		temp_message := `<p style="color:green">Successfully added</p>`
 		messages = append(messages, temp_message)
 	}

@@ -93,15 +93,14 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 
 		if len(temp_messages) == 0 {
 
-			err := target.CreateTarget() // Try to create a target
-			if err == nil {
+			target.TargetByName()
+			if target == (Target{}) {
+				target.CreateTarget()
 				target.SendEmailToAdminAboutNewTarget()
-			} else { // If already exists, get its name
-				target.TargetByName()
 			}
 
 			// Before creating the relation user <-> target, check if it is not already present
-			_, err = user.UsersTargetsByUserAndName(target.Name)
+			err := user.UsersTargetsByUserAndName(target)
 			if err != nil {
 				// If the relation does not exists create a new relation
 				target.CreateUserTarget(user)
@@ -132,24 +131,16 @@ func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting RemoveTarget..."))
 	var target Target
 	err := json.NewDecoder(r.Body).Decode(&target)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	target, err = user.UsersTargetsByUserAndName(target.Name)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	err = target.SetDeletedAtInUsersTargetsByUserAndTarget(user)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	err = target.SetDeletedAtIntUserTargetKeywordByUserAndTarget(user)
-	if err != nil {
-		panic(err.Error())
-	}
+	user.UsersTargetsByUserAndName(target)
+	target.SetDeletedAtInUsersTargetsByUserAndTarget(user)
+	target.SetDeletedAtIntUserTargetKeywordByUserAndTarget(user)
 
 	type TempStruct struct{ Messages []string }
 	var messages []string

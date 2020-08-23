@@ -29,10 +29,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 
 	if user.Password == Encrypt(user.LoginPassword) {
 		fmt.Println(Blue("Log in valid..."))
-		session, err := user.CreateSession()
-		if err != nil {
-			panic(err.Error())
-		}
+		session := user.CreateSession()
 		cookie := http.Cookie{
 			Name:     "_cookie",
 			Value:    session.Uuid,
@@ -132,9 +129,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 			messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
 		} else {
 			invitation.UpdateInvitation()
-			if err := user.CreateUser(); err != nil {
-				panic(err.Error())
-			}
+			user.CreateUser()
 			user.SendSignUpEmail()
 			green_1 := `<p style="color:green">`
 			green_2 := `</p>`
@@ -179,10 +174,7 @@ func SetForgotPassword(w http.ResponseWriter, r *http.Request) {
 		messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
 	} else {
 		token := GenerateToken()
-		err = user.CreateToken(token)
-		if err != nil {
-			panic(err.Error())
-		}
+		user.CreateToken(token)
 
 		var reset_url string
 		if isLocal {
@@ -244,10 +236,7 @@ func SetResetPassword(w http.ResponseWriter, r *http.Request) {
 
 		if infos.Password == infos.RepeatPassword {
 			e_password := Encrypt(infos.Password)
-			err := user.ChangePassword(e_password)
-			if err != nil {
-				panic(err.Error())
-			}
+			user.ChangePassword(e_password)
 			green_1 := `<p style="color:green">`
 			green_2 := `</p>`
 			messages = append(messages, green_1+"A new password has been set!"+green_2)

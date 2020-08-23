@@ -53,7 +53,7 @@ func GetSession(request *http.Request) (sess Session) {
 	return
 }
 
-func (user *User) CreateSession() (session Session, err error) {
+func (user *User) CreateSession() (session Session) {
 	fmt.Println(Gray(8-1, "Starting CreateSession..."))
 	statement := `INSERT INTO sessions (uuid, email, userid, createdat)
                   VALUES ($1, $2, $3, $4)
@@ -76,6 +76,9 @@ func (user *User) CreateSession() (session Session, err error) {
 		&session.UserId,
 		&session.CreatedAt,
 	)
+	if err != nil {
+		panic(err.Error())
+	}
 	return
 }
 
@@ -109,7 +112,7 @@ func (session *Session) CheckSession() (valid bool, err error) {
 }
 
 // Set deletedat by uuid
-func (session *Session) SetSessionDeletedAtByUUID() (err error) {
+func (session *Session) SetSessionDeletedAtByUUID() {
 	fmt.Println(Gray(8-1, "Starting SetSessionDeletedAtByUUID..."))
 	statement := `UPDATE sessions SET deletedat = current_timestamp WHERE uuid = $1;`
 	stmt, err := Db.Prepare(statement)
@@ -119,10 +122,12 @@ func (session *Session) SetSessionDeletedAtByUUID() (err error) {
 	defer stmt.Close()
 
 	_, err = stmt.Exec(session.Uuid)
-	return
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
-func (user *User) CreateUser() (err error) {
+func (user *User) CreateUser() {
 	fmt.Println(Gray(8-1, "Starting Create..."))
 	statement := `INSERT INTO users
                   (username, email, password, createdat, updatedat)
@@ -145,12 +150,14 @@ func (user *User) CreateUser() (err error) {
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
-	return
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
-func (user *User) UserByEmail() (err error) {
+func (user *User) UserByEmail() {
 	fmt.Println(Gray(8-1, "Starting UserByEmail..."))
-	err = Db.QueryRow(`SELECT
+	err := Db.QueryRow(`SELECT
                         id,
                         username,
                         email,
@@ -181,7 +188,9 @@ func (user *User) UserByEmail() (err error) {
 			&user.City,
 			&user.Gender,
 		)
-	return
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func UserById(userId int) (user User) {
@@ -279,9 +288,12 @@ func (user User) UpdateUserUpdates() {
 		user.Id,
 		user_json,
 		time.Now())
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
-func (user *User) CreateToken(token string) (err error) {
+func (user *User) CreateToken(token string) {
 	fmt.Println(Gray(8-1, "Starting CreateToken..."))
 	statement := `INSERT INTO resetpasswords (userid, token, createdat, expiredat)
                   VALUES ($1, $2, $3, $4)`
@@ -300,7 +312,6 @@ func (user *User) CreateToken(token string) (err error) {
 		created_at,
 		expired_at,
 	)
-	return
 }
 
 func (user *User) UserByToken(token string) {
@@ -314,13 +325,14 @@ func (user *User) UserByToken(token string) {
                       LEFT JOIN users u ON (r.userid = u.id)
                       WHERE r.token = $1
                       AND $2 < r.expiredat
-                      AND r.consumedat IS NULL`,
-		token, current_timestamp).Scan(&user.Id, &user.Email, &user.UserName)
-	_ = err
-	return
+                      AND r.consumedat IS NULL`, token, current_timestamp).
+		Scan(&user.Id, &user.Email, &user.UserName)
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
-func (user *User) ChangePassword(password string) (err error) {
+func (user *User) ChangePassword(password string) {
 	fmt.Println(Gray(8-1, "Starting ChangePassword..."))
 	statement := `UPDATE users SET password=$1 WHERE id=$2`
 	stmt, err := Db.Prepare(statement)
@@ -332,5 +344,4 @@ func (user *User) ChangePassword(password string) (err error) {
 		password,
 		user.Id,
 	)
-	return
 }

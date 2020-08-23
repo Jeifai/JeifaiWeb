@@ -28,7 +28,7 @@ type TargetInfo struct {
 	Closed             int
 }
 
-func (target *Target) CreateTarget() (err error) {
+func (target *Target) CreateTarget() {
 	fmt.Println(Gray(8-1, "Starting CreateTarget..."))
 	statement := `INSERT INTO targets (name, createdat)
                   VALUES ($1, $2)
@@ -46,7 +46,9 @@ func (target *Target) CreateTarget() (err error) {
 		&target.Name,
 		&target.CreatedAt,
 	)
-	return err
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (target *Target) CreateUserTarget(user User) {
@@ -196,7 +198,7 @@ func (target *Target) TargetByName() {
 	}
 }
 
-func TargetsByNames(targetNames []string) (targets []Target, err error) {
+func TargetsByNames(targetNames []string) (targets []Target) {
 	fmt.Println(Gray(8-1, "Starting TargetsByNames..."))
 
 	rows, err := Db.Query(`SELECT
@@ -205,36 +207,36 @@ func TargetsByNames(targetNames []string) (targets []Target, err error) {
                             FROM targets t
                             WHERE t.name LIKE ANY($1)`, pq.Array(targetNames))
 	if err != nil {
-		return
+		panic(err.Error())
 	}
 	for rows.Next() {
 		target := Target{}
 		if err = rows.Scan(&target.Id, &target.Name); err != nil {
-			return
+			panic(err.Error())
 		}
 		targets = append(targets, target)
 	}
 	rows.Close()
+
 	return
 }
 
-func (user *User) UsersTargetsByUserAndName(name string) (target Target, err error) {
+func (user *User) UsersTargetsByUserAndName(target Target) (err error) {
 	fmt.Println(Gray(8-1, "Starting UsersTargetsByUserAndName..."))
 	err = Db.QueryRow(`SELECT
-                         t.id, 
-                         t.name, 
+                         t.id,
                          t.createdat 
                        FROM users u
                        INNER JOIN userstargets ut ON(u.id = ut.userid) 
                        INNER JOIN targets t ON(ut.targetid = t.id)
                        WHERE u.id=$1
                        AND t.name=$2
-                       AND ut.deletedat IS NULL`, user.Id, name).Scan(&target.Id, &target.Name, &target.CreatedAt)
+                       AND ut.deletedat IS NULL`, user.Id, target.Name).Scan(
+		&target.Id, &target.CreatedAt)
 	return
 }
 
-func (target *Target) SetDeletedAtInUsersTargetsByUserAndTarget(
-	user User) (err error) {
+func (target *Target) SetDeletedAtInUsersTargetsByUserAndTarget(user User) {
 	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUsersTargetsByUserAndTarget..."))
 
 	statement := `UPDATE userstargets
@@ -248,10 +250,12 @@ func (target *Target) SetDeletedAtInUsersTargetsByUserAndTarget(
 	}
 	defer stmt.Close()
 	_, err = stmt.Exec(user.Id, target.Id)
-	return
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
-func (target *Target) SetDeletedAtIntUserTargetKeywordByUserAndTarget(user User) (err error) {
+func (target *Target) SetDeletedAtIntUserTargetKeywordByUserAndTarget(user User) {
 	fmt.Println(Gray(8-1, "Starting SetDeletedAtIntUserTargetKeywordByUserAndTarget..."))
 	statement := `UPDATE userstargetskeywords
                   SET deletedat = current_timestamp
@@ -264,5 +268,7 @@ func (target *Target) SetDeletedAtIntUserTargetKeywordByUserAndTarget(user User)
 	}
 	defer stmt.Close()
 	_, err = stmt.Exec(user.Id, target.Id)
-	return
+	if err != nil {
+		panic(err.Error())
+	}
 }

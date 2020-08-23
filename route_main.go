@@ -32,10 +32,7 @@ func GetHome(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	home, err := user.GetHomeData()
-	if err != nil {
-		fmt.Println(Gray(8-1, "User has no data..."))
-	}
+	home := user.GetHomeData()
 	home.UserName = user.UserName
 	type TempStruct struct {
 		Home HomeData

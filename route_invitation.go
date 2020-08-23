@@ -74,8 +74,8 @@ func SubmitInvitation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(messages) == 0 {
-		invitation.InvitationIdByEmail()
-		if invitation.Id == 0 {
+		err := invitation.InvitationIdByEmail()
+		if err != nil {
 			invitation.CreateInvitation()
 			green_1 := `<p style="color:green">`
 			green_2 := `</p>`

@@ -29,13 +29,16 @@ func (invitation *Invitation) InvitationIdByEmail() (err error) {
 
 func (user *User) InvitationIdByUuidAndEmail() (invitation Invitation) {
 	fmt.Println(Gray(8-1, "Starting InvitationIdByUuidAndEmail..."))
-	_ = Db.QueryRow(`SELECT i.id
+	err := Db.QueryRow(`SELECT i.id
                        FROM invitations i
                        WHERE i.uuid=$1
                        AND i.email=$2 
                        AND i.usedat IS NULL`,
 		user.InvitationCode,
 		user.Email).Scan(&invitation.Id)
+	if err != nil {
+		panic(err.Error())
+	}
 	return
 }
 
@@ -66,6 +69,9 @@ func (invitation *Invitation) CreateInvitation() {
 		invitation.Anythingelse,
 		time.Now(),
 	)
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (invitation *Invitation) UpdateInvitation() {

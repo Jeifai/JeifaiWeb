@@ -30,7 +30,7 @@ type KeywordInfo struct {
 	AvgMatchesDay   float32
 }
 
-func (keyword *Keyword) CreateKeyword() (err error) {
+func (keyword *Keyword) CreateKeyword() {
 	fmt.Println(Gray(8-1, "Starting CreateKeyword..."))
 	statement := `INSERT INTO keywords (text, createdat)
                   VALUES ($1, current_timestamp)
@@ -46,7 +46,9 @@ func (keyword *Keyword) CreateKeyword() (err error) {
 		&keyword.Id,
 		&keyword.CreatedAt,
 	)
-	return err
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (keyword *Keyword) KeywordByText() (err error) {
@@ -72,7 +74,7 @@ func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
                             AND utk.deletedat IS NULL
                             ORDER BY utk.updatedat DESC`, user.Id)
 	if err != nil {
-		return
+		panic(err.Error())
 	}
 	for rows.Next() {
 		utk := UserTargetKeyword{}
@@ -126,14 +128,11 @@ func (user *User) InfoKeywordsByUser() (keywordsInfo []KeywordInfo) {
 		keywordsInfo = append(keywordsInfo, keywordInfo)
 	}
 	rows.Close()
-	if err != nil {
-		panic(err.Error())
-	}
 	return
 }
 
 func SetUserTargetKeyword(
-	user User, targets []Target, keyword Keyword) (err error) {
+	user User, targets []Target, keyword Keyword) {
 	fmt.Println(Gray(8-1, "Starting SetUserTargetKeyword..."))
 
 	valueStrings := []string{}
@@ -159,7 +158,7 @@ func SetUserTargetKeyword(
 
 	smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
 
-	_, err = Db.Exec(smt, valueArgs...)
+	_, err := Db.Exec(smt, valueArgs...)
 	if err != nil {
 		panic(err.Error())
 	}
