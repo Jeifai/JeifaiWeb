@@ -64,7 +64,7 @@ func (jobs *TargetJobsTrend) GetTargetJobsTrend(target Target) {
                                                     date_trunc('day', dd)::date AS consdate
                                                 FROM generate_series(
                                                     (SELECT MIN(s.createdat) FROM scrapers s WHERE s.name = $1),
-                                                    (SELECT MAX(r.updatedat) - INTERVAL '1 DAY' FROM scrapers s LEFT JOIN results r ON(s.id = r.scraperid) WHERE s.name = $1), 
+                                                    (SELECT DISTINCT current_date - INTERVAL '1 DAY' FROM scrapers s LEFT JOIN results r ON(s.id = r.scraperid) WHERE s.name = $1), 
                                                     '1 day'::interval) dd)
                                     SELECT
                                         cd.consdate AS createdat,
