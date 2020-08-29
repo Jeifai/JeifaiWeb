@@ -91,6 +91,7 @@ export default {
             <table class="mdc-data-table__table" aria-label="Created Keywords">
                 <thead>
                     <tr class="mdc-data-table__header-row">
+                        <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Job Url</th>
                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                             <a class="column-header" @click="sortRows('CreatedDate')">
                                 CreatedAt
@@ -119,15 +120,10 @@ export default {
                                 <i v-if="sortedBy === 'Title' && sorting['Title'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                             </a>
                         </th>
-                        <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Job Url</th>
                     </tr>
                 </thead>
                 <tbody class="mdc-data-table__content">
                     <tr v-for="(row, index) in filteredRows" class="mdc-data-table__row">
-                        <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
-                        <td class="mdc-data-table__cell" v-html="row.KeywordText"></td>
-                        <td class="mdc-data-table__cell" v-html="row.Target"></td>
-                        <td class="mdc-data-table__cell" v-html="row.Title"></td>
                         <td class="mdc-data-table__cell">
                             <button 
                                 class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
@@ -137,6 +133,10 @@ export default {
                                 v-on:click="select(row)">open_in_new
                             </button>
                         </td>
+                        <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
+                        <td class="mdc-data-table__cell" v-html="row.KeywordText"></td>
+                        <td class="mdc-data-table__cell" v-html="row.Target"></td>
+                        <td class="mdc-data-table__cell" v-html="row.Title"></td>
                     </tr>
                 </tbody>
             </table>
