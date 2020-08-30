@@ -22,12 +22,15 @@ type UserTargetKeyword struct {
 }
 
 type KeywordInfo struct {
-	Name            string
-	CreatedDate     string
-	CountTargets    int
-	LastWeekMatches int
-	TotalMatches    int
-	AvgMatchesDay   float32
+	Name             string
+	CountResults     int
+	CountResultsPerc string
+	CountResultsDay  int
+	CreatedDate      string
+	CountTargets     int
+	LastWeekMatches  int
+	TotalMatches     int
+	AvgMatchesDay    float32
 }
 
 func (keyword *Keyword) CreateKeyword() {
@@ -95,22 +98,51 @@ func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
 func (user *User) InfoKeywordsByUser() (keywordsInfo []KeywordInfo) {
 	fmt.Println(Gray(8-1, "Starting InfoKeywordsByUser..."))
 	rows, err := Db.Query(`
-						SELECT
-							k.text,
-							TO_CHAR(MIN(utk.createdat), 'YYYY-MM-DD'),
-							COUNT(DISTINCT utk.targetid),
-							COUNT(DISTINCT CASE WHEN m.createdat >= now() - interval '1 week' THEN m.id END),
-							COUNT(DISTINCT m.id),
-							CASE 
-								WHEN COUNT(DISTINCT m.id) = 0 THEN 0
-								ELSE ROUND(1.0 * COUNT(DISTINCT m.id) / COUNT(DISTINCT m.createdat::date), 1)
-							END
-						FROM userstargetskeywords utk
-						LEFT JOIN keywords k ON(utk.keywordid = k.id)
-						LEFT JOIN matches m ON(utk.keywordid = m.keywordid AND utk.createdat < m.createdat)
-						WHERE utk.userid = $1
-						AND utk.deletedat IS NULL
-						GROUP BY 1;`, user.Id)
+						WITH 
+							keywords_macro AS (
+								WITH
+									userkeywords AS (
+										SELECT DISTINCT
+											k.text,
+											k.id
+										FROM userstargetskeywords utk
+										LEFT JOIN keywords k ON(utk.keywordid = k.id)
+										LEFT JOIN users u ON(utk.userid = u.id)
+										WHERE u.id = $1
+										AND utk.deletedat IS NULL),
+									all_results AS (
+										SELECT
+											COUNT(DISTINCT r.id) AS count_id
+										FROM results r)
+								SELECT
+									uk.text,
+									COUNT(DISTINCT r.id) AS count_results,
+									ROUND(100.0 * COUNT(DISTINCT r.id) / ar.count_id, 2)::text || '%' AS count_results_perc,
+									COUNT(DISTINCT r.id) / COUNT(DISTINCT r.createdat::date) AS count_results_per_day
+								FROM userkeywords uk
+								LEFT JOIN results r ON(LOWER(r.title) LIKE('%' || uk.text || '%'))
+								LEFT JOIN all_results ar ON(1 = 1)
+								GROUP BY 1, ar.count_id)
+							SELECT
+								k.text,
+								km.count_results,
+								km.count_results_perc,
+								km.count_results_per_day,
+								TO_CHAR(MIN(utk.createdat), 'YYYY-MM-DD'),
+								COUNT(DISTINCT utk.targetid),
+								COUNT(DISTINCT CASE WHEN m.createdat >= now() - interval '1 week' THEN m.id END),
+								COUNT(DISTINCT m.id),
+								CASE 
+									WHEN COUNT(DISTINCT m.id) = 0 THEN 0
+									ELSE ROUND(1.0 * COUNT(DISTINCT m.id) / COUNT(DISTINCT m.createdat::date), 1)
+								END
+							FROM userstargetskeywords utk
+							LEFT JOIN keywords k ON(utk.keywordid = k.id)
+							LEFT JOIN matches m ON(utk.keywordid = m.keywordid AND utk.createdat < m.createdat)
+							LEFT JOIN keywords_macro km ON(k.text = km.text)
+							WHERE utk.userid = $1
+							AND utk.deletedat IS NULL
+							GROUP BY 1, 2, 3, 4;`, user.Id)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -118,6 +150,9 @@ func (user *User) InfoKeywordsByUser() (keywordsInfo []KeywordInfo) {
 		keywordInfo := KeywordInfo{}
 		if err = rows.Scan(
 			&keywordInfo.Name,
+			&keywordInfo.CountResults,
+			&keywordInfo.CountResultsPerc,
+			&keywordInfo.CountResultsDay,
 			&keywordInfo.CreatedDate,
 			&keywordInfo.CountTargets,
 			&keywordInfo.LastWeekMatches,

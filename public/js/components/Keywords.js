@@ -17,6 +17,9 @@ export default {
             sortingKeywords: {
                 CreatedDate: true,
                 Name: false,
+                CountResults: false,
+                CountResultsPerc: false,
+                CountResultsDay: false,
                 CountTargets: false,
                 TotalMatches: false,
                 LastWeekMatches: false,
@@ -191,35 +194,56 @@ export default {
                             </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                 <a class="column-header" @click="sortRowsKeywords('Name')">
-                                    Keyword Text
+                                    Keyword
                                     <i v-if="sortedByKeywords === 'Name' && sortingKeywords['Name'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                     <i v-if="sortedByKeywords === 'Name' && sortingKeywords['Name'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                 </a>
                             </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header" @click="sortRowsKeywords('CountResults')">
+                                    Results
+                                    <i v-if="sortedByKeywords === 'CountResults' && sortingKeywords['CountResults'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                    <i v-if="sortedByKeywords === 'CountResults' && sortingKeywords['CountResults'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header" @click="sortRowsKeywords('CountResultsPerc')">
+                                    Results %
+                                    <i v-if="sortedByKeywords === 'CountResultsPerc' && sortingKeywords['CountResultsPerc'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                    <i v-if="sortedByKeywords === 'CountResultsPerc' && sortingKeywords['CountResultsPerc'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header" @click="sortRowsKeywords('CountResultsDay')">
+                                    Results / Day
+                                    <i v-if="sortedByKeywords === 'CountResultsDay' && sortingKeywords['CountResultsDay'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                    <i v-if="sortedByKeywords === 'CountResultsDay' && sortingKeywords['CountResultsDay'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                 <a class="column-header" @click="sortRowsKeywords('CountTargets')">
-                                    Count Targets
+                                    Targets
                                     <i v-if="sortedByKeywords === 'CountTargets' && sortingKeywords['CountTargets'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                     <i v-if="sortedByKeywords === 'CountTargets' && sortingKeywords['CountTargets'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                 </a>
                             </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                 <a class="column-header" @click="sortRowsKeywords('TotalMatches')">
-                                    Total Matches
+                                    Matches
                                     <i v-if="sortedByKeywords === 'TotalMatches' && sortingKeywords['TotalMatches'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                     <i v-if="sortedByKeywords === 'TotalMatches' && sortingKeywords['TotalMatches'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                 </a>
                             </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                 <a class="column-header" @click="sortRowsKeywords('LastWeekMatches')">
-                                    Last 7 Days Matches
+                                    7 Days Matches
                                     <i v-if="sortedByKeywords === 'LastWeekMatches' && sortingKeywords['LastWeekMatches'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                     <i v-if="sortedByKeywords === 'LastWeekMatches' && sortingKeywords['LastWeekMatches'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                 </a>
                             </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                 <a class="column-header" @click="sortRowsKeywords('LastWeekMatches')">
-                                    Avg Matches / Day
+                                    Matches / Day
                                     <i v-if="sortedByKeywords === 'AvgMatchesDay' && sortingKeywords['AvgMatchesDay'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                     <i v-if="sortedByKeywords === 'AvgMatchesDay' && sortingKeywords['AvgMatchesDay'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                 </a>
@@ -230,6 +254,9 @@ export default {
                         <tr v-for="(row, index) in keywordsInfo" class="mdc-data-table__row">
                             <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                             <td class="mdc-data-table__cell" v-html="row.Name"></td>
+                            <td class="mdc-data-table__cell" v-html="row.CountResults"></td>
+                            <td class="mdc-data-table__cell" v-html="row.CountResultsPerc"></td>
+                            <td class="mdc-data-table__cell" v-html="row.CountResultsDay"></td>
                             <td class="mdc-data-table__cell" v-html="row.CountTargets"></td>
                             <td class="mdc-data-table__cell" v-html="row.TotalMatches"></td>
                             <td class="mdc-data-table__cell" v-html="row.LastWeekMatches"></td>
