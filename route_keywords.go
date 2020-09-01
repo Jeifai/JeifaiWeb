@@ -10,8 +10,8 @@ import (
 	. "github.com/logrusorgru/aurora"
 )
 
-func GetKeywords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting GetKeywords..."))
+func GetUserKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetUserKeywords..."))
 
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
@@ -20,6 +20,25 @@ func GetKeywords(w http.ResponseWriter, r *http.Request) {
 
 	infos := struct {
 		Keywords 	[]Keyword
+	}{
+		keywords,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}
+
+
+func GetAllKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetAllKeywords..."))
+
+	_ = GetSession(r)
+
+	keywords := KeywordsByAll()
+
+	infos := struct {
+		Keywords 	[]string
 	}{
 		keywords,
 	}

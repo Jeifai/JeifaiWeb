@@ -3,11 +3,24 @@ export default {
     delimiters: ["[[","]]"],
     data: function () {
         return {
-            keywords: [],
+            userkeywords: [],
+            allkeywords: [],
             targets: [],
+            chosen: '',
+            autoCompleteStyle : {
+                vueSimpleSuggest: "",
+                inputWrapper: "",
+                defaultInput : "form-control",
+                suggestions: "suggestions-style",
+                suggestItem: "list-group-item"
+            },
         }
     },
     mounted() {
+        this.$parent.selectedIndex = this.selectedIndex
+        mdc.textField.MDCTextField.attachTo(document.getElementById("KeywordsFilter"));
+        mdc.textField.MDCTextField.attachTo(document.getElementById("TargetsFilter"));
+
         let styleElem = document.createElement('style');
         styleElem.textContent = `
             .row {
@@ -16,6 +29,13 @@ export default {
             .column {
                 flex: 50%;
             }
+            .input-row {
+                display: flex;
+            }
+            .suggestions-style {
+                position: absolute;
+                z-index: 1000;
+            }
             .scrollable {
                 overflow-y: scroll;
                 height:36vh;
@@ -23,13 +43,21 @@ export default {
         document.head.appendChild(styleElem);
     },
     created () {
-        this.fetchKeywords();
+        this.fetchUserKeywords();
+        this.fetchAllKeywords();
         this.fetchTargets();
     },
     methods: {
-        fetchKeywords: function() {
-            this.$http.get('/keywords').then(function(response) {
-                this.keywords = response.data.Keywords
+        fetchUserKeywords: function() {
+            this.$http.get('/keywords/user').then(function(response) {
+                this.userkeywords = response.data.Keywords
+            }).catch(function(error) {
+                console.log(error)
+            });
+        },
+        fetchAllKeywords: function() {
+            this.$http.get('/keywords/all').then(function(response) {
+                this.allkeywords = response.data.Keywords
             }).catch(function(error) {
                 console.log(error)
             });
@@ -50,6 +78,25 @@ export default {
                         <h1>
                             My Keywords
                         </h1><br>
+                        <div class="input-row">
+                            <vue-simple-suggest
+                                v-model="chosen"
+                                :list="allkeywords"
+                                :styles="autoCompleteStyle"
+                                :destyled=true
+                                :filter-by-query="true">
+                                <label id="KeywordsFilter" for="Filter" class="mdc-text-field mdc-text-field--filled mdc-text-field--with-leading-icon">
+                                    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" role="button">text_fields</i>
+                                    <input class="mdc-text-field__input" type="text" aria-labelledby="Filter">
+                                    <span class="mdc-floating-label" id="KeywordsFilter">Filter or add a new keyword</span>
+                                    <div class="mdc-line-ripple"></div>
+                                </label>
+                            </vue-simple-suggest>
+                            <button 
+                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
+                                aria-label="Add">add
+                            </button>
+                        </div>
                         <div class="mdc-data-table scrollable">
                             <table class="mdc-data-table__table" aria-label="Created Keywords">
                                 <thead>
@@ -70,7 +117,7 @@ export default {
                                     </tr>
                                 </thead>
                                 <tbody class="mdc-data-table__content">
-                                    <tr v-for="(row, index) in keywords" class="mdc-data-table__row">
+                                    <tr v-for="(row, index) in userkeywords" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
                                             <input type="checkbox">
                                         </td>
@@ -93,6 +140,25 @@ export default {
                         <h1>
                             My Targets
                         </h1><br>
+                        <div class="input-row">
+                            <vue-simple-suggest
+                                v-model="chosen"
+                                :list="simpleSuggestionList"
+                                :styles="autoCompleteStyle"
+                                :destyled=true
+                                :filter-by-query="true">
+                                <label id="TargetsFilter" for="Filter" class="mdc-text-field mdc-text-field--filled mdc-text-field--with-leading-icon">
+                                    <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" role="button">text_fields</i>
+                                    <input class="mdc-text-field__input" type="text" aria-labelledby="Filter">
+                                    <span class="mdc-floating-label" id="TargetsFilter">Filter or add a new target</span>
+                                    <div class="mdc-line-ripple"></div>
+                                </label>
+                            </vue-simple-suggest>
+                            <button 
+                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
+                                aria-label="Add">add
+                            </button>
+                        </div>
                         <div class="mdc-data-table scrollable">
                             <table class="mdc-data-table__table" aria-label="Created Targets">
                                 <thead>

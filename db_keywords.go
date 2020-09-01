@@ -94,6 +94,29 @@ func (user *User) KeywordsByUser() (keywords []Keyword) {
 	return
 }
 
+func KeywordsByAll() (keywords []string) {
+	fmt.Println(Gray(8-1, "Starting KeywordsByAll..."))
+	rows, err := Db.Query(`
+							SELECT
+								DISTINCT k.text
+							FROM keywords k;`)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		var keyword string
+		if err = rows.Scan(
+			&keyword); err != nil {
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+		keywords = append(keywords, keyword)
+	}
+	rows.Close()
+	return
+}
+
 func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
 	fmt.Println(Gray(8-1, "Starting GetUserTargetKeyword..."))
 
