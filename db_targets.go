@@ -111,6 +111,35 @@ func (user *User) NotSelectedTargetsNamesByUser() (notSelectedTargetsNames []str
 	return
 }
 
+func (user *User) TargetsByUser() (targets []Target) {
+	fmt.Println(Gray(8-1, "Starting TargetsByUser..."))
+	rows, err := Db.Query(`
+							SELECT
+								t.name,
+								MIN(ut.createdat::date)
+							FROM userstargets ut
+							LEFT JOIN targets t ON(ut.targetid = t.id)
+							WHERE ut.userid = $1
+							AND ut.deletedat IS NULL
+							GROUP BY 1;`, user.Id)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		target := Target{}
+		if err = rows.Scan(
+			&target.Name,
+			&target.CreatedDate); err != nil {
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+		targets = append(targets, target)
+	}
+	rows.Close()
+	return
+}
+
 func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo) {
 	fmt.Println(Gray(8-1, "Starting InfoUsersTargetsByUser..."))
 	rows, err := Db.Query(`
