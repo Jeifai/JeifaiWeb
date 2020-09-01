@@ -4,39 +4,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"sync"
 
 	"github.com/go-playground/validator"
 	. "github.com/logrusorgru/aurora"
 )
 
-func Targets(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting Targets..."))
+func GetTargets(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetTargets..."))
 
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	var infoUserTargets []TargetInfo
-	var notSelectedTargetsNames []string
-
-	var wg sync.WaitGroup
-	wg.Add(2)
-	go func() {
-		infoUserTargets = user.InfoUsersTargetsByUser()
-		wg.Done()
-	}()
-	go func() {
-		notSelectedTargetsNames = user.NotSelectedTargetsNamesByUser()
-		wg.Done()
-	}()
-	wg.Wait()
+	targets := user.TargetsByUser()
 
 	infos := struct {
-		Targets     []TargetInfo
-		NameTargets []string
+		Targets 	[]Target
 	}{
-		infoUserTargets,
-		notSelectedTargetsNames,
+		targets,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

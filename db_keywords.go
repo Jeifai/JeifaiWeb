@@ -10,9 +10,10 @@ import (
 )
 
 type Keyword struct {
-	Id        int
-	Text      string `validate:"required,max=30,min=3"`
-	CreatedAt time.Time
+	Id        	int
+	Text      	string `validate:"required,max=30,min=3"`
+	CreatedAt 	time.Time
+	CreatedDate string
 }
 
 type UserTargetKeyword struct {
@@ -60,6 +61,36 @@ func (keyword *Keyword) KeywordByText() (err error) {
                          k.id
                        FROM keywords k
                        WHERE k.text=$1`, keyword.Text).Scan(&keyword.Id)
+	return
+}
+
+
+func (user *User) KeywordsByUser() (keywords []Keyword) {
+	fmt.Println(Gray(8-1, "Starting KeywordsByUser..."))
+	rows, err := Db.Query(`
+							SELECT
+								k.text,
+								MIN(utk.createdat::date)
+							FROM userstargetskeywords utk
+							LEFT JOIN keywords k ON(utk.keywordid = k.id)
+							WHERE utk.userid = $1
+							AND utk.deletedat IS NULL
+							GROUP BY 1;`, user.Id)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		keyword := Keyword{}
+		if err = rows.Scan(
+			&keyword.Text,
+			&keyword.CreatedDate); err != nil {
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+		keywords = append(keywords, keyword)
+	}
+	rows.Close()
 	return
 }
 

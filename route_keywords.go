@@ -5,46 +5,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"sync"
 
 	"github.com/go-playground/validator"
 	. "github.com/logrusorgru/aurora"
 )
 
-func Keywords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting Keywords..."))
+func GetKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetKeywords..."))
 
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	var targetsNames []string
-	var infoUserKeywords []KeywordInfo
-	var utks []UserTargetKeyword
-
-	var wg sync.WaitGroup
-	wg.Add(3)
-	go func() {
-		targetsNames = user.TargetsNamesByUser()
-		wg.Done()
-	}()
-	go func() {
-		infoUserKeywords = user.InfoKeywordsByUser()
-		wg.Done()
-	}()
-	go func() {
-		utks = user.GetUserTargetKeyword()
-		wg.Done()
-	}()
-	wg.Wait()
+	keywords := user.KeywordsByUser()
 
 	infos := struct {
-		Targets      []string
-		Utks         []UserTargetKeyword
-		KeywordsInfo []KeywordInfo
+		Keywords 	[]Keyword
 	}{
-		targetsNames,
-		utks,
-		infoUserKeywords,
+		keywords,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
