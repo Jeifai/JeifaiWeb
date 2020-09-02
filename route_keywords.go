@@ -66,20 +66,17 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			var temp_message string
 			if err.Field() == "Text" {
 				if err.Tag() == "required" {
-					temp_message = `Keyword cannot be empty`
+					messages = append(messages, `<p style="color:red">Keyword is empty</p>`)
 				}
 				if err.Tag() == "min" {
-					temp_message = `Keyword inserted is too short`
+					messages = append(messages, `<p style="color:red">Keyword is too short</p>`)
 				}
 				if err.Tag() == "max" {
-					temp_message = `Keyword inserted is too long`
+					messages = append(messages, `<p style="color:red">Keyword is too long</p>`)
 				}
 			}
-			neg_alert := `<p style="color:red">` + temp_message + `</p>`
-			messages = append(messages, neg_alert)
 		}
 	}
 
@@ -92,10 +89,10 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 		userKeywordId := user.SelectUserKeywordByUserAndKeyword(keyword)
 		if userKeywordId == 0 {
 			user.InsertUserKeyword(keyword)
+			messages = append(messages, `<p style="color:green">Keyword added</p>`)
+		} else {
+			messages = append(messages, `<p style="color:orange">Keyword already present</p>`)
 		}
-
-		pos_alert := `<p style="color:green">Successfully added</p>`
-		messages = append(messages, pos_alert)
 	}
 	infos := struct{ Messages []string }{messages}
 

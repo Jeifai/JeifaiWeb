@@ -57,33 +57,39 @@ export default {
     methods: {
         fetchUserKeywords: function() {
             this.$http.get('/keywords/user').then(function(response) {
-                this.userKeywords = response.data.Keywords
+                this.userKeywords = response.data.Keywords;
             }).catch(function(error) {
-                console.log(error)
+                console.log(error);
             });
         },
         fetchAllKeywords: function() {
             this.$http.get('/keywords/all').then(function(response) {
-                this.allkeywords = response.data.Keywords
+                this.allkeywords = response.data.Keywords;
             }).catch(function(error) {
-                console.log(error)
+                console.log(error);
             });
         },
         fetchTargets: function() {
             this.$http.get('/targets').then(function(response) {
-                this.targets = response.data.Targets
+                this.targets = response.data.Targets;
             }).catch(function(error) {
-                console.log(error)
+                console.log(error);
             });
         },
         createKeyword: function() {
             this.$http.put('/keywords/' + this.inputKeyword).then(
                 function(response) {
-                    this.messages = response.data.Messages
-                    this.fetchKeywords()
+                    this.messages = response.data.Messages;
+                    this.fetchUserKeywords();
+                    this.fetchAllKeywords();
+                    this.inputKeyword = '';
+                    this.deleteMessages();
             }).catch(function(error) {
-                console.log(error)
+                console.log(error);
             });
+        },
+        deleteMessages: function() {
+            setTimeout(() => this.messages = '', 2000)
         },
     },
     computed: {

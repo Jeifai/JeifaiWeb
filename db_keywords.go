@@ -79,11 +79,11 @@ func (user *User) SelectKeywordsByUser() (keywords []Keyword) {
 	rows, err := Db.Query(`
 							SELECT
 								k.text,
-								TO_CHAR(MIN(utk.createdat::date), 'YYYY-MM-DD')
-							FROM userstargetskeywords utk
-							LEFT JOIN keywords k ON(utk.keywordid = k.id)
-							WHERE utk.userid = $1
-							AND utk.deletedat IS NULL
+								TO_CHAR(MIN(ut.createdat::date), 'YYYY-MM-DD')
+							FROM userskeywords ut
+							LEFT JOIN keywords k ON(ut.keywordid = k.id)
+							WHERE ut.userid = $1
+							AND ut.deletedat IS NULL
 							GROUP BY 1;`, user.Id)
 	if err != nil {
 		panic(err.Error())
