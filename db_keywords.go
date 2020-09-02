@@ -139,6 +139,21 @@ func (user *User) InsertUserKeyword(keyword Keyword) {
 	}
 }
 
+func (user *User) UpdateDeletedAtInUsersKeywords(keyword Keyword) {
+	fmt.Println(Gray(8-1, "Starting UpdateDeletedAtInUsersKeywords..."))
+
+	statement := `UPDATE userskeywords
+				  SET deletedat = current_timestamp
+				  WHERE userid = $1
+				  AND keywordid = $2;`
+	stmt, err := Db.Prepare(statement)
+	defer stmt.Close()
+	stmt.QueryRow(user.Id, keyword.Id)
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
 func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
 	fmt.Println(Gray(8-1, "Starting GetUserTargetKeyword..."))
 

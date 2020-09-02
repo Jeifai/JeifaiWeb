@@ -89,8 +89,12 @@ export default {
                 console.log(error);
             });
         },
-        deleteKeyword: function() {
-            this.$http.delete('/keywords/' + this.filteredRows[this.keywordsChecks[i]].Text).then(
+        deleteKeyword: function(index) {
+            console.log(index);
+            console.log(this.applyFilterUserKeywords);
+            console.log(this.applyFilterUserKeywords[index]);
+            console.log(this.applyFilterUserKeywords[index].Text);
+            this.$http.delete('/keywords/' + this.applyFilterUserKeywords[index].Text).then(
                 function(response) {
                     this.messages = response.data.Messages;
                     this.checks = [];
@@ -175,7 +179,7 @@ export default {
                                         <td class="mdc-data-table__cell" v-html="row.Text"></td>
                                         <td class="mdc-data-table__cell">
                                             <button
-                                                v-on:click="deleteKeyword"
+                                                v-on:click="deleteKeyword(index)"
                                                 class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
                                                 aria-label="Clear">clear
                                             </button>

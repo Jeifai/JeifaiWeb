@@ -3,13 +3,30 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
 	. "github.com/logrusorgru/aurora"
 )
+
+func GetAllKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetAllKeywords..."))
+
+	_ = GetSession(r)
+
+	keywords := SelectKeywordsByAll()
+
+	infos := struct {
+		Keywords []string
+	}{
+		keywords,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}
 
 func GetUserKeywords(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting GetUserKeywords..."))
@@ -21,24 +38,6 @@ func GetUserKeywords(w http.ResponseWriter, r *http.Request) {
 
 	infos := struct {
 		Keywords []Keyword
-	}{
-		keywords,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
-}
-
-func GetAllKeywords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting GetAllKeywords..."))
-
-	_ = GetSession(r)
-
-	keywords := SelectKeywordsByAll()
-
-	infos := struct {
-		Keywords []string
 	}{
 		keywords,
 	}
@@ -112,7 +111,11 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 
 	keyword.SelectKeywordByText()
 
-	user.SetDeletedAtInUserTargetKeywordMultiple(utks)
+	// NOW I HAVE THE ID, I CAN ADD deletedat in tables userskeywords and userstargetskeywords
+
+	user.UpdateDeletedAtInUsersKeywords(keyword)
+
+	// user.SetDeletedAtInUserTargetKeywordMultiple(utks)
 
 	var messages []string
 	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
