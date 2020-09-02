@@ -3,7 +3,8 @@ export default {
     delimiters: ["[[","]]"],
     data: function () {
         return {
-            userkeywords: [],
+            userKeywords: [],
+            filterUserKeywords: '',
             allkeywords: [],
             targets: [],
             chosen: '',
@@ -35,6 +36,12 @@ export default {
             .suggestions-style {
                 position: absolute;
                 z-index: 1000;
+                text-align: center;
+                background-color: rgba(245, 245, 245, 0.8);
+            }
+            .hover {
+                background-color: #007bff;
+                color: #fff;
             }
             .scrollable {
                 overflow-y: scroll;
@@ -50,7 +57,7 @@ export default {
     methods: {
         fetchUserKeywords: function() {
             this.$http.get('/keywords/user').then(function(response) {
-                this.userkeywords = response.data.Keywords
+                this.userKeywords = response.data.Keywords
             }).catch(function(error) {
                 console.log(error)
             });
@@ -70,6 +77,17 @@ export default {
             });
         },
     },
+    computed: {
+        applyFilterUserKeywords() {
+            return this.userKeywords.filter(row => {
+                const Text = row.Text.toString().toLowerCase();
+                const searchTerm = this.filterUserKeywords.toLowerCase();
+                return (
+                    Text.includes(searchTerm)
+                );
+            });
+        }
+    },
     template: `
         <div>
             <div class="row">
@@ -87,7 +105,7 @@ export default {
                                 :filter-by-query="true">
                                 <label id="KeywordsFilter" for="Filter" class="mdc-text-field mdc-text-field--filled mdc-text-field--with-leading-icon">
                                     <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" role="button">text_fields</i>
-                                    <input class="mdc-text-field__input" type="text" aria-labelledby="Filter">
+                                    <input class="mdc-text-field__input" type="text" aria-labelledby="Filter" v-model="filterUserKeywords">
                                     <span class="mdc-floating-label" id="KeywordsFilter">Filter or add a new keyword</span>
                                     <div class="mdc-line-ripple"></div>
                                 </label>
@@ -117,7 +135,7 @@ export default {
                                     </tr>
                                 </thead>
                                 <tbody class="mdc-data-table__content">
-                                    <tr v-for="(row, index) in userkeywords" class="mdc-data-table__row">
+                                    <tr v-for="(row, index) in applyFilterUserKeywords" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
                                             <input type="checkbox">
                                         </td>
@@ -143,7 +161,7 @@ export default {
                         <div class="input-row">
                             <vue-simple-suggest
                                 v-model="chosen"
-                                :list="simpleSuggestionList"
+                                :list="allkeywords"
                                 :styles="autoCompleteStyle"
                                 :destyled=true
                                 :filter-by-query="true">

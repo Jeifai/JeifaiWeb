@@ -116,7 +116,7 @@ func (user *User) TargetsByUser() (targets []Target) {
 	rows, err := Db.Query(`
 							SELECT
 								t.name,
-								MIN(ut.createdat::date)
+								_CHAR(MIN(ut.createdat::date)m 'YYYY-MM-DD')
 							FROM userstargets ut
 							LEFT JOIN targets t ON(ut.targetid = t.id)
 							WHERE ut.userid = $1

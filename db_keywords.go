@@ -70,7 +70,7 @@ func (user *User) KeywordsByUser() (keywords []Keyword) {
 	rows, err := Db.Query(`
 							SELECT
 								k.text,
-								MIN(utk.createdat::date)
+								_CHAR(MIN(utk.createdat::date), 'YYYY-MM-DD')
 							FROM userstargetskeywords utk
 							LEFT JOIN keywords k ON(utk.keywordid = k.id)
 							WHERE utk.userid = $1
