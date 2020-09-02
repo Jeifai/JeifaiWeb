@@ -6,6 +6,7 @@ export default {
             allkeywords: [],
             userKeywords: [],
             inputKeyword: '',
+            keywordsChecks: [],
             targets: [],
             messages: '',
             autoCompleteStyle : {
@@ -88,6 +89,18 @@ export default {
                 console.log(error);
             });
         },
+        deleteKeyword: function() {
+            this.$http.delete('/keywords/' + this.filteredRows[this.keywordsChecks[i]].Text).then(
+                function(response) {
+                    this.messages = response.data.Messages;
+                    this.checks = [];
+                    this.fetchUserKeywords();
+                    this.fetchAllKeywords();
+                    this.deleteMessages();
+            }).catch(function(error) {
+                console.log(error)
+            });
+        },
         deleteMessages: function() {
             setTimeout(() => this.messages = '', 2000)
         },
@@ -156,12 +169,13 @@ export default {
                                 <tbody class="mdc-data-table__content">
                                     <tr v-for="(row, index) in applyFilterUserKeywords" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
-                                            <input type="checkbox">
+                                            <input type="checkbox" v-model="keywordsChecks" :value="index">
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                                         <td class="mdc-data-table__cell" v-html="row.Text"></td>
                                         <td class="mdc-data-table__cell">
-                                            <button 
+                                            <button
+                                                v-on:click="deleteKeyword"
                                                 class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
                                                 aria-label="Clear">clear
                                             </button>

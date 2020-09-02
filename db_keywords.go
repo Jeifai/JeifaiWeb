@@ -61,7 +61,6 @@ func (keyword *Keyword) SelectKeywordByText() {
                          k.id
                        FROM keywords k
                        WHERE k.text=$1`, keyword.Text).Scan(&keyword.Id)
-	return
 }
 
 func (user *User) SelectUserKeywordByUserAndKeyword(keyword Keyword) (userKeywordId int) {
@@ -70,7 +69,8 @@ func (user *User) SelectUserKeywordByUserAndKeyword(keyword Keyword) (userKeywor
                          uk.id
                        FROM userskeywords uk
                        WHERE uk.userid = $1
-                       AND uk.keywordid = $2`, user.Id, keyword.Id).Scan(&userKeywordId)
+                       AND uk.keywordid = $2
+                       AND uk.deletedat IS NULL;`, user.Id, keyword.Id).Scan(&userKeywordId)
 	return
 }
 

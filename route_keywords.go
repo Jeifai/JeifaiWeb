@@ -55,7 +55,7 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 	user := UserById(sess.UserId)
 
 	keyword := Keyword{
-		Text: mux.Vars(r)["text"],
+		Text: mux.Vars(r)["keyword"],
 	}
 
 	validate := validator.New()
@@ -106,17 +106,11 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		panic(err.Error())
+	keyword := Keyword{
+		Text: mux.Vars(r)["keyword"],
 	}
 
-	var utks []UserTargetKeyword
-
-	err = json.Unmarshal(body, &utks)
-	if err != nil {
-		panic(err.Error())
-	}
+	keyword.SelectKeywordByText()
 
 	user.SetDeletedAtInUserTargetKeywordMultiple(utks)
 
