@@ -6,7 +6,8 @@ export default {
             allkeywords: [],
             userKeywords: [],
             inputKeyword: '',
-            keywordsChecks: [],
+            checksKeywords: [],
+            checkAllKeywords: false,
             targets: [],
             messages: '',
             autoCompleteStyle : {
@@ -90,11 +91,7 @@ export default {
             });
         },
         deleteKeyword: function(index) {
-            console.log(index);
-            console.log(this.applyFilterUserKeywords);
-            console.log(this.applyFilterUserKeywords[index]);
-            console.log(this.applyFilterUserKeywords[index].Text);
-            this.$http.delete('/keywords/' + this.applyFilterUserKeywords[index].Text).then(
+            this.$http.delete('/keywords/' + this.filteredKeywords[index].Text).then(
                 function(response) {
                     this.messages = response.data.Messages;
                     this.checks = [];
@@ -105,12 +102,20 @@ export default {
                 console.log(error)
             });
         },
+        selectAllKeywords: function() {
+            this.checksKeywords = [];
+            if (!this.checkAllKeywords) {
+                for (var i = 0; i < this.filteredKeywords.length; i++) {
+                    this.checksKeywords.push(i)
+                }
+            }
+        },
         deleteMessages: function() {
             setTimeout(() => this.messages = '', 2000)
         },
     },
     computed: {
-        applyFilterUserKeywords() {
+        filteredKeywords() {
             return this.userKeywords.filter(row => {
                 const Text = row.Text.toString().toLowerCase();
                 const searchTerm = this.inputKeyword.toLowerCase();
@@ -156,7 +161,7 @@ export default {
                                 <thead>
                                     <tr class="mdc-data-table__header-row">
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <input type="checkbox">
+                                            <input type="checkbox"  v-model="checkAllKeywords" @click="selectAllKeywords">
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <a class="column-header">
@@ -171,9 +176,9 @@ export default {
                                     </tr>
                                 </thead>
                                 <tbody class="mdc-data-table__content">
-                                    <tr v-for="(row, index) in applyFilterUserKeywords" class="mdc-data-table__row">
+                                    <tr v-for="(row, index) in filteredKeywords" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
-                                            <input type="checkbox" v-model="keywordsChecks" :value="index">
+                                            <input type="checkbox" v-model="checksKeywords" :value="index">
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                                         <td class="mdc-data-table__cell" v-html="row.Text"></td>
