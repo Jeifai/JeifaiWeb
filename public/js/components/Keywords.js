@@ -8,6 +8,11 @@ export default {
             inputKeyword: '',
             checksKeywords: [],
             checkAllKeywords: false,
+            sortedByKeywords: "CreatedDate",
+            sortingKeywords: {
+                CreatedDate: true,
+                Text: false,
+            },
             targets: [],
             messages: '',
             autoCompleteStyle : {
@@ -110,6 +115,26 @@ export default {
                 }
             }
         },
+        sortRowsKeywords: function(column) {
+            this.sortedByKeywords = column
+            if (column == "CreatedDate") {
+                if (this.sortingKeywords[column]) {
+                    this.filteredKeywords.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
+                    this.sortingKeywords[column] = false
+                } else {
+                    this.filteredKeywords.sort((b,a) => (new Date(a[column]) - new Date(b[column])))
+                    this.sortingKeywords[column] = true
+                }
+            } else {
+                if (this.sortingKeywords[column]) {
+                    this.filteredKeywords.sort((a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.sortingKeywords[column] = false
+                } else {
+                    this.filteredKeywords.sort((b,a) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.sortingKeywords[column] = true
+                }
+            }
+        },
         deleteMessages: function() {
             setTimeout(() => this.messages = '', 2000)
         },
@@ -164,13 +189,25 @@ export default {
                                             <input type="checkbox"  v-model="checkAllKeywords" @click="selectAllKeywords">
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <a class="column-header">
+                                            <a class="column-header" @click="sortRowsKeywords('CreatedDate')">
                                                 CreatedDate
+                                                <i v-if="sortedByKeywords === 'CreatedDate' && sortingKeywords['CreatedDate'] === true" class="material-icons column-sort">
+                                                    keyboard_arrow_up
+                                                </i>
+                                                <i v-if="sortedByKeywords === 'CreatedDate' && sortingKeywords['CreatedDate'] === false" class="material-icons column-sort">
+                                                    keyboard_arrow_down
+                                                </i>
                                             </a>
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <a class="column-header">
+                                            <a class="column-header" @click="sortRowsKeywords('Text')">
                                                 Keyword
+                                                <i v-if="sortedByKeywords === 'Text' && sortingKeywords['Text'] === true" class="material-icons column-sort">
+                                                    keyboard_arrow_up
+                                                </i>
+                                                <i v-if="sortedByKeywords === 'Text' && sortingKeywords['Text'] === false" class="material-icons column-sort">
+                                                    keyboard_arrow_down
+                                                </i>
                                             </a>
                                         </th>
                                     </tr>
