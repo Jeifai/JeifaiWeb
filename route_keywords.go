@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator"
+	"github.com/gorilla/mux"
 	. "github.com/logrusorgru/aurora"
 )
 
@@ -16,7 +17,7 @@ func GetUserKeywords(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	keywords := user.KeywordsByUser()
+	keywords := user.SelectKeywordsByUser()
 
 	infos := struct {
 		Keywords 	[]Keyword
@@ -35,7 +36,7 @@ func GetAllKeywords(w http.ResponseWriter, r *http.Request) {
 
 	_ = GetSession(r)
 
-	keywords := KeywordsByAll()
+	keywords := SelectKeywordsByAll()
 
 	infos := struct {
 		Keywords 	[]string
@@ -54,33 +55,19 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	type TempResponse struct {
-		SelectedTargets []string `json:"selectedTargets" validate:"required"`
-		Keyword         Keyword  `json:"newKeyword"`
-	}
-
-	response := TempResponse{}
-
-	err := json.NewDecoder(r.Body).Decode(&response)
-	if err != nil {
-		panic(err.Error())
+	keyword := Keyword{
+		Text: mux.Vars(r)["text"],
 	}
 
 	validate := validator.New()
-	err = validate.Struct(response)
+	err := validate.Struct(keyword)
 
 	var messages []string
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			red_1 := `<p style="color:red">`
-			red_2 := `</p>`
 			var temp_message string
-			if err.Field() == "SelectedTargets" {
-				if err.Tag() == "required" {
-					temp_message = `Targets cannot be empty`
-				}
-			} else if err.Field() == "Text" {
+			if err.Field() == "Text" {
 				if err.Tag() == "required" {
 					temp_message = `Keyword cannot be empty`
 				}
@@ -91,26 +78,24 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 					temp_message = `Keyword inserted is too long`
 				}
 			}
-			messages = append(messages, red_1+temp_message+red_2)
+			neg_alert := `<p style="color:red">` + temp_message + `</p>`
+			messages = append(messages, neg_alert)
 		}
 	}
 
 	if len(messages) == 0 {
 
-		// Before creating the relation user <-> target,
-		// check if it is not already present
-		err := response.Keyword.KeywordByText()
-		// If keyword does not exist, create it
-		if err != nil {
-			response.Keyword.CreateKeyword()
+		keyword.SelectKeywordByText()
+		if keyword.Id == 0 {
+			keyword.InsertKeyword()
+		}
+		userKeywordId := user.SelectUserKeywordByUserAndKeyword(keyword)
+		if userKeywordId == 0 {
+			user.InsertUserKeyword(keyword)
 		}
 
-		targets := TargetsByNames(response.SelectedTargets)
-
-		SetUserTargetKeyword(user, targets, response.Keyword)
-
-		temp_message := `<p style="color:green">Successfully added</p>`
-		messages = append(messages, temp_message)
+		pos_alert := `<p style="color:green">Successfully added</p>`
+		messages = append(messages, pos_alert)
 	}
 	infos := struct{ Messages []string }{messages}
 

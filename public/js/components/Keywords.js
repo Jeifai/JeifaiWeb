@@ -3,11 +3,11 @@ export default {
     delimiters: ["[[","]]"],
     data: function () {
         return {
-            userKeywords: [],
-            filterUserKeywords: '',
             allkeywords: [],
+            userKeywords: [],
+            inputKeyword: '',
             targets: [],
-            chosen: '',
+            messages: '',
             autoCompleteStyle : {
                 vueSimpleSuggest: "",
                 inputWrapper: "",
@@ -76,12 +76,21 @@ export default {
                 console.log(error)
             });
         },
+        createKeyword: function() {
+            this.$http.put('/keywords/' + this.inputKeyword).then(
+                function(response) {
+                    this.messages = response.data.Messages
+                    this.fetchKeywords()
+            }).catch(function(error) {
+                console.log(error)
+            });
+        },
     },
     computed: {
         applyFilterUserKeywords() {
             return this.userKeywords.filter(row => {
                 const Text = row.Text.toString().toLowerCase();
-                const searchTerm = this.filterUserKeywords.toLowerCase();
+                const searchTerm = this.inputKeyword.toLowerCase();
                 return (
                     Text.includes(searchTerm)
                 );
@@ -96,21 +105,25 @@ export default {
                         <h1>
                             My Keywords
                         </h1><br>
+                        <p v-for="(message, index) in messages">
+                            <span v-html="message"></span>
+                        </p>
                         <div class="input-row">
                             <vue-simple-suggest
-                                v-model="chosen"
+                                v-model="inputKeyword"
                                 :list="allkeywords"
                                 :styles="autoCompleteStyle"
                                 :destyled=true
                                 :filter-by-query="true">
                                 <label id="KeywordsFilter" for="Filter" class="mdc-text-field mdc-text-field--filled mdc-text-field--with-leading-icon">
                                     <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" role="button">text_fields</i>
-                                    <input class="mdc-text-field__input" type="text" aria-labelledby="Filter" v-model="filterUserKeywords">
+                                    <input class="mdc-text-field__input" type="text" aria-labelledby="Filter">
                                     <span class="mdc-floating-label" id="KeywordsFilter">Filter or add a new keyword</span>
                                     <div class="mdc-line-ripple"></div>
                                 </label>
                             </vue-simple-suggest>
-                            <button 
+                            <button
+                                v-on:click="createKeyword"
                                 class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
                                 aria-label="Add">add
                             </button>
@@ -160,7 +173,7 @@ export default {
                         </h1><br>
                         <div class="input-row">
                             <vue-simple-suggest
-                                v-model="chosen"
+                                v-model="inputKeyword"
                                 :list="allkeywords"
                                 :styles="autoCompleteStyle"
                                 :destyled=true

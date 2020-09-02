@@ -34,8 +34,8 @@ type KeywordInfo struct {
 	AvgMatchesDay    float32
 }
 
-func (keyword *Keyword) CreateKeyword() {
-	fmt.Println(Gray(8-1, "Starting CreateKeyword..."))
+func (keyword *Keyword) InsertKeyword() {
+	fmt.Println(Gray(8-1, "Starting InsertKeyword..."))
 	statement := `INSERT INTO keywords (text, createdat)
                   VALUES ($1, current_timestamp)
                   RETURNING id, createdat`
@@ -55,18 +55,27 @@ func (keyword *Keyword) CreateKeyword() {
 	}
 }
 
-func (keyword *Keyword) KeywordByText() (err error) {
-	fmt.Println(Gray(8-1, "Starting KeywordByText..."))
-	err = Db.QueryRow(`SELECT
+func (keyword *Keyword) SelectKeywordByText() {
+	fmt.Println(Gray(8-1, "Starting SelectKeywordByText..."))
+	_ = Db.QueryRow(`SELECT
                          k.id
                        FROM keywords k
                        WHERE k.text=$1`, keyword.Text).Scan(&keyword.Id)
 	return
 }
 
+func (user *User) SelectUserKeywordByUserAndKeyword(keyword Keyword) (userKeywordId int) {
+	fmt.Println(Gray(8-1, "Starting SelectUserKeywordByUserAndKeyword..."))
+	_ = Db.QueryRow(`SELECT
+                         uk.id
+                       FROM userskeywords uk
+                       WHERE uk.userid = $1
+                       AND uk.keywordid = $2`, user.Id, keyword.Id).Scan(&userKeywordId)
+	return
+}
 
-func (user *User) KeywordsByUser() (keywords []Keyword) {
-	fmt.Println(Gray(8-1, "Starting KeywordsByUser..."))
+func (user *User) SelectKeywordsByUser() (keywords []Keyword) {
+	fmt.Println(Gray(8-1, "Starting SelectKeywordsByUser..."))
 	rows, err := Db.Query(`
 							SELECT
 								k.text,
@@ -94,8 +103,8 @@ func (user *User) KeywordsByUser() (keywords []Keyword) {
 	return
 }
 
-func KeywordsByAll() (keywords []string) {
-	fmt.Println(Gray(8-1, "Starting KeywordsByAll..."))
+func SelectKeywordsByAll() (keywords []string) {
+	fmt.Println(Gray(8-1, "Starting SelectKeywordsByAll..."))
 	rows, err := Db.Query(`
 							SELECT
 								DISTINCT k.text
@@ -115,6 +124,19 @@ func KeywordsByAll() (keywords []string) {
 	}
 	rows.Close()
 	return
+}
+
+func (user *User) InsertUserKeyword(keyword Keyword) {
+	fmt.Println(Gray(8-1, "Starting InsertUserKeyword..."))
+
+	statement := `INSERT INTO userskeywords (userid, keywordid, createdat)
+                  VALUES ($1, $2, current_timestamp);`
+	stmt, err := Db.Prepare(statement)
+	defer stmt.Close()
+	stmt.QueryRow(user.Id, keyword.Id)
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
@@ -147,6 +169,70 @@ func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
 	}
 	rows.Close()
 	return
+}
+
+func SetUserTargetKeyword(
+	user User, targets []Target, keyword Keyword) {
+	fmt.Println(Gray(8-1, "Starting SetUserTargetKeyword..."))
+
+	valueStrings := []string{}
+	valueArgs := []interface{}{}
+	timeNow := time.Now()
+	for i, elem := range targets {
+		str1 := "$" + strconv.Itoa(1+i*4) + ","
+		str2 := "$" + strconv.Itoa(2+i*4) + ","
+		str3 := "$" + strconv.Itoa(3+i*4) + ","
+		str4 := "$" + strconv.Itoa(4+i*4)
+		str_n := "(" + str1 + str2 + str3 + str4 + ")"
+		valueStrings = append(valueStrings, str_n)
+		valueArgs = append(valueArgs, user.Id)
+		valueArgs = append(valueArgs, elem.Id)
+		valueArgs = append(valueArgs, keyword.Id)
+		valueArgs = append(valueArgs, timeNow)
+	}
+	smt := `INSERT INTO userstargetskeywords (
+            userid, targetid, keywordid, createdat)
+            VALUES %s
+            ON CONFLICT (userid, targetid, keywordid) 
+            DO UPDATE SET deletedat = NULL, updatedat = current_timestamp`
+
+	smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
+
+	_, err := Db.Exec(smt, valueArgs...)
+	if err != nil {
+		panic(err.Error())
+	}
+	return
+}
+
+func (user *User) SetDeletedAtInUserTargetKeywordMultiple(utks []UserTargetKeyword) {
+	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUserTargetKeywordMultiple..."))
+
+	valueArray := []string{}
+	timeNow := time.Now()
+	_ = timeNow
+	for _, elem := range utks {
+		str1 := "(userid=" + strconv.Itoa(user.Id) + " AND "
+		str2 := "keywordid=(SELECT id FROM keywords WHERE text='" + elem.KeywordText + "') AND "
+		str3 := "targetid=(SELECT id FROM targets WHERE name='" + elem.TargetName + "'))"
+		str_n := str1 + str2 + str3
+		valueArray = append(valueArray, str_n)
+	}
+	valueString := strings.Join(valueArray, " OR ")
+
+	smt := `UPDATE userstargetskeywords
+            SET deletedat = current_timestamp
+            WHERE id IN (
+                SELECT
+                    id
+                FROM userstargetskeywords
+                WHERE (%s));`
+
+	smt = fmt.Sprintf(smt, valueString)
+	_, err := Db.Exec(smt)
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func (user *User) InfoKeywordsByUser() (keywordsInfo []KeywordInfo) {
@@ -235,68 +321,4 @@ func (user *User) InfoKeywordsByUser() (keywordsInfo []KeywordInfo) {
 	}
 	rows.Close()
 	return
-}
-
-func SetUserTargetKeyword(
-	user User, targets []Target, keyword Keyword) {
-	fmt.Println(Gray(8-1, "Starting SetUserTargetKeyword..."))
-
-	valueStrings := []string{}
-	valueArgs := []interface{}{}
-	timeNow := time.Now()
-	for i, elem := range targets {
-		str1 := "$" + strconv.Itoa(1+i*4) + ","
-		str2 := "$" + strconv.Itoa(2+i*4) + ","
-		str3 := "$" + strconv.Itoa(3+i*4) + ","
-		str4 := "$" + strconv.Itoa(4+i*4)
-		str_n := "(" + str1 + str2 + str3 + str4 + ")"
-		valueStrings = append(valueStrings, str_n)
-		valueArgs = append(valueArgs, user.Id)
-		valueArgs = append(valueArgs, elem.Id)
-		valueArgs = append(valueArgs, keyword.Id)
-		valueArgs = append(valueArgs, timeNow)
-	}
-	smt := `INSERT INTO userstargetskeywords (
-            userid, targetid, keywordid, createdat)
-            VALUES %s
-            ON CONFLICT (userid, targetid, keywordid) 
-            DO UPDATE SET deletedat = NULL, updatedat = current_timestamp`
-
-	smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
-
-	_, err := Db.Exec(smt, valueArgs...)
-	if err != nil {
-		panic(err.Error())
-	}
-	return
-}
-
-func (user *User) SetDeletedAtInUserTargetKeywordMultiple(utks []UserTargetKeyword) {
-	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUserTargetKeywordMultiple..."))
-
-	valueArray := []string{}
-	timeNow := time.Now()
-	_ = timeNow
-	for _, elem := range utks {
-		str1 := "(userid=" + strconv.Itoa(user.Id) + " AND "
-		str2 := "keywordid=(SELECT id FROM keywords WHERE text='" + elem.KeywordText + "') AND "
-		str3 := "targetid=(SELECT id FROM targets WHERE name='" + elem.TargetName + "'))"
-		str_n := str1 + str2 + str3
-		valueArray = append(valueArray, str_n)
-	}
-	valueString := strings.Join(valueArray, " OR ")
-
-	smt := `UPDATE userstargetskeywords
-            SET deletedat = current_timestamp
-            WHERE id IN (
-                SELECT
-                    id
-                FROM userstargetskeywords
-                WHERE (%s));`
-
-	smt = fmt.Sprintf(smt, valueString)
-	_, err := Db.Exec(smt)
-	if err != nil {
-		panic(err.Error())
-	}
 }
