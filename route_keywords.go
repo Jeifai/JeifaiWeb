@@ -20,7 +20,7 @@ func GetUserKeywords(w http.ResponseWriter, r *http.Request) {
 	keywords := user.SelectKeywordsByUser()
 
 	infos := struct {
-		Keywords 	[]Keyword
+		Keywords []Keyword
 	}{
 		keywords,
 	}
@@ -30,7 +30,6 @@ func GetUserKeywords(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(infos)
 }
 
-
 func GetAllKeywords(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting GetAllKeywords..."))
 
@@ -39,7 +38,7 @@ func GetAllKeywords(w http.ResponseWriter, r *http.Request) {
 	keywords := SelectKeywordsByAll()
 
 	infos := struct {
-		Keywords 	[]string
+		Keywords []string
 	}{
 		keywords,
 	}

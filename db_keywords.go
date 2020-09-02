@@ -10,9 +10,9 @@ import (
 )
 
 type Keyword struct {
-	Id        	int
-	Text      	string `validate:"required,max=30,min=3"`
-	CreatedAt 	time.Time
+	Id          int
+	Text        string `validate:"required,max=30,min=3"`
+	CreatedAt   time.Time
 	CreatedDate string
 }
 

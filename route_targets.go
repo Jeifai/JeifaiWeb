@@ -18,7 +18,7 @@ func GetTargets(w http.ResponseWriter, r *http.Request) {
 	targets := user.TargetsByUser()
 
 	infos := struct {
-		Targets 	[]Target
+		Targets []Target
 	}{
 		targets,
 	}
