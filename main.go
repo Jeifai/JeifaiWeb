@@ -40,9 +40,10 @@ func main() {
 	r.HandleFunc("/profile", Profile).Methods("GET")
 	r.HandleFunc("/profile", UpdateProfile).Methods("PUT")
 
-	r.HandleFunc("/targets", GetTargets).Methods("GET")
-	r.HandleFunc("/targets", PutTarget).Methods("PUT")
-	r.HandleFunc("/targets", RemoveTarget).Methods("DELETE")
+	r.HandleFunc("/targets/user", GetUserTargets).Methods("GET")
+	r.HandleFunc("/targets/all", GetAllTargets).Methods("GET")
+	r.HandleFunc("/targets/{target}", PutTarget).Methods("PUT")
+	r.HandleFunc("/targets/{target}", RemoveTarget).Methods("DELETE")
 
 	r.HandleFunc("/keywords/user", GetUserKeywords).Methods("GET")
 	r.HandleFunc("/keywords/all", GetAllKeywords).Methods("GET")

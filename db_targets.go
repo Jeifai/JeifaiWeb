@@ -28,8 +28,8 @@ type TargetInfo struct {
 	Closed             int
 }
 
-func (target *Target) CreateTarget() {
-	fmt.Println(Gray(8-1, "Starting CreateTarget..."))
+func (target *Target) InsertTarget() {
+	fmt.Println(Gray(8-1, "Starting InsertTarget..."))
 	statement := `INSERT INTO targets (name, createdat)
                   VALUES ($1, $2)
                   RETURNING id, name, createdat`
@@ -51,16 +51,17 @@ func (target *Target) CreateTarget() {
 	}
 }
 
-func (target *Target) CreateUserTarget(user User) {
-	fmt.Println(Gray(8-1, "Starting CreateUserTarget..."))
-	statement := `INSERT INTO userstargets (userid, targetid, createdat) 
-                  VALUES ($1, $2, $3)`
+func (user *User) InsertUserTarget(target Target) {
+	fmt.Println(Gray(8-1, "Starting InsertUserTarget..."))
+
+	statement := `INSERT INTO userstargets (userid, targetid, createdat)
+                  VALUES ($1, $2, current_timestamp);`
 	stmt, err := Db.Prepare(statement)
+	defer stmt.Close()
+	stmt.QueryRow(user.Id, target.Id)
 	if err != nil {
 		panic(err.Error())
 	}
-	defer stmt.Close()
-	stmt.QueryRow(user.Id, target.Id, time.Now())
 }
 
 func (user *User) TargetsNamesByUser() (targetsNames []string) {
@@ -111,8 +112,8 @@ func (user *User) NotSelectedTargetsNamesByUser() (notSelectedTargetsNames []str
 	return
 }
 
-func (user *User) TargetsByUser() (targets []Target) {
-	fmt.Println(Gray(8-1, "Starting TargetsByUser..."))
+func (user *User) SelectTargetsByUser() (targets []Target) {
+	fmt.Println(Gray(8-1, "Starting SelectTargetsByUser..."))
 	rows, err := Db.Query(`
 							SELECT
 								t.name,
@@ -130,6 +131,29 @@ func (user *User) TargetsByUser() (targets []Target) {
 		if err = rows.Scan(
 			&target.Name,
 			&target.CreatedDate); err != nil {
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+		targets = append(targets, target)
+	}
+	rows.Close()
+	return
+}
+
+func SelectTargetsByAll() (targets []string) {
+	fmt.Println(Gray(8-1, "Starting SelectTargetsByAll..."))
+	rows, err := Db.Query(`
+							SELECT
+								DISTINCT t.name
+							FROM targets t;`)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		var target string
+		if err = rows.Scan(
+			&target); err != nil {
 			if err != nil {
 				panic(err.Error())
 			}
@@ -216,15 +240,12 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo) {
 	return
 }
 
-func (target *Target) TargetByName() {
-	fmt.Println(Gray(8-1, "Starting TargetByName..."))
-	err := Db.QueryRow(`SELECT
+func (target *Target) SelectTargetByName() {
+	fmt.Println(Gray(8-1, "Starting SelectTargetByName..."))
+	_ = Db.QueryRow(`SELECT
                          t.id
                        FROM targets t
                        WHERE t.name=$1`, target.Name).Scan(&target.Id)
-	if err != nil {
-		panic(err.Error())
-	}
 }
 
 func TargetsByNames(targetNames []string) (targets []Target) {
@@ -250,35 +271,27 @@ func TargetsByNames(targetNames []string) (targets []Target) {
 	return
 }
 
-func (user *User) UsersTargetsByUserAndName(target Target) (err error) {
-	fmt.Println(Gray(8-1, "Starting UsersTargetsByUserAndName..."))
-	err = Db.QueryRow(`SELECT
-                         t.id,
-                         t.createdat 
-                       FROM users u
-                       INNER JOIN userstargets ut ON(u.id = ut.userid) 
-                       INNER JOIN targets t ON(ut.targetid = t.id)
-                       WHERE u.id=$1
-                       AND t.name=$2
-                       AND ut.deletedat IS NULL`, user.Id, target.Name).Scan(
-		&target.Id, &target.CreatedAt)
+func (user *User) SelectUserTargetByUserAndTarget(target Target) (userTargetId int) {
+	fmt.Println(Gray(8-1, "Starting SelectUserTargetByUserAndTarget..."))
+	_ = Db.QueryRow(`SELECT
+                         ut.id
+                       FROM userstargets ut
+                       WHERE ut.userid = $1
+                       AND ut.targetid = $2
+                       AND ut.deletedat IS NULL;`, user.Id, target.Id).Scan(&userTargetId)
 	return
 }
 
-func (target *Target) SetDeletedAtInUsersTargetsByUserAndTarget(user User) {
-	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUsersTargetsByUserAndTarget..."))
+func (user *User) UpdateDeletedAtInUsersTargets(target Target) {
+	fmt.Println(Gray(8-1, "Starting UpdateDeletedAtInUsersTargets..."))
 
 	statement := `UPDATE userstargets
-                  SET deletedat = current_timestamp
-                  WHERE userid = $1
-                  AND targetid = $2;`
-
+				  SET deletedat = current_timestamp
+				  WHERE userid = $1
+				  AND targetid = $2;`
 	stmt, err := Db.Prepare(statement)
-	if err != nil {
-		panic(err.Error())
-	}
 	defer stmt.Close()
-	_, err = stmt.Exec(user.Id, target.Id)
+	stmt.QueryRow(user.Id, target.Id)
 	if err != nil {
 		panic(err.Error())
 	}

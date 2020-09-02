@@ -79,7 +79,6 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(messages) == 0 {
-
 		keyword.SelectKeywordByText()
 		if keyword.Id == 0 {
 			keyword.InsertKeyword()
@@ -92,8 +91,8 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 			messages = append(messages, `<p style="color:orange">Keyword already present</p>`)
 		}
 	}
-	infos := struct{ Messages []string }{messages}
 
+	infos := struct{ Messages []string }{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -110,12 +109,8 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 	}
 
 	keyword.SelectKeywordByText()
-
-	// NOW I HAVE THE ID, I CAN ADD deletedat in tables userskeywords and userstargetskeywords
-
 	user.UpdateDeletedAtInUsersKeywords(keyword)
-
-	// user.SetDeletedAtInUserTargetKeywordMultiple(utks)
+	// user.SetDeletedAtInUserTargetKeywordMultiple(utks) --> TODO
 
 	var messages []string
 	messages = append(messages, `<p style="color:green">Successfully removed</p>`)

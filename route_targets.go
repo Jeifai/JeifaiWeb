@@ -6,16 +6,35 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator"
+	"github.com/gorilla/mux"
 	. "github.com/logrusorgru/aurora"
 )
 
-func GetTargets(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting GetTargets..."))
+func GetAllTargets(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetAllTargets..."))
+
+	_ = GetSession(r)
+
+	targets := SelectTargetsByAll()
+
+	infos := struct {
+		Targets []string
+	}{
+		targets,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}
+
+func GetUserTargets(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetUserTargets..."))
 
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	targets := user.TargetsByUser()
+	targets := user.SelectTargetsByUser()
 
 	infos := struct {
 		Targets []Target
@@ -34,75 +53,48 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	type TempResponse struct {
-		SelectedTargets []string
+	target := Target{
+		Name: mux.Vars(r)["target"],
 	}
 
-	response := TempResponse{}
-
-	err := json.NewDecoder(r.Body).Decode(&response)
-	if err != nil {
-		panic(err.Error())
-	}
+	validate := validator.New()
+	err := validate.Struct(target)
 
 	var messages []string
-	for _, name_target := range response.SelectedTargets {
 
-		var temp_messages []string
-
-		target := Target{
-			Name: name_target,
-		}
-
-		validate := validator.New()
-		err = validate.Struct(target)
-
-		if err != nil {
-			for _, err := range err.(validator.ValidationErrors) {
-				var temp_message string
-				if err.Field() == "Name" {
-					if err.Tag() == "required" {
-						temp_message = name_target + ` --> Name cannot be empty`
-					}
-					if err.Tag() == "min" {
-						temp_message = name_target + ` --> Name inserted is too short`
-					}
-					if err.Tag() == "max" {
-						temp_message = name_target + ` --> Name inserted is too long`
-					}
-					red_1 := `<p style="color:red">`
-					red_2 := `</p>`
-					temp_messages = append(temp_messages, red_1+temp_message+red_2)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			if err.Field() == "Name" {
+				if err.Tag() == "required" {
+					messages = append(messages, `<p style="color:red">Name cannot be empty</p>`)
+				}
+				if err.Tag() == "min" {
+					messages = append(messages, `<p style="color:red">Name is too short</p>`)
+				}
+				if err.Tag() == "max" {
+					messages = append(messages, `<p style="color:red">Name inserted is too long</p>`)
 				}
 			}
 		}
-
-		if len(temp_messages) == 0 {
-
-			target.TargetByName()
-			if target == (Target{}) {
-				target.CreateTarget()
-				target.SendEmailToAdminAboutNewTarget()
-			}
-
-			// Before creating the relation user <-> target, check if it is not already present
-			err := user.UsersTargetsByUserAndName(target)
-			if err != nil {
-				// If the relation does not exists create a new relation
-				target.CreateUserTarget(user)
-				green_1 := `<p style="color:green">`
-				green_2 := `</p>`
-				temp_messages = append(temp_messages, green_1+name_target+" --> Target successfully added"+green_2)
-			} else {
-				red_1 := `<p style="color:red">`
-				red_2 := `</p>`
-				temp_messages = append(temp_messages, red_1+name_target+" --> Target already exists"+red_2)
-			}
-		}
-		messages = append(messages, temp_messages...)
 	}
-	infos := struct{ Messages []string }{messages}
 
+	if len(messages) == 0 {
+
+		target.SelectTargetByName()
+		if target.Id == 0 {
+			target.InsertTarget()
+			target.SendEmailToAdminAboutNewTarget()
+		}
+		userTargetId := user.SelectUserTargetByUserAndTarget(target)
+		if userTargetId == 0 {
+			user.InsertUserTarget(target)
+			messages = append(messages, `<p style="color:green">Target successfully added</p>`)
+		} else {
+			messages = append(messages, `<p style="color:red">Target already exists</p>`)
+		}
+	}
+
+	infos := struct{ Messages []string }{messages}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -110,21 +102,20 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 
 func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting RemoveTarget..."))
-	var target Target
-	err := json.NewDecoder(r.Body).Decode(&target)
-	if err != nil {
-		panic(err.Error())
-	}
 
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	user.UsersTargetsByUserAndName(target)
-	target.SetDeletedAtInUsersTargetsByUserAndTarget(user)
-	target.SetDeletedAtIntUserTargetKeywordByUserAndTarget(user)
+	target := Target{
+		Name: mux.Vars(r)["target"],
+	}
+
+	target.SelectTargetByName()
+	user.UpdateDeletedAtInUsersTargets(target)
+	// user.SetDeletedAtInUserTargetKeywordMultiple(utks) --> TODO
 
 	var messages []string
-	messages = append(messages, `<p style="color:green">Target successfully removed</p>`)
+	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
 	infos := struct{ Messages []string }{messages}
 
 	w.Header().Set("Content-Type", "application/json")

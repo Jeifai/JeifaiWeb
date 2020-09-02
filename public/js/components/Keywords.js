@@ -3,7 +3,7 @@ export default {
     delimiters: ["[[","]]"],
     data: function () {
         return {
-            allkeywords: [],
+            allKeywords: [],
             userKeywords: [],
             inputKeyword: '',
             checksKeywords: [],
@@ -13,8 +13,18 @@ export default {
                 CreatedDate: true,
                 Text: false,
             },
-            targets: [],
-            messages: '',
+            messagesKeywords: '',
+            allTargets: [],
+            userTargets: [],
+            inputTarget: '',
+            checksTargets: [],
+            checkAllTargets: false,
+            sortedByTargets: "CreatedDate",
+            sortingTargets: {
+                CreatedDate: true,
+                Name: false,
+            },
+            messagesTargets: '',
             autoCompleteStyle : {
                 vueSimpleSuggest: "",
                 inputWrapper: "",
@@ -59,7 +69,8 @@ export default {
     created () {
         this.fetchUserKeywords();
         this.fetchAllKeywords();
-        this.fetchTargets();
+        this.fetchUserTargets();
+        this.fetchAllTargets();
     },
     methods: {
         fetchUserKeywords: function() {
@@ -71,14 +82,7 @@ export default {
         },
         fetchAllKeywords: function() {
             this.$http.get('/keywords/all').then(function(response) {
-                this.allkeywords = response.data.Keywords;
-            }).catch(function(error) {
-                console.log(error);
-            });
-        },
-        fetchTargets: function() {
-            this.$http.get('/targets').then(function(response) {
-                this.targets = response.data.Targets;
+                this.allKeywords = response.data.Keywords;
             }).catch(function(error) {
                 console.log(error);
             });
@@ -86,11 +90,11 @@ export default {
         createKeyword: function() {
             this.$http.put('/keywords/' + this.inputKeyword).then(
                 function(response) {
-                    this.messages = response.data.Messages;
+                    this.messagesKeywords = response.data.Messages;
                     this.fetchUserKeywords();
                     this.fetchAllKeywords();
                     this.inputKeyword = '';
-                    this.deleteMessages();
+                    setTimeout(() => this.messagesKeywords = '', 2000);
             }).catch(function(error) {
                 console.log(error);
             });
@@ -98,11 +102,10 @@ export default {
         deleteKeyword: function(index) {
             this.$http.delete('/keywords/' + this.filteredKeywords[index].Text).then(
                 function(response) {
-                    this.messages = response.data.Messages;
-                    this.checks = [];
+                    this.messagesKeywords = response.data.Messages;
                     this.fetchUserKeywords();
                     this.fetchAllKeywords();
-                    this.deleteMessages();
+                    setTimeout(() => this.messagesKeywords = '', 2000);
             }).catch(function(error) {
                 console.log(error)
             });
@@ -135,8 +138,70 @@ export default {
                 }
             }
         },
-        deleteMessages: function() {
-            setTimeout(() => this.messages = '', 2000)
+        fetchUserTargets: function() {
+            this.$http.get('/targets/user').then(function(response) {
+                this.userTargets = response.data.Targets;
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
+        fetchAllTargets: function() {
+            this.$http.get('/targets/all').then(function(response) {
+                this.allTargets = response.data.Targets;
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
+        createTarget: function() {
+            this.$http.put('/targets/' + this.inputTarget).then(
+                function(response) {
+                    this.messagesTargets = response.data.Messages;
+                    this.fetchUserTargets();
+                    this.fetchAllTargets();
+                    this.inputTarget = '';
+                    setTimeout(() => this.messagesTargets = '', 2000);
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
+        deleteTarget: function(index) {
+            this.$http.delete('/targets/' + this.filteredTargets[index].Name).then(
+                function(response) {
+                    this.messagesTargets = response.data.Messages;
+                    this.fetchUserTargets();
+                    this.fetchAllTargets();
+                    setTimeout(() => this.messagesTargets = '', 2000);
+            }).catch(function(error) {
+                console.log(error)
+            });
+        },
+        selectAllTargets: function() {
+            this.checksTargets = [];
+            if (!this.checkAllTargets) {
+                for (var i = 0; i < this.filteredTargets.length; i++) {
+                    this.checksTargets.push(i)
+                }
+            }
+        },
+        sortRowsTargets: function(column) {
+            this.sortedByTargets = column
+            if (column == "CreatedDate") {
+                if (this.sortingTargets[column]) {
+                    this.filteredTargets.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
+                    this.sortingTargets[column] = false
+                } else {
+                    this.filteredTargets.sort((b,a) => (new Date(a[column]) - new Date(b[column])))
+                    this.sortingTargets[column] = true
+                }
+            } else {
+                if (this.sortingTargets[column]) {
+                    this.filteredTargets.sort((a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.sortingTargets[column] = false
+                } else {
+                    this.filteredTargets.sort((b,a) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.sortingTargets[column] = true
+                }
+            }
         },
     },
     computed: {
@@ -146,6 +211,15 @@ export default {
                 const searchTerm = this.inputKeyword.toLowerCase();
                 return (
                     Text.includes(searchTerm)
+                );
+            });
+        },
+        filteredTargets() {
+            return this.userTargets.filter(row => {
+                const Name = row.Name.toString().toLowerCase();
+                const searchTerm = this.inputTarget.toLowerCase();
+                return (
+                    Name.includes(searchTerm)
                 );
             });
         }
@@ -158,13 +232,13 @@ export default {
                         <h1>
                             My Keywords
                         </h1><br>
-                        <p v-for="(message, index) in messages">
+                        <p v-for="(message, index) in messagesKeywords">
                             <span v-html="message"></span>
                         </p>
                         <div class="input-row">
                             <vue-simple-suggest
                                 v-model="inputKeyword"
-                                :list="allkeywords"
+                                :list="allKeywords"
                                 :styles="autoCompleteStyle"
                                 :destyled=true
                                 :filter-by-query="true">
@@ -237,10 +311,13 @@ export default {
                         <h1>
                             My Targets
                         </h1><br>
+                        <p v-for="(message, index) in messagesTargets">
+                            <span v-html="message"></span>
+                        </p>
                         <div class="input-row">
                             <vue-simple-suggest
-                                v-model="inputKeyword"
-                                :list="allkeywords"
+                                v-model="inputTarget"
+                                :list="allTargets"
                                 :styles="autoCompleteStyle"
                                 :destyled=true
                                 :filter-by-query="true">
@@ -251,7 +328,8 @@ export default {
                                     <div class="mdc-line-ripple"></div>
                                 </label>
                             </vue-simple-suggest>
-                            <button 
+                            <button
+                                v-on:click="createTarget"
                                 class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
                                 aria-label="Add">add
                             </button>
@@ -261,29 +339,42 @@ export default {
                                 <thead>
                                     <tr class="mdc-data-table__header-row">
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <input type="checkbox">
+                                            <input type="checkbox"  v-model="checkAllTargets" @click="selectAllTargets">
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <a class="column-header">
+                                            <a class="column-header" @click="sortRowsTargets('CreatedDate')">
                                                 CreatedDate
+                                                <i v-if="sortedByTargets === 'CreatedDate' && sortingTargets['CreatedDate'] === true" class="material-icons column-sort">
+                                                    keyboard_arrow_up
+                                                </i>
+                                                <i v-if="sortedByTargets === 'CreatedDate' && sortingTargets['CreatedDate'] === false" class="material-icons column-sort">
+                                                    keyboard_arrow_down
+                                                </i>
                                             </a>
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <a class="column-header">
+                                            <a class="column-header" @click="sortRowsTargets('Name')">
                                                 Target
+                                                <i v-if="sortedByTargets === 'Name' && sortingTargets['Name'] === true" class="material-icons column-sort">
+                                                    keyboard_arrow_up
+                                                </i>
+                                                <i v-if="sortedByTargets === 'Name' && sortingTargets['Name'] === false" class="material-icons column-sort">
+                                                    keyboard_arrow_down
+                                                </i>
                                             </a>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody class="mdc-data-table__content">
-                                    <tr v-for="(row, index) in targets" class="mdc-data-table__row">
+                                    <tr v-for="(row, index) in filteredTargets" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
-                                            <input type="checkbox">
+                                            <input type="checkbox" v-model="checksTargets" :value="index">
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                                         <td class="mdc-data-table__cell" v-html="row.Name"></td>
                                         <td class="mdc-data-table__cell">
-                                            <button 
+                                            <button
+                                                v-on:click="deleteTarget(index)"
                                                 class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
                                                 aria-label="Clear">clear
                                             </button>
