@@ -219,6 +219,19 @@ export default {
                 }
             }
         },
+        updateTargets: function(index) {
+            selectedKeyword = this.filteredKeywords[index].Text;
+            keywordTargets = utksKeyword[selectedKeyword];
+
+            /**
+            for (var i = 0; i < keywordTargets.length; i++) {
+                if filteredTargets.includes(keywordTargets[i]) {
+
+                }
+            }
+            */
+
+        },
     },
     computed: {
         filteredKeywords() {
@@ -276,7 +289,7 @@ export default {
                                 <thead>
                                     <tr class="mdc-data-table__header-row">
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <input type="checkbox"  v-model="checkAllKeywords" @click="selectAllKeywords">
+                                            <input type="checkbox" v-model="checkAllKeywords" :disabled="checksKeywords.length == (filteredKeywords.length - 1) && checksKeywords.length > 0 && checksKeywords.indexOf(index) === -1" @click="selectAllKeywords">
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <a class="column-header" @click="sortRowsKeywords('CreatedDate')">
@@ -305,7 +318,7 @@ export default {
                                 <tbody class="mdc-data-table__content">
                                     <tr v-for="(row, index) in filteredKeywords" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
-                                            <input type="checkbox" v-model="checksKeywords" :value="index">
+                                            <input type="checkbox" v-model="checksKeywords" :value="index" :disabled="checksKeywords.length > 0 && checksKeywords.indexOf(index) === -1" @change="updateTargets(index)">
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                                         <td class="mdc-data-table__cell" v-html="row.Text"></td>
@@ -355,7 +368,7 @@ export default {
                                 <thead>
                                     <tr class="mdc-data-table__header-row">
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <input type="checkbox"  v-model="checkAllTargets" @click="selectAllTargets">
+                                            <input type="checkbox"  v-model="checkAllTargets"  :disabled="checksTargets.length == (filteredTargets.length - 1) && checksTargets.length > 0 && checksTargets.indexOf(index) === -1" @click="selectAllTargets">
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <a class="column-header" @click="sortRowsTargets('CreatedDate')">
@@ -384,7 +397,7 @@ export default {
                                 <tbody class="mdc-data-table__content">
                                     <tr v-for="(row, index) in filteredTargets" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
-                                            <input type="checkbox" v-model="checksTargets" :value="index">
+                                            <input type="checkbox" v-model="checksTargets" :value="index" :disabled="checksTargets.length > 0 && checksTargets.indexOf(index) === -1">
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                                         <td class="mdc-data-table__cell" v-html="row.Name"></td>
