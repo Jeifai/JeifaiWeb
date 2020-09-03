@@ -69,7 +69,7 @@ export default {
             }`
         document.head.appendChild(styleElem);
     },
-    created () {
+    created: async function() {
         this.fetchUserTargetsKeywords();
         this.fetchUserKeywords();
         this.fetchAllKeywords();
