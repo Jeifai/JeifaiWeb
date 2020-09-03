@@ -54,6 +54,7 @@ export default {
                 position: absolute;
                 z-index: 1000;
                 text-align: center;
+                width: 30%;
                 background-color: rgba(245, 245, 245, 0.8);
             }
             .hover {
