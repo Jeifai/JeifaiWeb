@@ -288,17 +288,29 @@ func (user *User) SelectTargetsKeywordsByUser() (utks []map[string]interface{}) 
 	rows, err := Db.Query(`
 							WITH
 								utks AS (
-								    SELECT 
-										k.text AS keyword_text, 
+									WITH
+										userkeywords AS(
+											SELECT
+												uk.id,
+												uk.keywordid
+											FROM userskeywords uk
+											WHERE uk.userid = $1
+											AND uk.deletedat IS NULL),
+										usertargets AS(
+											SELECT
+												ut.id,
+												ut.targetid
+											FROM userstargets ut
+											WHERE ut.userid = $1
+											AND ut.deletedat IS NULL)
+									SELECT
+										k.text AS keyword_text,
 										t.name AS target_name
-									FROM users u
-									LEFT JOIN userstargets ut ON(u.id = ut.userid)
-									LEFT JOIN targets t ON(ut.targetid = t.id)
-									LEFT JOIN userskeywords uk ON(u.id = uk.userid)
+									FROM userstargetskeywords2 utk
+									INNER JOIN userkeywords uk ON(utk.userkeywordid = uk.id)
+									INNER JOIN usertargets ut ON(utk.usertargetid = ut.id)
 									LEFT JOIN keywords k ON(uk.keywordid = k.id)
-									LEFT JOIN userstargetskeywords2 utk ON(utk.usertargetid = ut.id AND utk.userkeywordid = uk.id)
-									WHERE u.id = $1
-									AND utk.deletedat IS NULL),
+									LEFT JOIN targets t ON(ut.targetid = t.id)),
 								pivot_by_keyword AS (
 								    SELECT 
 										keyword_text, 
