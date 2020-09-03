@@ -3,6 +3,8 @@ export default {
     delimiters: ["[[","]]"],
     data: function () {
         return {
+            utksKeyword: {},
+            utksTarget: {},
             allKeywords: [],
             userKeywords: [],
             inputKeyword: '',
@@ -68,12 +70,21 @@ export default {
         document.head.appendChild(styleElem);
     },
     created () {
+        this.fetchUserTargetsKeywords();
         this.fetchUserKeywords();
         this.fetchAllKeywords();
         this.fetchUserTargets();
         this.fetchAllTargets();
     },
     methods: {
+        fetchUserTargetsKeywords: function() {
+            this.$http.get('/targets/keywords').then(function(response) {
+                this.utksKeyword = response.data.Utks[0];
+                this.utksTarget = response.data.Utks[1];
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
         fetchUserKeywords: function() {
             this.$http.get('/keywords/user').then(function(response) {
                 this.userKeywords = response.data.Keywords;
@@ -94,6 +105,7 @@ export default {
                     this.messagesKeywords = response.data.Messages;
                     this.fetchUserKeywords();
                     this.fetchAllKeywords();
+                    this.fetchUserTargetsKeywords();
                     this.inputKeyword = '';
                     setTimeout(() => this.messagesKeywords = '', 2000);
             }).catch(function(error) {
@@ -106,6 +118,7 @@ export default {
                     this.messagesKeywords = response.data.Messages;
                     this.fetchUserKeywords();
                     this.fetchAllKeywords();
+                    this.fetchUserTargetsKeywords();
                     setTimeout(() => this.messagesKeywords = '', 2000);
             }).catch(function(error) {
                 console.log(error)
@@ -159,6 +172,7 @@ export default {
                     this.messagesTargets = response.data.Messages;
                     this.fetchUserTargets();
                     this.fetchAllTargets();
+                    this.fetchUserTargetsKeywords();
                     this.inputTarget = '';
                     setTimeout(() => this.messagesTargets = '', 2000);
             }).catch(function(error) {
@@ -171,6 +185,7 @@ export default {
                     this.messagesTargets = response.data.Messages;
                     this.fetchUserTargets();
                     this.fetchAllTargets();
+                    this.fetchUserTargetsKeywords();
                     setTimeout(() => this.messagesTargets = '', 2000);
             }).catch(function(error) {
                 console.log(error)

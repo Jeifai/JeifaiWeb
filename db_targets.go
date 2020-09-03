@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -279,6 +280,62 @@ func (user *User) SelectUserTargetByUserAndTarget(target Target) (userTargetId i
                        WHERE ut.userid = $1
                        AND ut.targetid = $2
                        AND ut.deletedat IS NULL;`, user.Id, target.Id).Scan(&userTargetId)
+	return
+}
+
+func (user *User) SelectTargetsKeywordsByUser() (utks []map[string]interface{}) {
+	fmt.Println(Gray(8-1, "Starting SelectTargetsByUser..."))
+	rows, err := Db.Query(`
+							WITH
+								utks AS (
+								    SELECT 
+										k.text AS keyword_text, 
+										t.name AS target_name
+									FROM users u
+									LEFT JOIN userstargets ut ON(u.id = ut.userid)
+									LEFT JOIN targets t ON(ut.targetid = t.id)
+									LEFT JOIN userskeywords uk ON(u.id = uk.userid)
+									LEFT JOIN keywords k ON(uk.keywordid = k.id)
+									LEFT JOIN userstargetskeywords2 utk ON(utk.usertargetid = ut.id AND utk.userkeywordid = uk.id)
+									WHERE u.id = $1
+									AND utk.deletedat IS NULL),
+								pivot_by_keyword AS (
+								    SELECT 
+										keyword_text, 
+										json_agg(target_name) AS target_name
+									FROM utks
+									GROUP BY 1),
+								pivot_by_target AS (
+								    SELECT 
+										target_name, 
+										json_agg(keyword_text) AS keyword_text
+									FROM utks
+									GROUP BY 1)
+							SELECT
+								json_object_agg(keyword_text, target_name)
+							FROM pivot_by_keyword
+							UNION ALL
+							SELECT
+								json_object_agg(target_name, keyword_text)
+							FROM pivot_by_target;`, user.Id)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		var temp_utk string
+		if err = rows.Scan(
+			&temp_utk); err != nil {
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+		utk := map[string]interface{}{}
+		if err := json.Unmarshal([]byte(temp_utk), &utk); err != nil {
+			panic(err)
+		}
+		utks = append(utks, utk)
+	}
+	rows.Close()
 	return
 }
 
