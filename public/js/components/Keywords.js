@@ -3,6 +3,7 @@ export default {
     delimiters: ["[[","]]"],
     data: function () {
         return {
+            macroPivot: '',
             utksKeyword: {},
             utksTarget: {},
             allKeywords: [],
@@ -223,21 +224,55 @@ export default {
                 }
             }
         },
+        sortKeywordsCheckboxes: function() {
+            this.checksKeywords.sort((b,a) => (a > b) ? 1 : ((b > a) ? -1 : 0))
+        },
+        sortCheckboxes: function(arr_filtered, arr_checks, arr_user) {
+            var temp_result_present = [];
+            var temp_result_not_present = [];
+            var temp_checkbox = [];
+            var matches = 0
+            for (var i = 0; i < arr_filtered.length; i++) {
+                var is_present = false;
+                for (var x = 0; x < arr_checks.length; x++) {
+                    if (i === arr_checks[x]) {
+                        is_present = true;
+                        temp_result_present.push(arr_filtered[i]);
+                        temp_checkbox.push(matches);
+                        matches++;
+                    }
+                }
+                if (!is_present) {
+                    temp_result_not_present.push(arr_filtered[i]);
+                }
+            }
+            return [
+                temp_result_present.concat(temp_result_not_present),
+                temp_checkbox
+            ];
+        },
         updateCheckboxes: function(pivotOn, index) {
 
-            // DO NOTHING IF THE USER IS PLAYING AROUND
-            if (pivotOn == 'keywords' && this.checksTargets.length > 0 && this.checksKeywords.length == 0) return;
-            if (pivotOn == 'targets' && this.checksKeywords.length > 0 && this.checksTargets.length == 0) return;
-            if (pivotOn == 'keywords' && this.checksTargets.length == 1) return;
-            if (pivotOn == 'targets' && this.checksKeywords.length == 1) return;
+            // INSTANCIATE MACRO PIVOT
+            if (this.macroPivot == '' && this.checksKeywords.length == 1) {
+                this.macroPivot = 'keywords';
+            } else if (this.macroPivot == '' && this.checksTargets.length == 1) {
+                this.macroPivot = 'targets';
+            }
 
-            // RESET AS INITIAL CONDITIONS
+            // DO NOTHING IF THE USER IS PLAYING AROUND
+            if (this.macroPivot == 'targets' && pivotOn == 'keywords' && this.checksTargets.length == 1) return;
+            if (this.macroPivot == 'keywords' && pivotOn == 'targets' && this.checksKeywords.length == 1) return;
+
+            // RESET INITIAL CONDITIONS
             if (pivotOn == 'keywords' && this.checksKeywords.length == 0) {
                 this.checksTargets = [];
+                this.macroPivot = '';
                 return;
             }
             if (pivotOn == 'targets' && this.checksTargets.length == 0) {
                 this.checksKeywords = [];
+                this.macroPivot = '';
                 return;
             }
 
@@ -250,6 +285,9 @@ export default {
                         this.checksTargets.push(i);
                     }
                 }
+                var sorted_elem = this.sortCheckboxes(this.filteredTargets, this.checksTargets, this.userTargets);
+                this.userTargets = sorted_elem[0];
+                this.checksTargets = sorted_elem[1];
             }
             if (pivotOn == 'targets' && this.checksTargets.length == 1) {
                 var selectedTarget = this.filteredTargets[index].Name;
@@ -259,6 +297,9 @@ export default {
                         this.checksKeywords.push(i);
                     }
                 }
+                var sorted_elem = this.sortCheckboxes(this.filteredKeywords, this.checksKeywords, this.userKeywords);
+                this.userKeywords = sorted_elem[0];
+                this.checksKeywords = sorted_elem[1];
             }
         },
 
@@ -338,6 +379,7 @@ export default {
                                                 type="checkbox" 
                                                 v-model="checkAllKeywords"
                                                 @click="selectAllKeywords"
+                                                :disabled="macroPivot == 'keywords' && checksKeywords.length == 1"
                                             >
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
@@ -372,6 +414,7 @@ export default {
                                                 v-model="checksKeywords"
                                                 :value="index"
                                                 @change="updateCheckboxes('keywords', index)"
+                                                :disabled="macroPivot == 'keywords' && checksKeywords[0] != index"
                                             >
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
@@ -427,6 +470,7 @@ export default {
                                                 type="checkbox"
                                                 v-model="checkAllTargets"
                                                 @click="selectAllTargets"
+                                                :disabled="macroPivot == 'targets' && checksTargets.length == 1"
                                             >
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
@@ -461,6 +505,7 @@ export default {
                                                 v-model="checksTargets"
                                                 :value="index"
                                                 @change="updateCheckboxes('targets', index)"
+                                                :disabled="macroPivot == 'targets' && checksTargets[0] != index"
                                             >
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
