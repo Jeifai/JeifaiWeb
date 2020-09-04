@@ -3,8 +3,6 @@ export default {
     delimiters: ["[[","]]"],
     data: function () {
         return {
-            pivotOn: '',
-
             utksKeyword: {},
             utksTarget: {},
             allKeywords: [],
@@ -115,16 +113,18 @@ export default {
             });
         },
         deleteKeyword: function(index) {
-            this.$http.delete('/keywords/' + this.filteredKeywords[index].Text).then(
-                function(response) {
-                    this.messagesKeywords = response.data.Messages;
-                    this.fetchUserKeywords();
-                    this.fetchAllKeywords();
-                    this.fetchUserTargetsKeywords();
-                    setTimeout(() => this.messagesKeywords = '', 2000);
-            }).catch(function(error) {
-                console.log(error)
-            });
+            if (confirm("Are you sure you want to delete the keyword?")) {
+                this.$http.delete('/keywords/' + this.filteredKeywords[index].Text).then(
+                    function(response) {
+                        this.messagesKeywords = response.data.Messages;
+                        this.fetchUserKeywords();
+                        this.fetchAllKeywords();
+                        this.fetchUserTargetsKeywords();
+                        setTimeout(() => this.messagesKeywords = '', 2000);
+                }).catch(function(error) {
+                    console.log(error)
+                });
+            }
         },
         selectAllKeywords: function() {
             this.checksKeywords = [];
@@ -182,16 +182,18 @@ export default {
             });
         },
         deleteTarget: function(index) {
-            this.$http.delete('/targets/' + this.filteredTargets[index].Name).then(
-                function(response) {
-                    this.messagesTargets = response.data.Messages;
-                    this.fetchUserTargets();
-                    this.fetchAllTargets();
-                    this.fetchUserTargetsKeywords();
-                    setTimeout(() => this.messagesTargets = '', 2000);
-            }).catch(function(error) {
-                console.log(error)
-            });
+            if (confirm("Are you sure you want to delete the target?")) {
+                this.$http.delete('/targets/' + this.filteredTargets[index].Name).then(
+                    function(response) {
+                        this.messagesTargets = response.data.Messages;
+                        this.fetchUserTargets();
+                        this.fetchAllTargets();
+                        this.fetchUserTargetsKeywords();
+                        setTimeout(() => this.messagesTargets = '', 2000);
+                }).catch(function(error) {
+                    console.log(error)
+                });
+            }
         },
         selectAllTargets: function() {
             this.checksTargets = [];
@@ -221,37 +223,38 @@ export default {
                 }
             }
         },
-        updateKeywords: function(index) {
+        updateCheckboxes: function(pivotOn, index) {
 
-            if (this.checksKeywords.length == 0 && this.checksTargets.length == 0) {
-                this.pivotOn = '';
-                return;
-            }
-
-            this.pivotOn = 'targets';
-
-            if (this.checksTargets.length > 0) {
-                var selectedTarget = this.filteredTargets[index].Name;
-                var targetKeywords = this.utksTarget[selectedTarget];
-                for (var i = 0; i < this.filteredKeywords.length; i++) {
-                    if (targetKeywords.includes(this.filteredKeywords[i].Text)) {
-                        this.checksKeywords.push(i);
-                    }
+            // DO NOTHING IF THE USER IS PLAYING AROUND
+            if (pivotOn == 'keywords' && this.checksTargets.length == 1) {
+                if (this.checksKeywords.length == this.userKeywords.length) {
+                    this.checkAllKeywords = true;
+                } else {
+                    this.checkAllKeywords = false;
                 }
-            } else {
-                this.checksTargets = [];
+                return;
             }
-        },
-        updateTargets: function(index) {
-
-            if (this.checksKeywords.length == 0 && this.checksTargets.length == 0) {
-                this.pivotOn = '';
+            if (pivotOn == 'targets' && this.checksKeywords.length == 1) {
+                if (this.checksTargets.length == this.userTargets.length) {
+                    this.checkAllTargets = true;
+                } else {
+                    this.checkAllTargets = false;
+                }
                 return;
             }
 
-            this.pivotOn = 'keywords';
+            // RESET AS INITIAL CONDITIONS
+            if (pivotOn == 'keywords' && this.checksKeywords.length == 0) {
+                this.checksTargets = [];
+                return;
+            }
+            if (pivotOn == 'targets' && this.checksTargets.length == 0) {
+                this.checksKeywords = [];
+                return;
+            }
 
-            if (this.checksKeywords.length > 0) {
+            // FILL CHECKBOXES BASED ON DICT
+            if (pivotOn == 'keywords' && this.checksKeywords.length == 1) {
                 var selectedKeyword = this.filteredKeywords[index].Text;
                 var keywordTargets = this.utksKeyword[selectedKeyword];
                 for (var i = 0; i < this.filteredTargets.length; i++) {
@@ -259,10 +262,20 @@ export default {
                         this.checksTargets.push(i);
                     }
                 }
-            } else {
-                this.checksTargets = [];
+                if (this.checksTargets.length == this.userTargets.length) this.checkAllTargets = true;
+            }
+            if (pivotOn == 'targets' && this.checksTargets.length == 1) {
+                var selectedTarget = this.filteredTargets[index].Name;
+                var targetKeywords = this.utksTarget[selectedTarget];
+                for (var i = 0; i < this.filteredKeywords.length; i++) {
+                    if (targetKeywords.includes(this.filteredKeywords[i].Text)) {
+                        this.checksKeywords.push(i);
+                    }
+                }
+                if (this.checksKeywords.length == this.userKeywords.length) this.checkAllKeywords = true;
             }
         },
+
     },
     computed: {
         filteredKeywords() {
@@ -320,7 +333,12 @@ export default {
                                 <thead>
                                     <tr class="mdc-data-table__header-row">
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <input type="checkbox" v-model="checkAllKeywords" :disabled="pivotOn != 'targets' && checksKeywords.length == 1 && checksKeywords.length != filteredKeywords.length"  @click="selectAllKeywords">
+                                            <input
+                                                v-if="checksTargets.length"
+                                                type="checkbox" 
+                                                v-model="checkAllKeywords"
+                                                @click="selectAllKeywords"
+                                            >
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <a class="column-header" @click="sortRowsKeywords('CreatedDate')">
@@ -349,7 +367,12 @@ export default {
                                 <tbody class="mdc-data-table__content">
                                     <tr v-for="(row, index) in filteredKeywords" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
-                                            <input type="checkbox" v-model="checksKeywords" :value="index" :disabled="pivotOn != 'targets' && checksKeywords.length > 0 && checksKeywords.indexOf(index) === -1"  @change="updateTargets(index)">
+                                            <input
+                                                type="checkbox"
+                                                v-model="checksKeywords"
+                                                :value="index"
+                                                @change="updateCheckboxes('keywords', index)"
+                                            >
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                                         <td class="mdc-data-table__cell" v-html="row.Text"></td>
@@ -399,7 +422,12 @@ export default {
                                 <thead>
                                     <tr class="mdc-data-table__header-row">
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                            <input type="checkbox"  v-model="checkAllTargets"  :disabled="pivotOn != 'keywords' && checksTargets.length == 1 && checksTargets.length != filteredTargets.length" @click="selectAllTargets">
+                                            <input
+                                                v-if="checksKeywords.length"
+                                                type="checkbox"
+                                                v-model="checkAllTargets"
+                                                @click="selectAllTargets"
+                                            >
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <a class="column-header" @click="sortRowsTargets('CreatedDate')">
@@ -428,7 +456,12 @@ export default {
                                 <tbody class="mdc-data-table__content">
                                     <tr v-for="(row, index) in filteredTargets" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
-                                            <input type="checkbox" v-model="checksTargets" :value="index" :disabled="pivotOn != 'keywords' && checksTargets.length > 0 && checksTargets.indexOf(index) === -1" @change="updateKeywords(index)">
+                                            <input
+                                                type="checkbox"
+                                                v-model="checksTargets"
+                                                :value="index"
+                                                @change="updateCheckboxes('targets', index)"
+                                            >
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                                         <td class="mdc-data-table__cell" v-html="row.Name"></td>
