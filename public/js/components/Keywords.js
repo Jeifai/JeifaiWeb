@@ -9,7 +9,6 @@ export default {
             userKeywords: [],
             inputKeyword: '',
             checksKeywords: [],
-            checkAllKeywords: false,
             sortedByKeywords: "CreatedDate",
             sortingKeywords: {
                 CreatedDate: true,
@@ -20,7 +19,6 @@ export default {
             userTargets: [],
             inputTarget: '',
             checksTargets: [],
-            checkAllTargets: false,
             sortedByTargets: "CreatedDate",
             sortingTargets: {
                 CreatedDate: true,
@@ -127,12 +125,13 @@ export default {
             }
         },
         selectAllKeywords: function() {
-            this.checksKeywords = [];
-            if (!this.checkAllKeywords) {
+            if (this.checksKeywords.length <  this.filteredKeywords.length) {
                 for (var i = 0; i < this.filteredKeywords.length; i++) {
                     this.checksKeywords.push(i)
                 }
+                return;
             }
+            this.checksKeywords = [];
         },
         sortRowsKeywords: function(column) {
             this.sortedByKeywords = column
@@ -196,12 +195,13 @@ export default {
             }
         },
         selectAllTargets: function() {
-            this.checksTargets = [];
-            if (!this.checkAllTargets) {
+            if (this.checksTargets.length <  this.filteredTargets.length) {
                 for (var i = 0; i < this.filteredTargets.length; i++) {
                     this.checksTargets.push(i)
                 }
+                return;
             }
+            this.checksTargets = [];
         },
         sortRowsTargets: function(column) {
             this.sortedByTargets = column
@@ -226,22 +226,10 @@ export default {
         updateCheckboxes: function(pivotOn, index) {
 
             // DO NOTHING IF THE USER IS PLAYING AROUND
-            if (pivotOn == 'keywords' && this.checksTargets.length == 1) {
-                if (this.checksKeywords.length == this.userKeywords.length) {
-                    this.checkAllKeywords = true;
-                } else {
-                    this.checkAllKeywords = false;
-                }
-                return;
-            }
-            if (pivotOn == 'targets' && this.checksKeywords.length == 1) {
-                if (this.checksTargets.length == this.userTargets.length) {
-                    this.checkAllTargets = true;
-                } else {
-                    this.checkAllTargets = false;
-                }
-                return;
-            }
+            if (pivotOn == 'keywords' && this.checksTargets.length > 0 && this.checksKeywords.length == 0) return;
+            if (pivotOn == 'targets' && this.checksKeywords.length > 0 && this.checksTargets.length == 0) return;
+            if (pivotOn == 'keywords' && this.checksTargets.length == 1) return;
+            if (pivotOn == 'targets' && this.checksKeywords.length == 1) return;
 
             // RESET AS INITIAL CONDITIONS
             if (pivotOn == 'keywords' && this.checksKeywords.length == 0) {
@@ -262,7 +250,6 @@ export default {
                         this.checksTargets.push(i);
                     }
                 }
-                if (this.checksTargets.length == this.userTargets.length) this.checkAllTargets = true;
             }
             if (pivotOn == 'targets' && this.checksTargets.length == 1) {
                 var selectedTarget = this.filteredTargets[index].Name;
@@ -272,7 +259,6 @@ export default {
                         this.checksKeywords.push(i);
                     }
                 }
-                if (this.checksKeywords.length == this.userKeywords.length) this.checkAllKeywords = true;
             }
         },
 
@@ -295,7 +281,21 @@ export default {
                     Name.includes(searchTerm)
                 );
             });
-        }
+        },
+        checkAllKeywords() {
+            if (this.checksKeywords.length == this.filteredKeywords.length) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        checkAllTargets() {
+            if (this.checksTargets.length == this.filteredTargets.length) {
+                return true;
+            } else {
+                return false;
+            }
+        },
     },
     template: `
         <div>
