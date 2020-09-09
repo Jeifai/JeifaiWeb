@@ -37,19 +37,21 @@ export default {
     },
     mounted() {
         this.$parent.selectedIndex = this.selectedIndex
-        mdc.textField.MDCTextField.attachTo(document.getElementById("KeywordsFilter"));
-        mdc.textField.MDCTextField.attachTo(document.getElementById("TargetsFilter"));
+        mdc.textField.MDCTextField.attachTo(document.getElementById("KeywordsField"));
+        mdc.textField.MDCTextField.attachTo(document.getElementById("TargetsField"));
 
         let styleElem = document.createElement('style');
         styleElem.textContent = `
             .row {
                 display: flex;
             }
-            .column {
-                flex: 50%;
-            }
             .input-row {
                 display: flex;
+            }
+            .match-button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
             .suggestions-style {
                 position: absolute;
@@ -113,7 +115,7 @@ export default {
         },
         deleteKeyword: function(index) {
             if (confirm("Are you sure you want to delete the keyword?")) {
-                this.$http.delete('/keywords/' + this.filteredKeywords[index].Text).then(
+                this.$http.delete('/keywords/' + this.userKeywords[index].Text).then(
                     function(response) {
                         this.messagesKeywords = response.data.Messages;
                         this.fetchUserKeywords();
@@ -126,8 +128,8 @@ export default {
             }
         },
         selectAllKeywords: function() {
-            if (this.checksKeywords.length <  this.filteredKeywords.length) {
-                for (var i = 0; i < this.filteredKeywords.length; i++) {
+            if (this.checksKeywords.length <  this.userKeywords.length) {
+                for (var i = 0; i < this.userKeywords.length; i++) {
                     this.checksKeywords.push(i)
                 }
                 return;
@@ -138,18 +140,18 @@ export default {
             this.sortedByKeywords = column
             if (column == "CreatedDate") {
                 if (this.sortingKeywords[column]) {
-                    this.filteredKeywords.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
+                    this.userKeywords.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
                     this.sortingKeywords[column] = false
                 } else {
-                    this.filteredKeywords.sort((b,a) => (new Date(a[column]) - new Date(b[column])))
+                    this.userKeywords.sort((b,a) => (new Date(a[column]) - new Date(b[column])))
                     this.sortingKeywords[column] = true
                 }
             } else {
                 if (this.sortingKeywords[column]) {
-                    this.filteredKeywords.sort((a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.userKeywords.sort((a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
                     this.sortingKeywords[column] = false
                 } else {
-                    this.filteredKeywords.sort((b,a) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.userKeywords.sort((b,a) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
                     this.sortingKeywords[column] = true
                 }
             }
@@ -183,7 +185,7 @@ export default {
         },
         deleteTarget: function(index) {
             if (confirm("Are you sure you want to delete the target?")) {
-                this.$http.delete('/targets/' + this.filteredTargets[index].Name).then(
+                this.$http.delete('/targets/' + this.userTargets[index].Name).then(
                     function(response) {
                         this.messagesTargets = response.data.Messages;
                         this.fetchUserTargets();
@@ -196,8 +198,8 @@ export default {
             }
         },
         selectAllTargets: function() {
-            if (this.checksTargets.length <  this.filteredTargets.length) {
-                for (var i = 0; i < this.filteredTargets.length; i++) {
+            if (this.checksTargets.length <  this.userTargets.length) {
+                for (var i = 0; i < this.userTargets.length; i++) {
                     this.checksTargets.push(i)
                 }
                 return;
@@ -208,39 +210,39 @@ export default {
             this.sortedByTargets = column
             if (column == "CreatedDate") {
                 if (this.sortingTargets[column]) {
-                    this.filteredTargets.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
+                    this.userTargets.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
                     this.sortingTargets[column] = false
                 } else {
-                    this.filteredTargets.sort((b,a) => (new Date(a[column]) - new Date(b[column])))
+                    this.userTargets.sort((b,a) => (new Date(a[column]) - new Date(b[column])))
                     this.sortingTargets[column] = true
                 }
             } else {
                 if (this.sortingTargets[column]) {
-                    this.filteredTargets.sort((a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.userTargets.sort((a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
                     this.sortingTargets[column] = false
                 } else {
-                    this.filteredTargets.sort((b,a) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.userTargets.sort((b,a) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
                     this.sortingTargets[column] = true
                 }
             }
         },
-        sortCheckboxes: function(arr_filtered, arr_checks, arr_user) {
+        sortCheckboxes: function(arr_values, arr_checks) {
             var temp_result_present = [];
             var temp_result_not_present = [];
             var temp_checkbox = [];
             var matches = 0
-            for (var i = 0; i < arr_filtered.length; i++) {
+            for (var i = 0; i < arr_values.length; i++) {
                 var is_present = false;
                 for (var x = 0; x < arr_checks.length; x++) {
                     if (i === arr_checks[x]) {
                         is_present = true;
-                        temp_result_present.push(arr_filtered[i]);
+                        temp_result_present.push(arr_values[i]);
                         temp_checkbox.push(matches);
                         matches++;
                     }
                 }
                 if (!is_present) {
-                    temp_result_not_present.push(arr_filtered[i]);
+                    temp_result_not_present.push(arr_values[i]);
                 }
             }
             return [
@@ -277,59 +279,41 @@ export default {
 
             // FILL CHECKBOXES BASED ON DICT
             if (pivotOn == 'keywords' && this.checksKeywords.length == 1) {
-                var selectedKeyword = this.filteredKeywords[index].Text;
+                var selectedKeyword = this.userKeywords[index].Text;
                 var keywordTargets = this.utksKeyword[selectedKeyword];
-                for (var i = 0; i < this.filteredTargets.length; i++) {
-                    if (keywordTargets.includes(this.filteredTargets[i].Name)) {
+                for (var i = 0; i < this.userTargets.length; i++) {
+                    if (keywordTargets.includes(this.userTargets[i].Name)) {
                         this.checksTargets.push(i);
                     }
                 }
-                var sorted_elem = this.sortCheckboxes(this.filteredTargets, this.checksTargets, this.userTargets);
+                var sorted_elem = this.sortCheckboxes(this.userTargets, this.checksTargets);
                 this.userTargets = sorted_elem[0];
                 this.checksTargets = sorted_elem[1];
             }
             if (pivotOn == 'targets' && this.checksTargets.length == 1) {
-                var selectedTarget = this.filteredTargets[index].Name;
+                var selectedTarget = this.userTargets[index].Name;
                 var targetKeywords = this.utksTarget[selectedTarget];
-                for (var i = 0; i < this.filteredKeywords.length; i++) {
-                    if (targetKeywords.includes(this.filteredKeywords[i].Text)) {
+                for (var i = 0; i < this.userKeywords.length; i++) {
+                    if (targetKeywords.includes(this.userKeywords[i].Text)) {
                         this.checksKeywords.push(i);
                     }
                 }
-                var sorted_elem = this.sortCheckboxes(this.filteredKeywords, this.checksKeywords, this.userKeywords);
+                var sorted_elem = this.sortCheckboxes(this.userKeywords, this.checksKeywords);
                 this.userKeywords = sorted_elem[0];
                 this.checksKeywords = sorted_elem[1];
             }
         },
     },
     computed: {
-        filteredKeywords() {
-            return this.userKeywords.filter(row => {
-                const Text = row.Text.toString().toLowerCase();
-                const searchTerm = this.inputKeyword.toLowerCase();
-                return (
-                    Text.includes(searchTerm)
-                );
-            });
-        },
-        filteredTargets() {
-            return this.userTargets.filter(row => {
-                const Name = row.Name.toString().toLowerCase();
-                const searchTerm = this.inputTarget.toLowerCase();
-                return (
-                    Name.includes(searchTerm)
-                );
-            });
-        },
         checkAllKeywords() {
-            if (this.checksKeywords.length == this.filteredKeywords.length) {
+            if (this.checksKeywords.length == this.userKeywords.length) {
                 return true;
             } else {
                 return false;
             }
         },
         checkAllTargets() {
-            if (this.checksTargets.length == this.filteredTargets.length) {
+            if (this.checksTargets.length == this.userTargets.length) {
                 return true;
             } else {
                 return false;
@@ -339,11 +323,11 @@ export default {
     template: `
         <div>
             <div class="row">
-                <div class="column">
+                <div class="column" style="flex: 45%;">
                     <div>
                         <h1>
                             My Keywords
-                        </h1><br>
+                        </h1>
                         <p v-for="(message, index) in messagesKeywords">
                             <span v-html="message"></span>
                         </p>
@@ -354,10 +338,10 @@ export default {
                                 :styles="autoCompleteStyle"
                                 :destyled=true
                                 :filter-by-query="true">
-                                <label id="KeywordsFilter" for="Filter" class="mdc-text-field mdc-text-field--filled mdc-text-field--with-leading-icon">
+                                <label id="KeywordsField" for="Filter" class="mdc-text-field mdc-text-field--filled mdc-text-field--with-leading-icon">
                                     <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" role="button">text_fields</i>
-                                    <input class="mdc-text-field__input" type="text" aria-labelledby="Filter">
-                                    <span class="mdc-floating-label" id="KeywordsFilter">Filter or add a new keyword</span>
+                                    <input class="mdc-text-field__input" type="text">
+                                    <span class="mdc-floating-label">Add keyword</span>
                                     <div class="mdc-line-ripple"></div>
                                 </label>
                             </vue-simple-suggest>
@@ -405,7 +389,7 @@ export default {
                                     </tr>
                                 </thead>
                                 <tbody class="mdc-data-table__content">
-                                    <tr v-for="(row, index) in filteredKeywords" class="mdc-data-table__row">
+                                    <tr v-for="(row, index) in userKeywords" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
                                             <input
                                                 type="checkbox"
@@ -430,11 +414,11 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div class="column">
+                <div class="column" style="flex: 45%;">
                     <div>
                         <h1>
                             My Targets
-                        </h1><br>
+                        </h1>
                         <p v-for="(message, index) in messagesTargets">
                             <span v-html="message"></span>
                         </p>
@@ -445,10 +429,10 @@ export default {
                                 :styles="autoCompleteStyle"
                                 :destyled=true
                                 :filter-by-query="true">
-                                <label id="TargetsFilter" for="Filter" class="mdc-text-field mdc-text-field--filled mdc-text-field--with-leading-icon">
+                                <label id="TargetsField" for="Filter" class="mdc-text-field mdc-text-field--filled mdc-text-field--with-leading-icon">
                                     <i class="material-icons mdc-text-field__icon mdc-text-field__icon--leading" tabindex="0" role="button">text_fields</i>
-                                    <input class="mdc-text-field__input" type="text" aria-labelledby="Filter">
-                                    <span class="mdc-floating-label" id="TargetsFilter">Filter or add a new target</span>
+                                    <input class="mdc-text-field__input" type="text">
+                                    <span class="mdc-floating-label">Add target</span>
                                     <div class="mdc-line-ripple"></div>
                                 </label>
                             </vue-simple-suggest>
@@ -496,7 +480,7 @@ export default {
                                     </tr>
                                 </thead>
                                 <tbody class="mdc-data-table__content">
-                                    <tr v-for="(row, index) in filteredTargets" class="mdc-data-table__row">
+                                    <tr v-for="(row, index) in userTargets" class="mdc-data-table__row">
                                         <td class="mdc-data-table__cell">
                                             <input
                                                 type="checkbox"
@@ -520,6 +504,15 @@ export default {
                             </table>
                         </div>
                     </div>
+                </div>
+                <div class="column match-button" style="flex: 10%;">
+                    <button id="add-to-favorites"
+                    class="mdc-icon-button"
+                    aria-label="Add to favorites"
+                    aria-pressed="false">
+                        <i class="material-icons mdc-icon-button__icon mdc-icon-button__icon--on">favorite</i>
+                        <i class="material-icons mdc-icon-button__icon">favorite_border</i>
+                    </button>
                 </div>
             </div>
         </div>`,
