@@ -48,10 +48,12 @@ export default {
             .input-row {
                 display: flex;
             }
+            .column-match {
+                padding-left: 3%;
+                padding-right: 3%;
+            }
             .match-button {
-                display: flex;
-                justify-content: center;
-                align-items: center;
+                top: 60%;
             }
             .suggestions-style {
                 position: absolute;
@@ -323,7 +325,7 @@ export default {
     template: `
         <div>
             <div class="row">
-                <div class="column" style="flex: 45%;">
+                <div class="column">
                     <div>
                         <h1>
                             My Keywords
@@ -414,7 +416,14 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div class="column" style="flex: 45%;">
+                <div class="column-match">
+                    <button class="mdc-button mdc-button--raised match-button">
+                        <div class="mdc-button__ripple"></div>
+                        <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
+                        <span class="mdc-button__label">Create Match</span>
+                    </button>
+                </div>
+                <div class="column">
                     <div>
                         <h1>
                             My Targets
@@ -504,15 +513,6 @@ export default {
                             </table>
                         </div>
                     </div>
-                </div>
-                <div class="column match-button" style="flex: 10%;">
-                    <button id="add-to-favorites"
-                    class="mdc-icon-button"
-                    aria-label="Add to favorites"
-                    aria-pressed="false">
-                        <i class="material-icons mdc-icon-button__icon mdc-icon-button__icon--on">favorite</i>
-                        <i class="material-icons mdc-icon-button__icon">favorite_border</i>
-                    </button>
                 </div>
             </div>
         </div>`,
