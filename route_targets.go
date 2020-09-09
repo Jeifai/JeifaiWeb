@@ -148,15 +148,24 @@ func PutUserTargetsKeywords(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	utks := user.SelectTargetsKeywordsByUser()
-
-	infos := struct {
-		Utks []map[string]interface{}
-	}{
-		utks,
+	type TempResponse struct {
+		MacroPivot string   `json:"macroPivot"`
+		Keywords   []string `json:"keywords"`
+		Targets    []string `json:"targets"`
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
+	response := TempResponse{}
+
+	err := json.NewDecoder(r.Body).Decode(&response)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if response.MacroPivot == "keywords" {
+		// user.DeleteUserTargetsKeywordsByKeyword(string(response.Keywords[0]))
+	} else if response.MacroPivot == "targets" {
+		// user.DeleteUserTargetsKeywordsByTarget(response.Targets)
+	}
+	user.InsertUserTargetsKeywords(response.Keywords, response.Targets)
+	fmt.Println(response)
 }

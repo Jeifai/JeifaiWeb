@@ -81,7 +81,7 @@ export default {
     },
     methods: {
         fetchUserTargetsKeywords: function() {
-            this.$http.get('/targets/keywords').then(function(response) {
+            this.$http.get('/utks').then(function(response) {
                 this.utksKeyword = response.data.Utks[0];
                 this.utksTarget = response.data.Utks[1];
             }).catch(function(error) {
@@ -89,21 +89,24 @@ export default {
             });
         },
         createUserTargetsKeywords: function() {
-            var new_utks = {
-                'macroPivot': this.macroPivot
+            var keywords = [];
+            var targets = [];
+            for (var i = 0; i < this.checksKeywords.length; i++) {
+                keywords.push(this.userKeywords[this.checksKeywords[i]].Text);
             };
-            if (this.macroPivot == 'keywords') {
-                for (var i = 0; i < this.checksKeywords.length; i++) {
-                    var keyword_text = this.userKeywords[this.checksKeywords[i]].Text;
-                    new_utks[keyword_text] = [];
-                    for (var q = 0; q < this.checksTargets.length; q++) {
-                        var target_name = this.userTargets[this.checksTargets[q]].Name;
-                        new_utks[keyword_text].push(target_name);
-                    }
-                }
-            }
-            console.log(new_utks);
-        },
+            for (var q = 0; q < this.checksTargets.length; q++) {
+                targets.push(this.userTargets[this.checksTargets[q]].Name);
+            };
+            this.$http.put('/utks', {
+                "macroPivot": this.macroPivot,
+                "keywords": keywords,
+                "targets": targets
+            }).then(function(response) {
+                    this.messages = response.data.Messages
+            }).catch(function(error) {
+                console.log(error)
+            });
+        },  
         fetchUserKeywords: function() {
             this.$http.get('/keywords/user').then(function(response) {
                 this.userKeywords = response.data.Keywords;
