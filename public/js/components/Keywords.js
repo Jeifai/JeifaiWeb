@@ -224,9 +224,6 @@ export default {
                 }
             }
         },
-        sortKeywordsCheckboxes: function() {
-            this.checksKeywords.sort((b,a) => (a > b) ? 1 : ((b > a) ? -1 : 0))
-        },
         sortCheckboxes: function(arr_filtered, arr_checks, arr_user) {
             var temp_result_present = [];
             var temp_result_not_present = [];
@@ -268,11 +265,13 @@ export default {
             if (pivotOn == 'keywords' && this.checksKeywords.length == 0) {
                 this.checksTargets = [];
                 this.macroPivot = '';
+                document.getElementById('table-targets').scrollTop = 0;
                 return;
             }
             if (pivotOn == 'targets' && this.checksTargets.length == 0) {
                 this.checksKeywords = [];
                 this.macroPivot = '';
+                document.getElementById('table-keywords').scrollTop = 0;
                 return;
             }
 
@@ -302,7 +301,6 @@ export default {
                 this.checksKeywords = sorted_elem[1];
             }
         },
-
     },
     computed: {
         filteredKeywords() {
@@ -369,7 +367,7 @@ export default {
                                 aria-label="Add">add
                             </button>
                         </div>
-                        <div class="mdc-data-table scrollable">
+                        <div class="mdc-data-table scrollable" id="table-keywords">
                             <table class="mdc-data-table__table" aria-label="Created Keywords">
                                 <thead>
                                     <tr class="mdc-data-table__header-row">
@@ -460,7 +458,7 @@ export default {
                                 aria-label="Add">add
                             </button>
                         </div>
-                        <div class="mdc-data-table scrollable">
+                        <div class="mdc-data-table scrollable" id="table-targets">
                             <table class="mdc-data-table__table" aria-label="Created Targets">
                                 <thead>
                                     <tr class="mdc-data-table__header-row">
