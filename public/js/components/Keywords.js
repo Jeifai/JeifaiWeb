@@ -88,6 +88,22 @@ export default {
                 console.log(error);
             });
         },
+        createUserTargetsKeywords: function() {
+            var new_utks = {
+                'macroPivot': this.macroPivot
+            };
+            if (this.macroPivot == 'keywords') {
+                for (var i = 0; i < this.checksKeywords.length; i++) {
+                    var keyword_text = this.userKeywords[this.checksKeywords[i]].Text;
+                    new_utks[keyword_text] = [];
+                    for (var q = 0; q < this.checksTargets.length; q++) {
+                        var target_name = this.userTargets[this.checksTargets[q]].Name;
+                        new_utks[keyword_text].push(target_name);
+                    }
+                }
+            }
+            console.log(new_utks);
+        },
         fetchUserKeywords: function() {
             this.$http.get('/keywords/user').then(function(response) {
                 this.userKeywords = response.data.Keywords;
@@ -417,10 +433,12 @@ export default {
                     </div>
                 </div>
                 <div class="column-match">
-                    <button class="mdc-button mdc-button--raised match-button">
+                    <button
+                        v-on:click="createUserTargetsKeywords"
+                        class="mdc-button mdc-button--raised match-button"
+                        :disabled="checksKeywords.length == 0 && checksTargets.length == 0">
                         <div class="mdc-button__ripple"></div>
-                        <i class="material-icons mdc-button__icon" aria-hidden="true">check</i>
-                        <span class="mdc-button__label">Create Match</span>
+                        <span class="mdc-button__label">Save combinations</span>
                     </button>
                 </div>
                 <div class="column">

@@ -141,3 +141,22 @@ func GetUserTargetsKeywords(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
 }
+
+func PutUserTargetsKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting PutUserTargetsKeywords..."))
+
+	sess := GetSession(r)
+	user := UserById(sess.UserId)
+
+	utks := user.SelectTargetsKeywordsByUser()
+
+	infos := struct {
+		Utks []map[string]interface{}
+	}{
+		utks,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}
