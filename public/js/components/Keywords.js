@@ -15,7 +15,6 @@ export default {
                 CreatedDate: true,
                 Text: false,
             },
-            messagesKeywords: '',
             allTargets: [],
             userTargets: [],
             inputTarget: '',
@@ -25,7 +24,6 @@ export default {
                 CreatedDate: true,
                 Name: false,
             },
-            messagesTargets: '',
             autoCompleteStyle : {
                 vueSimpleSuggest: "",
                 inputWrapper: "",
@@ -33,6 +31,8 @@ export default {
                 suggestions: "suggestions-style",
                 suggestItem: "list-group-item"
             },
+            message: '',
+            loading: ''
         }
     },
     mounted() {
@@ -51,9 +51,24 @@ export default {
             .column-match {
                 padding-left: 3%;
                 padding-right: 3%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
             }
-            .match-button {
-                top: 60%;
+            .combinations-button-div {
+                height: 80%;
+            }
+            .combinations-button {
+                top: 80%;
+            }
+            .message-div {
+                height: 20%;
+                text-align: center;"
+                background-color: green;
+            }
+            .message-text {
+                color: #1D3557;
+                font-size: 25px;
             }
             .suggestions-style {
                 position: absolute;
@@ -69,6 +84,20 @@ export default {
             .scrollable {
                 overflow-y: scroll;
                 height:36vh;
+            }
+            .loader {
+                border: 16px solid #f3f3f3;
+                border-radius: 50%;
+                border-top: 16px solid #457B9D;
+                border-bottom: 16px solid #457B9D;
+                width: 30px;
+                height: 30px;
+                margin: 0 auto;
+                animation: spin 2s linear infinite;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
             }`
         document.head.appendChild(styleElem);
     },
@@ -89,6 +118,7 @@ export default {
             });
         },
         createUserTargetsKeywords: function() {
+            this.loading = true;
             var keywords = [];
             var targets = [];
             for (var i = 0; i < this.checksKeywords.length; i++) {
@@ -103,8 +133,11 @@ export default {
                 "targets": targets
             }).then(function(response) {
                     this.fetchUserTargetsKeywords();
-                    // this.messages = response.data.Messages;
+                    this.loading = false;
+                    this.message = response.data.Message;
+                    setTimeout(() => this.message = '', 2000);
             }).catch(function(error) {
+                this.loading = false;
                 console.log(error)
             });
         },  
@@ -125,12 +158,10 @@ export default {
         createKeyword: function() {
             this.$http.put('/keywords/' + this.inputKeyword).then(
                 function(response) {
-                    this.messagesKeywords = response.data.Messages;
                     this.fetchUserKeywords();
                     this.fetchAllKeywords();
                     this.fetchUserTargetsKeywords();
                     this.inputKeyword = '';
-                    setTimeout(() => this.messagesKeywords = '', 2000);
             }).catch(function(error) {
                 console.log(error);
             });
@@ -139,11 +170,9 @@ export default {
             if (confirm("Are you sure you want to delete the keyword?")) {
                 this.$http.delete('/keywords/' + this.userKeywords[index].Text).then(
                     function(response) {
-                        this.messagesKeywords = response.data.Messages;
                         this.fetchUserKeywords();
                         this.fetchAllKeywords();
                         this.fetchUserTargetsKeywords();
-                        setTimeout(() => this.messagesKeywords = '', 2000);
                 }).catch(function(error) {
                     console.log(error)
                 });
@@ -195,12 +224,10 @@ export default {
         createTarget: function() {
             this.$http.put('/targets/' + this.inputTarget).then(
                 function(response) {
-                    this.messagesTargets = response.data.Messages;
                     this.fetchUserTargets();
                     this.fetchAllTargets();
                     this.fetchUserTargetsKeywords();
                     this.inputTarget = '';
-                    setTimeout(() => this.messagesTargets = '', 2000);
             }).catch(function(error) {
                 console.log(error);
             });
@@ -209,11 +236,9 @@ export default {
             if (confirm("Are you sure you want to delete the target?")) {
                 this.$http.delete('/targets/' + this.userTargets[index].Name).then(
                     function(response) {
-                        this.messagesTargets = response.data.Messages;
                         this.fetchUserTargets();
                         this.fetchAllTargets();
                         this.fetchUserTargetsKeywords();
-                        setTimeout(() => this.messagesTargets = '', 2000);
                 }).catch(function(error) {
                     console.log(error)
                 });
@@ -345,14 +370,11 @@ export default {
     template: `
         <div>
             <div class="row">
-                <div class="column">
+                <div>
                     <div>
                         <h1>
                             My Keywords
                         </h1>
-                        <p v-for="(message, index) in messagesKeywords">
-                            <span v-html="message"></span>
-                        </p>
                         <div class="input-row">
                             <vue-simple-suggest
                                 v-model="inputKeyword"
@@ -437,22 +459,25 @@ export default {
                     </div>
                 </div>
                 <div class="column-match">
-                    <button
-                        v-on:click="createUserTargetsKeywords"
-                        class="mdc-button mdc-button--raised match-button"
-                        :disabled="checksKeywords.length == 0 && checksTargets.length == 0">
-                        <div class="mdc-button__ripple"></div>
-                        <span class="mdc-button__label">Save combinations</span>
-                    </button>
+                    <div class="combinations-button-div">
+                        <button
+                            v-on:click="createUserTargetsKeywords"
+                            class="mdc-button mdc-button--raised combinations-button"
+                            :disabled="checksKeywords.length == 0 && checksTargets.length == 0">
+                            <div class="mdc-button__ripple"></div>
+                            <span class="mdc-button__label">Save combinations</span>
+                        </button>
+                    </div>
+                    <div v-if="loading" class="message-div loader"></div>
+                    <div v-if="message" class="message-div">
+                        <span v-html="message" class="message-text"></span>
+                    </div>
                 </div>
-                <div class="column">
+                <div>
                     <div>
                         <h1>
                             My Targets
                         </h1>
-                        <p v-for="(message, index) in messagesTargets">
-                            <span v-html="message"></span>
-                        </p>
                         <div class="input-row">
                             <vue-simple-suggest
                                 v-model="inputTarget"

@@ -168,4 +168,9 @@ func PutUserTargetsKeywords(w http.ResponseWriter, r *http.Request) {
 	if len(response.Keywords) > 0 && len(response.Targets) > 0 {
 		user.InsertUserTargetsKeywords(response.Keywords, response.Targets)
 	}
+
+	message := struct{ Message string }{"Success!"}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(message)
 }
