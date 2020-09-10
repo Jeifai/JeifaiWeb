@@ -32,7 +32,7 @@ export default {
                 suggestItem: "list-group-item"
             },
             message: '',
-            loading: ''
+            messageLoading: ''
         }
     },
     mounted() {
@@ -85,13 +85,13 @@ export default {
                 overflow-y: scroll;
                 height:36vh;
             }
-            .loader {
+            .loader-message {
+                width: 100px;
+                height: 100px;
                 border: 16px solid #f3f3f3;
                 border-radius: 50%;
                 border-top: 16px solid #457B9D;
                 border-bottom: 16px solid #457B9D;
-                width: 30px;
-                height: 30px;
                 margin: 0 auto;
                 animation: spin 2s linear infinite;
             }
@@ -118,7 +118,7 @@ export default {
             });
         },
         createUserTargetsKeywords: function() {
-            this.loading = true;
+            this.messageLoading = true;
             var keywords = [];
             var targets = [];
             for (var i = 0; i < this.checksKeywords.length; i++) {
@@ -133,11 +133,11 @@ export default {
                 "targets": targets
             }).then(function(response) {
                     this.fetchUserTargetsKeywords();
-                    this.loading = false;
+                    this.messageLoading = false;
                     this.message = response.data.Message;
                     setTimeout(() => this.message = '', 2000);
             }).catch(function(error) {
-                this.loading = false;
+                this.messageLoading = false;
                 console.log(error)
             });
         },  
@@ -468,7 +468,7 @@ export default {
                             <span class="mdc-button__label">Save combinations</span>
                         </button>
                     </div>
-                    <div v-if="loading" class="message-div loader"></div>
+                    <div v-if="messageLoading" class="message-div loader-message"></div>
                     <div v-if="message" class="message-div">
                         <span v-html="message" class="message-text"></span>
                     </div>
