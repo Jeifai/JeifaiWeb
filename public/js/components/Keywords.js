@@ -102,7 +102,8 @@ export default {
                 "keywords": keywords,
                 "targets": targets
             }).then(function(response) {
-                    this.messages = response.data.Messages
+                    this.fetchUserTargetsKeywords();
+                    // this.messages = response.data.Messages;
             }).catch(function(error) {
                 console.log(error)
             });
