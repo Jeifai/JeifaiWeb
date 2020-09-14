@@ -282,7 +282,7 @@ func (user *User) SelectTargetsKeywordsByUser() (utks []map[string]interface{}) 
 											SELECT
 												k.text AS keyword_text,
 												t.name AS target_name
-											FROM userstargetskeywords2 utk
+											FROM userstargetskeywords utk
 											INNER JOIN userkeywords uk ON(utk.userkeywordid = uk.id)
 											INNER JOIN usertargets ut ON(utk.usertargetid = ut.id)
 											LEFT JOIN keywords k ON(uk.keywordid = k.id)
@@ -349,7 +349,7 @@ func (user *User) UpdateDeletedAtInUsersTargets(target Target) {
 func (user *User) DeleteUserTargetsKeywordsByKeywords(keywords []string) {
 	fmt.Println(Gray(8-1, "Starting DeleteUserTargetsKeywordsByKeywords..."))
 
-	statement := `DELETE FROM userstargetskeywords2 
+	statement := `DELETE FROM userstargetskeywords
 					WHERE userkeywordid IN(
 						SELECT
 							uk.id AS userkeywordid
@@ -371,7 +371,7 @@ func (user *User) DeleteUserTargetsKeywordsByKeywords(keywords []string) {
 func (user *User) DeleteUserTargetsKeywordsByTargets(targets []string) {
 	fmt.Println(Gray(8-1, "Starting DeleteUserTargetsKeywordsByTargets..."))
 
-	statement := `DELETE FROM userstargetskeywords2 
+	statement := `DELETE FROM userstargetskeywords
 					WHERE usertargetid IN(
 						SELECT
 							ut.id AS usertargetid
@@ -445,7 +445,7 @@ func (user *User) InsertUserTargetsKeywords(keywords []string, targets []string)
 			valueStrings = append(valueStrings, str_n)
 		}
 	}
-	smt := `INSERT INTO userstargetskeywords2 (userkeywordid, usertargetid, createdat) VALUES %s;`
+	smt := `INSERT INTO userstargetskeywords (userkeywordid, usertargetid, createdat) VALUES %s;`
 
 	smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
 
