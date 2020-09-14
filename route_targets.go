@@ -112,7 +112,7 @@ func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 
 	target.SelectTargetByName()
 	user.UpdateDeletedAtInUsersTargets(target)
-	// user.SetDeletedAtInUserTargetKeywordMultiple(utks) --> TODO
+	user.DeleteUserTargetsKeywordsByTargets([]string{target.Name})
 
 	message := struct{ Message string }{"Removed!"}
 	w.Header().Set("Content-Type", "application/json")
@@ -157,9 +157,9 @@ func PutUserTargetsKeywords(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if response.MacroPivot == "keywords" {
-		user.DeleteUserTargetsKeywordsByKeyword(response.Keywords)
+		user.DeleteUserTargetsKeywordsByKeywords(response.Keywords)
 	} else if response.MacroPivot == "targets" {
-		user.DeleteUserTargetsKeywordsByTarget(response.Targets)
+		user.DeleteUserTargetsKeywordsByTargets(response.Targets)
 	}
 
 	if len(response.Keywords) > 0 && len(response.Targets) > 0 {

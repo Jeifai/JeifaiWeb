@@ -98,8 +98,8 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(infos)
 }
 
-func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting RemoveKeywords..."))
+func RemoveKeyword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting RemoveKeyword..."))
 
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
@@ -110,7 +110,7 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 
 	keyword.SelectKeywordByText()
 	user.UpdateDeletedAtInUsersKeywords(keyword)
-	// user.SetDeletedAtInUserTargetKeywordMultiple(utks) --> TODO
+	user.DeleteUserTargetsKeywordsByKeywords([]string{keyword.Text})
 
 	message := struct{ Message string }{"Removed!"}
 	w.Header().Set("Content-Type", "application/json")
