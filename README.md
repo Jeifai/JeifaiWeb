@@ -194,6 +194,7 @@ export default {
 
 ## TODO
 * How to run the webapp locally
+* How to add IP to Google Cloud Platform
 * Write architecture_decision_record
 * How to deploy
 * Discuss emailing
