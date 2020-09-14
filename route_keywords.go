@@ -66,13 +66,13 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 		for _, err := range err.(validator.ValidationErrors) {
 			if err.Field() == "Text" {
 				if err.Tag() == "required" {
-					message = `<p style="color:red">Keyword is empty</p>`
+					message = `<p style="color:red">Empty!</p>`
 				}
 				if err.Tag() == "min" {
-					message = `<p style="color:red">Keyword is too short</p>`
+					message = `<p style="color:red">Too short!</p>`
 				}
 				if err.Tag() == "max" {
-					message = `<p style="color:red">Keyword is too long</p>`
+					message = `<p style="color:red">Too long!</p>`
 				}
 			}
 		}
@@ -86,9 +86,9 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 		userKeywordId := user.SelectUserKeywordByUserAndKeyword(keyword)
 		if userKeywordId == 0 {
 			user.InsertUserKeyword(keyword)
-			message = `<p style="color:green">Keyword added</p>`
+			message = `<p style="color:green">Added!</p>`
 		} else {
-			message = `<p style="color:orange">Keyword already present</p>`
+			message = `<p style="color:orange">Already present</p>`
 		}
 	}
 
@@ -112,7 +112,7 @@ func RemoveKeyword(w http.ResponseWriter, r *http.Request) {
 	user.UpdateDeletedAtInUsersKeywords(keyword)
 	user.DeleteUserTargetsKeywordsByKeywords([]string{keyword.Text})
 
-	message := struct{ Message string }{"Removed!"}
+	message := struct{ Message string }{`<p style="color:green">Removed!</p>`}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(message)

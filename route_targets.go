@@ -66,13 +66,13 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 		for _, err := range err.(validator.ValidationErrors) {
 			if err.Field() == "Name" {
 				if err.Tag() == "required" {
-					message = `<p style="color:red">Name cannot be empty</p>`
+					message = `<p style="color:red">Empty!</p>`
 				}
 				if err.Tag() == "min" {
-					message = `<p style="color:red">Name is too short</p>`
+					message = `<p style="color:red">Too short!</p>`
 				}
 				if err.Tag() == "max" {
-					message = `<p style="color:red">Name inserted is too long</p>`
+					message = `<p style="color:red">Too long!</p>`
 				}
 			}
 		}
@@ -88,9 +88,9 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 		userTargetId := user.SelectUserTargetByUserAndTarget(target)
 		if userTargetId == 0 {
 			user.InsertUserTarget(target)
-			message = `<p style="color:green">Target successfully added</p>`
+			message = `<p style="color:green">Success!</p>`
 		} else {
-			message = `<p style="color:red">Target already exists</p>`
+			message = `<p style="color:red">Already present</p>`
 		}
 	}
 
@@ -114,7 +114,7 @@ func RemoveTarget(w http.ResponseWriter, r *http.Request) {
 	user.UpdateDeletedAtInUsersTargets(target)
 	user.DeleteUserTargetsKeywordsByTargets([]string{target.Name})
 
-	message := struct{ Message string }{"Removed!"}
+	message := struct{ Message string }{`<p style="color:green">Removed!</p>`}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(message)
@@ -166,7 +166,7 @@ func PutUserTargetsKeywords(w http.ResponseWriter, r *http.Request) {
 		user.InsertUserTargetsKeywords(response.Keywords, response.Targets)
 	}
 
-	message := struct{ Message string }{"Success!"}
+	message := struct{ Message string }{`<p style="color:green">Success!</p>`}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(message)
