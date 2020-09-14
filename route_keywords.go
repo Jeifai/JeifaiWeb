@@ -86,16 +86,16 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 		userKeywordId := user.SelectUserKeywordByUserAndKeyword(keyword)
 		if userKeywordId == 0 {
 			user.InsertUserKeyword(keyword)
-			message = `<p style="color:green">Added!</p>`
+			message = `<p style="color:green">Success!</p>`
 		} else {
-			message = `<p style="color:orange">Already present</p>`
+			message = `<p style="color:orange">Already present!</p>`
 		}
 	}
 
-	infos := struct{ Message string }{message}
+	info := struct{ Message string }{message}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
+	json.NewEncoder(w).Encode(info)
 }
 
 func RemoveKeyword(w http.ResponseWriter, r *http.Request) {

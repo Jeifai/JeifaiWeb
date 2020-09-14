@@ -94,10 +94,10 @@ func PutTarget(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	infos := struct{ Message string }{message}
+	info := struct{ Message string }{message}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
+	json.NewEncoder(w).Encode(info)
 }
 
 func RemoveTarget(w http.ResponseWriter, r *http.Request) {

@@ -111,8 +111,10 @@ export default {
     methods: {
         fetchUserTargetsKeywords: function() {
             this.$http.get('/utks').then(function(response) {
-                this.utksKeyword = response.data.Utks[0];
-                this.utksTarget = response.data.Utks[1];
+                if (response.data.Utks !== null) {
+                    this.utksKeyword = response.data.Utks[0];
+                    this.utksTarget = response.data.Utks[1];
+                }
             }).catch(function(error) {
                 console.log(error);
             });
@@ -133,12 +135,12 @@ export default {
                 "targets": targets
             }).then(function(response) {
                     this.fetchUserTargetsKeywords();
+                    this.messageLoading = false;
                     this.message = response.data.Message;
                     setTimeout(() => this.message = '', 2000);
             }).catch(function(error) {
                 console.log(error)
             });
-            this.messageLoading = false;
         },  
         fetchUserKeywords: function() {
             this.$http.get('/keywords/user').then(function(response) {
@@ -343,26 +345,30 @@ export default {
             if (pivotOn == 'keywords' && this.checksKeywords.length == 1) {
                 var selectedKeyword = this.userKeywords[index].Text;
                 var keywordTargets = this.utksKeyword[selectedKeyword];
-                for (var i = 0; i < this.userTargets.length; i++) {
-                    if (keywordTargets.includes(this.userTargets[i].Name)) {
-                        this.checksTargets.push(i);
+                if (keywordTargets !== null) {
+                    for (var i = 0; i < this.userTargets.length; i++) {
+                        if (keywordTargets.includes(this.userTargets[i].Name)) {
+                            this.checksTargets.push(i);
+                        }
                     }
+                    var sorted_elem = this.sortCheckboxes(this.userTargets, this.checksTargets);
+                    this.userTargets = sorted_elem[0];
+                    this.checksTargets = sorted_elem[1];
                 }
-                var sorted_elem = this.sortCheckboxes(this.userTargets, this.checksTargets);
-                this.userTargets = sorted_elem[0];
-                this.checksTargets = sorted_elem[1];
             }
             if (pivotOn == 'targets' && this.checksTargets.length == 1) {
                 var selectedTarget = this.userTargets[index].Name;
                 var targetKeywords = this.utksTarget[selectedTarget];
-                for (var i = 0; i < this.userKeywords.length; i++) {
-                    if (targetKeywords.includes(this.userKeywords[i].Text)) {
-                        this.checksKeywords.push(i);
+                if (targetKeywords !== null) {
+                    for (var i = 0; i < this.userKeywords.length; i++) {
+                        if (targetKeywords.includes(this.userKeywords[i].Text)) {
+                            this.checksKeywords.push(i);
+                        }
                     }
+                    var sorted_elem = this.sortCheckboxes(this.userKeywords, this.checksKeywords);
+                    this.userKeywords = sorted_elem[0];
+                    this.checksKeywords = sorted_elem[1];
                 }
-                var sorted_elem = this.sortCheckboxes(this.userKeywords, this.checksKeywords);
-                this.userKeywords = sorted_elem[0];
-                this.checksKeywords = sorted_elem[1];
             }
         },
     },
