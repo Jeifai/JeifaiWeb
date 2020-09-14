@@ -9,13 +9,9 @@ export default {
             sorting: {
                 CreatedDate: true,
                 Name: false,
-                CountResults: false,
-                CountResultsPerc: false,
-                CountResultsDay: false,
                 CountTargets: false,
-                TotalMatches: false,
-                LastWeekMatches: false,
-                AvgMatchesDay: false,
+                CountAllTimeResults: false,
+                CountResultsSinceCreation: false,
             }
         }
     },
@@ -94,52 +90,24 @@ export default {
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                    <a class="column-header" @click="sortRows('CountResults')">
-                                        Results
-                                        <i v-if="sortedBy === 'CountResults' && sortedBy['CountResults'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'CountResults' && sortedBy['CountResults'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
-                                    </a>
-                                </th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                    <a class="column-header" @click="sortRows('CountResultsPerc')">
-                                        Results %
-                                        <i v-if="sortedBy === 'CountResultsPerc' && sortedBy['CountResultsPerc'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'CountResultsPerc' && sortedBy['CountResultsPerc'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
-                                    </a>
-                                </th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                    <a class="column-header" @click="sortRows('CountResultsDay')">
-                                        Results / Day
-                                        <i v-if="sortedBy === 'CountResultsDay' && sortedBy['CountResultsDay'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'CountResultsDay' && sortedBy['CountResultsDay'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
-                                    </a>
-                                </th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                     <a class="column-header" @click="sortRows('CountTargets')">
-                                        Targets
+                                        CountTargets
                                         <i v-if="sortedBy === 'CountTargets' && sortedBy['CountTargets'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                         <i v-if="sortedBy === 'CountTargets' && sortedBy['CountTargets'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                    <a class="column-header" @click="sortRows('TotalMatches')">
-                                        Matches
-                                        <i v-if="sortedBy === 'TotalMatches' && sortedBy['TotalMatches'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'TotalMatches' && sortedBy['TotalMatches'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                    <a class="column-header" @click="sortRows('CountAllTimeResults')">
+                                        CountAllTimeResults
+                                        <i v-if="sortedBy === 'CountAllTimeResults' && sortedBy['CountAllTimeResults'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'CountAllTimeResults' && sortedBy['CountAllTimeResults'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                                 <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                    <a class="column-header" @click="sortRows('LastWeekMatches')">
-                                        7 Days Matches
-                                        <i v-if="sortedBy === 'LastWeekMatches' && sortedBy['LastWeekMatches'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'LastWeekMatches' && sortedBy['LastWeekMatches'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
-                                    </a>
-                                </th>
-                                <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                    <a class="column-header" @click="sortRows('LastWeekMatches')">
-                                        Matches / Day
-                                        <i v-if="sortedBy === 'AvgMatchesDay' && sortedBy['AvgMatchesDay'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                        <i v-if="sortedBy === 'AvgMatchesDay' && sortedBy['AvgMatchesDay'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                    <a class="column-header" @click="sortRows('CountResultsSinceCreation')">
+                                        CountResultsSinceCreation
+                                        <i v-if="sortedBy === 'CountResultsSinceCreation' && sortedBy['CountResultsSinceCreation'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                        <i v-if="sortedBy === 'CountResultsSinceCreation' && sortedBy['CountResultsSinceCreation'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                     </a>
                                 </th>
                             </tr>
@@ -148,13 +116,9 @@ export default {
                             <tr v-for="(row, index) in keywords" class="mdc-data-table__row">
                                 <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
                                 <td class="mdc-data-table__cell" v-html="row.Name"></td>
-                                <td class="mdc-data-table__cell" v-html="row.CountResults"></td>
-                                <td class="mdc-data-table__cell" v-html="row.CountResultsPerc"></td>
-                                <td class="mdc-data-table__cell" v-html="row.CountResultsDay"></td>
                                 <td class="mdc-data-table__cell" v-html="row.CountTargets"></td>
-                                <td class="mdc-data-table__cell" v-html="row.TotalMatches"></td>
-                                <td class="mdc-data-table__cell" v-html="row.LastWeekMatches"></td>
-                                <td class="mdc-data-table__cell" v-html="row.AvgMatchesDay"></td>
+                                <td class="mdc-data-table__cell" v-html="row.CountAllTimeResults"></td>
+                                <td class="mdc-data-table__cell" v-html="row.CountResultsSinceCreation"></td>
                             </tr>
                         </tbody>
                     </table>

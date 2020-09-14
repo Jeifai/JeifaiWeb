@@ -21,15 +21,11 @@ type UserTargetKeyword struct {
 }
 
 type KeywordInfo struct {
-	Name             string
-	CountResults     int
-	CountResultsPerc string
-	CountResultsDay  int
-	CreatedDate      string
-	CountTargets     int
-	LastWeekMatches  int
-	TotalMatches     int
-	AvgMatchesDay    float32
+    CreatedDate                 string
+    Name                        string
+    CountTargets                int
+    CountAllTimeResults         int
+    CountResultsSinceCreation   int
 }
 
 func (keyword *Keyword) InsertKeyword() {
@@ -187,83 +183,44 @@ func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
 func (user *User) InfoUsersKeywordsByUser() (keywordsInfo []KeywordInfo) {
 	fmt.Println(Gray(8-1, "Starting InfoUsersKeywordsByUser..."))
 	rows, err := Db.Query(`
-						WITH 
-                            keywords_macro AS (
-                                WITH
-                                    userkeywords AS (
-                                        SELECT DISTINCT
-                                            k.text,
-                                            k.id
-                                        FROM userstargetskeywords utk
-                                        LEFT JOIN keywords k ON(utk.keywordid = k.id)
-                                        LEFT JOIN users u ON(utk.userid = u.id)
-                                        WHERE u.id = $1
-                                        AND utk.deletedat IS NULL),
-                                    all_results AS (
-                                        SELECT
-                                            COUNT(DISTINCT r.id) AS count_id
-                                        FROM results r)
-                                SELECT
-                                    uk.text,
-                                    COUNT(DISTINCT r.id) AS count_results,
-                                    ROUND(100.0 * COUNT(DISTINCT r.id) / ar.count_id, 2)::text || '%' AS count_results_perc,
-                                    COUNT(DISTINCT r.id) / COUNT(DISTINCT r.createdat::date) AS count_results_per_day
-                                FROM userkeywords uk
-                                LEFT JOIN results r ON(LOWER(r.title) LIKE('%' || uk.text || '%'))
-                                LEFT JOIN all_results ar ON(1 = 1)
-                                GROUP BY 1, ar.count_id),
-                            matches_by_user AS (
-                                SELECT
-                                    r.createdat,
-                                    s.name,
-                                    r.title,
-                                    r.url,
-                                    k.id AS keywordid,
-                                    k.text
-                                FROM userstargetskeywords utk
-                                INNER JOIN matches m ON(utk.keywordid = m.keywordid)
-                                INNER JOIN results r ON(m.resultid = r.id)
-                                INNER JOIN scrapers s ON(r.scraperid = s.id)
-                                INNER JOIN users u ON(utk.userid = u.id)
-                                INNER JOIN keywords k ON(m.keywordid = k.id)
-                                AND s.targetid = utk.targetid
-                                AND utk.userid = $1
-                                AND utk.deletedat IS NULL)
-                        SELECT
-                            k.text,
-                            km.count_results,
-                            km.count_results_perc,
-                            km.count_results_per_day,
-                            TO_CHAR(MIN(utk.createdat), 'YYYY-MM-DD'),
-                            COUNT(DISTINCT utk.targetid),
-                            COUNT(DISTINCT CASE WHEN m.createdat >= now() - interval '1 week' THEN m.url END),
-                            COUNT(DISTINCT m.url),
-                            CASE 
-                                WHEN COUNT(DISTINCT m.url) = 0 THEN 0
-                                ELSE ROUND(1.0 * COUNT(DISTINCT m.url) / COUNT(DISTINCT m.createdat::date), 1)
-                            END
-                        FROM userstargetskeywords utk
-                        LEFT JOIN keywords k ON(utk.keywordid = k.id)
-                        LEFT JOIN matches_by_user m ON(utk.keywordid = m.keywordid AND utk.createdat < m.createdat)
-                        LEFT JOIN keywords_macro km ON(k.text = km.text)
-                        WHERE utk.userid = $1
-                        AND utk.deletedat IS NULL
-                        GROUP BY 1, 2, 3, 4;`, user.Id)
+                            WITH
+                                userkeywords AS(
+                                    SELECT
+                                        uk.keywordid
+                                    FROM userskeywords uk
+                                    WHERE uk.userid = $1
+                                    AND uk.deletedat IS NULL),
+                                usertargets AS(
+                                    SELECT
+                                        ut.targetid
+                                    FROM userstargets ut
+                                    WHERE ut.userid = $1
+                                    AND ut.deletedat IS NULL)
+                            SELECT
+                                TO_CHAR(uk.createdat, 'YYYY-MM-DD') AS createdat,
+                                k.text,
+                                COUNT(DISTINCT ut.targetid) AS targets_involved,
+                                COUNT(DISTINCT r.id) AS results_all_time,
+                                SUM(CASE WHEN r.createdat > uk.createdat THEN 1 ELSE 0 END) AS results_since_creation
+                            FROM userstargetskeywords utk
+                            LEFT JOIN userskeywords uk ON(utk.userkeywordid = uk.id)
+                            LEFT JOIN keywords k ON(uk.keywordid = k.id)
+                            LEFT JOIN userstargets ut ON(utk.usertargetid = ut.id)
+                            LEFT JOIN scrapers s ON(ut.targetid = s.targetid)
+                            LEFT JOIN results r ON(s.id = r.scraperid)
+                            WHERE LOWER(r.title) LIKE('%' || k.text || '%')
+                            GROUP BY 1, 2;`, user.Id)
 	if err != nil {
 		panic(err.Error())
 	}
 	for rows.Next() {
 		keywordInfo := KeywordInfo{}
 		if err = rows.Scan(
-			&keywordInfo.Name,
-			&keywordInfo.CountResults,
-			&keywordInfo.CountResultsPerc,
-			&keywordInfo.CountResultsDay,
 			&keywordInfo.CreatedDate,
+            &keywordInfo.Name,
 			&keywordInfo.CountTargets,
-			&keywordInfo.LastWeekMatches,
-			&keywordInfo.TotalMatches,
-			&keywordInfo.AvgMatchesDay); err != nil {
+            &keywordInfo.CountAllTimeResults,
+            &keywordInfo.CountResultsSinceCreation); err != nil {
 			panic(err.Error())
 		}
 		keywordsInfo = append(keywordsInfo, keywordInfo)

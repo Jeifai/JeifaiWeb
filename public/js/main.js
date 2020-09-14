@@ -1,4 +1,3 @@
-import Home from './components/Home.js';
 import Manage from './components/Manage.js';
 import Targets from './components/Targets.js';
 import Keywords from './components/Keywords.js';
@@ -11,10 +10,6 @@ const router = new VueRouter({
     routes: [
     {
         path: '/',
-        component: Home
-    },
-    {
-        path: '/manage',
         component: Manage
     },
     {

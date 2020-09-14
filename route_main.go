@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -25,22 +24,6 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		templates.ExecuteTemplate(w, "layout", nil)
 	}
 }
-
-func GetHome(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting Home..."))
-
-	sess := GetSession(r)
-	user := UserById(sess.UserId)
-
-	home := user.GetHomeData()
-	home.UserName = user.UserName
-	infos := struct{ Home HomeData }{home}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
-}
-
 func How(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting How..."))
 	templates := template.Must(template.ParseFiles(
