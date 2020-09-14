@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 	"time"
 
 	. "github.com/logrusorgru/aurora"
@@ -186,72 +184,8 @@ func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
 	return
 }
 
-func SetUserTargetKeyword(
-	user User, targets []Target, keyword Keyword) {
-	fmt.Println(Gray(8-1, "Starting SetUserTargetKeyword..."))
-
-	valueStrings := []string{}
-	valueArgs := []interface{}{}
-	timeNow := time.Now()
-	for i, elem := range targets {
-		str1 := "$" + strconv.Itoa(1+i*4) + ","
-		str2 := "$" + strconv.Itoa(2+i*4) + ","
-		str3 := "$" + strconv.Itoa(3+i*4) + ","
-		str4 := "$" + strconv.Itoa(4+i*4)
-		str_n := "(" + str1 + str2 + str3 + str4 + ")"
-		valueStrings = append(valueStrings, str_n)
-		valueArgs = append(valueArgs, user.Id)
-		valueArgs = append(valueArgs, elem.Id)
-		valueArgs = append(valueArgs, keyword.Id)
-		valueArgs = append(valueArgs, timeNow)
-	}
-	smt := `INSERT INTO userstargetskeywords (
-            userid, targetid, keywordid, createdat)
-            VALUES %s
-            ON CONFLICT (userid, targetid, keywordid) 
-            DO UPDATE SET deletedat = NULL, updatedat = current_timestamp`
-
-	smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
-
-	_, err := Db.Exec(smt, valueArgs...)
-	if err != nil {
-		panic(err.Error())
-	}
-	return
-}
-
-func (user *User) SetDeletedAtInUserTargetKeywordMultiple(utks []UserTargetKeyword) {
-	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUserTargetKeywordMultiple..."))
-
-	valueArray := []string{}
-	timeNow := time.Now()
-	_ = timeNow
-	for _, elem := range utks {
-		str1 := "(userid=" + strconv.Itoa(user.Id) + " AND "
-		str2 := "keywordid=(SELECT id FROM keywords WHERE text='" + elem.KeywordText + "') AND "
-		str3 := "targetid=(SELECT id FROM targets WHERE name='" + elem.TargetName + "'))"
-		str_n := str1 + str2 + str3
-		valueArray = append(valueArray, str_n)
-	}
-	valueString := strings.Join(valueArray, " OR ")
-
-	smt := `UPDATE userstargetskeywords
-            SET deletedat = current_timestamp
-            WHERE id IN (
-                SELECT
-                    id
-                FROM userstargetskeywords
-                WHERE (%s));`
-
-	smt = fmt.Sprintf(smt, valueString)
-	_, err := Db.Exec(smt)
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func (user *User) InfoKeywordsByUser() (keywordsInfo []KeywordInfo) {
-	fmt.Println(Gray(8-1, "Starting InfoKeywordsByUser..."))
+func (user *User) InfoUsersKeywordsByUser() (keywordsInfo []KeywordInfo) {
+	fmt.Println(Gray(8-1, "Starting InfoUsersKeywordsByUser..."))
 	rows, err := Db.Query(`
 						WITH 
                             keywords_macro AS (

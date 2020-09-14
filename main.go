@@ -44,11 +44,13 @@ func main() {
 	r.HandleFunc("/targets/all", GetAllTargets).Methods("GET")
 	r.HandleFunc("/targets/{target}", PutTarget).Methods("PUT")
 	r.HandleFunc("/targets/{target}", RemoveTarget).Methods("DELETE")
+	r.HandleFunc("/targets/analytic", GetTargetsAnalytic).Methods("GET")
 
 	r.HandleFunc("/keywords/user", GetUserKeywords).Methods("GET")
 	r.HandleFunc("/keywords/all", GetAllKeywords).Methods("GET")
 	r.HandleFunc("/keywords/{keyword}", PutKeyword).Methods("PUT")
 	r.HandleFunc("/keywords/{keyword}", RemoveKeyword).Methods("DELETE")
+	r.HandleFunc("/keywords/analytic", GetKeywordsAnalytic).Methods("GET")
 
 	r.HandleFunc("/utks", GetUserTargetsKeywords).Methods("GET")
 	r.HandleFunc("/utks", PutUserTargetsKeywords).Methods("PUT")

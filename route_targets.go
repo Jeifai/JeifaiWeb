@@ -171,3 +171,22 @@ func PutUserTargetsKeywords(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(message)
 }
+
+func GetTargetsAnalytic(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetTargetsAnalytic..."))
+
+	sess := GetSession(r)
+	user := UserById(sess.UserId)
+
+	infoUserTargets := user.InfoUsersTargetsByUser()
+
+	infos := struct {
+		Targets []TargetInfo
+	}{
+		infoUserTargets,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}
