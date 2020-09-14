@@ -60,25 +60,25 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 	validate := validator.New()
 	err := validate.Struct(keyword)
 
-	var messages []string
+	var message string
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
 			if err.Field() == "Text" {
 				if err.Tag() == "required" {
-					messages = append(messages, `<p style="color:red">Keyword is empty</p>`)
+					message = `<p style="color:red">Keyword is empty</p>`
 				}
 				if err.Tag() == "min" {
-					messages = append(messages, `<p style="color:red">Keyword is too short</p>`)
+					message = `<p style="color:red">Keyword is too short</p>`
 				}
 				if err.Tag() == "max" {
-					messages = append(messages, `<p style="color:red">Keyword is too long</p>`)
+					message = `<p style="color:red">Keyword is too long</p>`
 				}
 			}
 		}
 	}
 
-	if len(messages) == 0 {
+	if message == "" {
 		keyword.SelectKeywordByText()
 		if keyword.Id == 0 {
 			keyword.InsertKeyword()
@@ -86,13 +86,13 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 		userKeywordId := user.SelectUserKeywordByUserAndKeyword(keyword)
 		if userKeywordId == 0 {
 			user.InsertUserKeyword(keyword)
-			messages = append(messages, `<p style="color:green">Keyword added</p>`)
+			message = `<p style="color:green">Keyword added</p>`
 		} else {
-			messages = append(messages, `<p style="color:orange">Keyword already present</p>`)
+			message = `<p style="color:orange">Keyword already present</p>`
 		}
 	}
 
-	infos := struct{ Messages []string }{messages}
+	infos := struct{ Message string }{message}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
@@ -112,11 +112,8 @@ func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
 	user.UpdateDeletedAtInUsersKeywords(keyword)
 	// user.SetDeletedAtInUserTargetKeywordMultiple(utks) --> TODO
 
-	var messages []string
-	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
-	infos := struct{ Messages []string }{messages}
-
+	message := struct{ Message string }{"Removed!"}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
+	json.NewEncoder(w).Encode(message)
 }

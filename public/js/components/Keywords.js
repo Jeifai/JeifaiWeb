@@ -86,14 +86,14 @@ export default {
                 height:36vh;
             }
             .loader-message {
-                width: 100px;
-                height: 100px;
-                border: 16px solid #f3f3f3;
+                width: 40px;
+                height: 40px;
+                border: 8px solid #f3f3f3;
                 border-radius: 50%;
-                border-top: 16px solid #457B9D;
-                border-bottom: 16px solid #457B9D;
+                border-top: 6px solid #457B9D;
+                border-bottom: 6px solid #457B9D;
                 margin: 0 auto;
-                animation: spin 2s linear infinite;
+                animation: spin 0.5s linear infinite;
             }
             @keyframes spin {
                 0% { transform: rotate(0deg); }
@@ -133,13 +133,12 @@ export default {
                 "targets": targets
             }).then(function(response) {
                     this.fetchUserTargetsKeywords();
-                    this.messageLoading = false;
                     this.message = response.data.Message;
                     setTimeout(() => this.message = '', 2000);
             }).catch(function(error) {
-                this.messageLoading = false;
                 console.log(error)
             });
+            this.messageLoading = false;
         },  
         fetchUserKeywords: function() {
             this.$http.get('/keywords/user').then(function(response) {
@@ -156,23 +155,31 @@ export default {
             });
         },
         createKeyword: function() {
+            this.messageLoading = true;
             this.$http.put('/keywords/' + this.inputKeyword).then(
                 function(response) {
                     this.fetchUserKeywords();
                     this.fetchAllKeywords();
                     this.fetchUserTargetsKeywords();
                     this.inputKeyword = '';
+                    this.messageLoading = false;
+                    this.message = response.data.Message;
+                    setTimeout(() => this.message = '', 2000);
             }).catch(function(error) {
                 console.log(error);
             });
         },
         deleteKeyword: function(index) {
             if (confirm("Are you sure you want to delete the keyword?")) {
+                this.messageLoading = true;
                 this.$http.delete('/keywords/' + this.userKeywords[index].Text).then(
                     function(response) {
                         this.fetchUserKeywords();
                         this.fetchAllKeywords();
                         this.fetchUserTargetsKeywords();
+                        this.messageLoading = false;
+                        this.message = response.data.Message;
+                        setTimeout(() => this.message = '', 2000);
                 }).catch(function(error) {
                     console.log(error)
                 });
@@ -222,23 +229,31 @@ export default {
             });
         },
         createTarget: function() {
+            this.messageLoading = true;
             this.$http.put('/targets/' + this.inputTarget).then(
                 function(response) {
                     this.fetchUserTargets();
                     this.fetchAllTargets();
                     this.fetchUserTargetsKeywords();
                     this.inputTarget = '';
+                    this.messageLoading = false;
+                    this.message = response.data.Message;
+                    setTimeout(() => this.message = '', 2000);
             }).catch(function(error) {
                 console.log(error);
             });
         },
         deleteTarget: function(index) {
             if (confirm("Are you sure you want to delete the target?")) {
+                this.messageLoading = true;
                 this.$http.delete('/targets/' + this.userTargets[index].Name).then(
                     function(response) {
                         this.fetchUserTargets();
                         this.fetchAllTargets();
                         this.fetchUserTargetsKeywords();
+                        this.messageLoading = false;
+                        this.message = response.data.Message;
+                        setTimeout(() => this.message = '', 2000);
                 }).catch(function(error) {
                     console.log(error)
                 });
