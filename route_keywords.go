@@ -3,48 +3,43 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"sync"
 
 	"github.com/go-playground/validator"
+	"github.com/gorilla/mux"
 	. "github.com/logrusorgru/aurora"
 )
 
-func Keywords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting Keywords..."))
+func GetAllKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetAllKeywords..."))
+
+	_ = GetSession(r)
+
+	keywords := SelectKeywordsByAll()
+
+	infos := struct {
+		Keywords []string
+	}{
+		keywords,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}
+
+func GetUserKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetUserKeywords..."))
 
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	var targetsNames []string
-	var infoUserKeywords []KeywordInfo
-	var utks []UserTargetKeyword
-
-	var wg sync.WaitGroup
-	wg.Add(3)
-	go func() {
-		targetsNames = user.TargetsNamesByUser()
-		wg.Done()
-	}()
-	go func() {
-		infoUserKeywords = user.InfoKeywordsByUser()
-		wg.Done()
-	}()
-	go func() {
-		utks = user.GetUserTargetKeyword()
-		wg.Done()
-	}()
-	wg.Wait()
+	keywords := user.SelectKeywordsByUser()
 
 	infos := struct {
-		Targets      []string
-		Utks         []UserTargetKeyword
-		KeywordsInfo []KeywordInfo
+		Keywords []Keyword
 	}{
-		targetsNames,
-		utks,
-		infoUserKeywords,
+		keywords,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -58,94 +53,84 @@ func PutKeyword(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	type TempResponse struct {
-		SelectedTargets []string `json:"selectedTargets" validate:"required"`
-		Keyword         Keyword  `json:"newKeyword"`
-	}
-
-	response := TempResponse{}
-
-	err := json.NewDecoder(r.Body).Decode(&response)
-	if err != nil {
-		panic(err.Error())
+	keyword := Keyword{
+		Text: mux.Vars(r)["keyword"],
 	}
 
 	validate := validator.New()
-	err = validate.Struct(response)
+	err := validate.Struct(keyword)
 
-	var messages []string
+	var message string
 
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			red_1 := `<p style="color:red">`
-			red_2 := `</p>`
-			var temp_message string
-			if err.Field() == "SelectedTargets" {
+			if err.Field() == "Text" {
 				if err.Tag() == "required" {
-					temp_message = `Targets cannot be empty`
-				}
-			} else if err.Field() == "Text" {
-				if err.Tag() == "required" {
-					temp_message = `Keyword cannot be empty`
+					message = `<p style="color:red">Empty!</p>`
 				}
 				if err.Tag() == "min" {
-					temp_message = `Keyword inserted is too short`
+					message = `<p style="color:red">Too short!</p>`
 				}
 				if err.Tag() == "max" {
-					temp_message = `Keyword inserted is too long`
+					message = `<p style="color:red">Too long!</p>`
 				}
 			}
-			messages = append(messages, red_1+temp_message+red_2)
 		}
 	}
 
-	if len(messages) == 0 {
-
-		// Before creating the relation user <-> target,
-		// check if it is not already present
-		err := response.Keyword.KeywordByText()
-		// If keyword does not exist, create it
-		if err != nil {
-			response.Keyword.CreateKeyword()
+	if message == "" {
+		keyword.SelectKeywordByText()
+		if keyword.Id == 0 {
+			keyword.InsertKeyword()
 		}
-
-		targets := TargetsByNames(response.SelectedTargets)
-
-		SetUserTargetKeyword(user, targets, response.Keyword)
-
-		temp_message := `<p style="color:green">Successfully added</p>`
-		messages = append(messages, temp_message)
+		userKeywordId := user.SelectUserKeywordByUserAndKeyword(keyword)
+		if userKeywordId == 0 {
+			user.InsertUserKeyword(keyword)
+			message = `<p style="color:green">Success!</p>`
+		} else {
+			message = `<p style="color:orange">Already present!</p>`
+		}
 	}
-	infos := struct{ Messages []string }{messages}
 
+	info := struct{ Message string }{message}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
+	json.NewEncoder(w).Encode(info)
 }
 
-func RemoveKeywords(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting RemoveKeywords..."))
+func RemoveKeyword(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting RemoveKeyword..."))
 
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		panic(err.Error())
+	keyword := Keyword{
+		Text: mux.Vars(r)["keyword"],
 	}
 
-	var utks []UserTargetKeyword
+	keyword.SelectKeywordByText()
+	user.UpdateDeletedAtInUsersKeywords(keyword)
+	user.DeleteUserTargetsKeywordsByKeywords([]string{keyword.Text})
 
-	err = json.Unmarshal(body, &utks)
-	if err != nil {
-		panic(err.Error())
+	message := struct{ Message string }{`<p style="color:green">Removed!</p>`}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(message)
+}
+
+func GetKeywordsAnalytic(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetKeywordsAnalytic..."))
+
+	sess := GetSession(r)
+	user := UserById(sess.UserId)
+
+	infoUserKeywords := user.InfoUsersKeywordsByUser()
+
+	infos := struct {
+		Keywords []KeywordInfo
+	}{
+		infoUserKeywords,
 	}
-
-	user.SetDeletedAtInUserTargetKeywordMultiple(utks)
-
-	var messages []string
-	messages = append(messages, `<p style="color:green">Successfully removed</p>`)
-	infos := struct{ Messages []string }{messages}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)

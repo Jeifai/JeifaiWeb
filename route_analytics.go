@@ -33,7 +33,7 @@ func AnalyticsPerTarget(w http.ResponseWriter, r *http.Request) {
 	target := Target{
 		Name: targetName,
 	}
-	target.TargetByName()
+	target.SelectTargetByName()
 
 	var jobs TargetJobsTrend
 	var linkedinData CompanyData

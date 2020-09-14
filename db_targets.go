@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/lib/pq"
@@ -28,8 +31,8 @@ type TargetInfo struct {
 	Closed             int
 }
 
-func (target *Target) CreateTarget() {
-	fmt.Println(Gray(8-1, "Starting CreateTarget..."))
+func (target *Target) InsertTarget() {
+	fmt.Println(Gray(8-1, "Starting InsertTarget..."))
 	statement := `INSERT INTO targets (name, createdat)
                   VALUES ($1, $2)
                   RETURNING id, name, createdat`
@@ -51,16 +54,17 @@ func (target *Target) CreateTarget() {
 	}
 }
 
-func (target *Target) CreateUserTarget(user User) {
-	fmt.Println(Gray(8-1, "Starting CreateUserTarget..."))
-	statement := `INSERT INTO userstargets (userid, targetid, createdat) 
-                  VALUES ($1, $2, $3)`
+func (user *User) InsertUserTarget(target Target) {
+	fmt.Println(Gray(8-1, "Starting InsertUserTarget..."))
+
+	statement := `INSERT INTO userstargets (userid, targetid, createdat)
+                  VALUES ($1, $2, current_timestamp);`
 	stmt, err := Db.Prepare(statement)
+	defer stmt.Close()
+	stmt.QueryRow(user.Id, target.Id)
 	if err != nil {
 		panic(err.Error())
 	}
-	defer stmt.Close()
-	stmt.QueryRow(user.Id, target.Id, time.Now())
 }
 
 func (user *User) TargetsNamesByUser() (targetsNames []string) {
@@ -83,31 +87,55 @@ func (user *User) TargetsNamesByUser() (targetsNames []string) {
 	return
 }
 
-func (user *User) NotSelectedTargetsNamesByUser() (notSelectedTargetsNames []string) {
-	fmt.Println(Gray(8-1, "Starting NotSelectedTargetsNamesByUser..."))
-
-	err := Db.QueryRow(`
-                WITH usertargets AS (
-				  SELECT
-				      ut.targetid
-				  FROM userstargets ut
-				  WHERE ut.deletedat IS NULL
-				  AND ut.userid=$1)
-				SELECT
-				  ARRAY_AGG(t.name)
-				FROM targets t
-				LEFT JOIN usertargets ut ON(t.id = ut.targetid)
-				WHERE ut.targetid IS NULL
-				ORDER BY 1;`, user.Id).
-		Scan(
-			pq.Array(&notSelectedTargetsNames),
-		)
-	if len(notSelectedTargetsNames) == 0 { // vue-taggable-select does not work if name_targets is empty
-		notSelectedTargetsNames = []string{" "}
-	}
+func (user *User) SelectTargetsByUser() (targets []Target) {
+	fmt.Println(Gray(8-1, "Starting SelectTargetsByUser..."))
+	rows, err := Db.Query(`
+							SELECT
+								t.name,
+								TO_CHAR(MIN(ut.createdat::date), 'YYYY-MM-DD')
+							FROM userstargets ut
+							LEFT JOIN targets t ON(ut.targetid = t.id)
+							WHERE ut.userid = $1
+							AND ut.deletedat IS NULL
+							GROUP BY 1;`, user.Id)
 	if err != nil {
 		panic(err.Error())
 	}
+	for rows.Next() {
+		target := Target{}
+		if err = rows.Scan(
+			&target.Name,
+			&target.CreatedDate); err != nil {
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+		targets = append(targets, target)
+	}
+	rows.Close()
+	return
+}
+
+func SelectTargetsByAll() (targets []string) {
+	fmt.Println(Gray(8-1, "Starting SelectTargetsByAll..."))
+	rows, err := Db.Query(`
+							SELECT
+								DISTINCT t.name
+							FROM targets t;`)
+	if err != nil {
+		panic(err.Error())
+	}
+	for rows.Next() {
+		var target string
+		if err = rows.Scan(
+			&target); err != nil {
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+		targets = append(targets, target)
+	}
+	rows.Close()
 	return
 }
 
@@ -187,15 +215,12 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo) {
 	return
 }
 
-func (target *Target) TargetByName() {
-	fmt.Println(Gray(8-1, "Starting TargetByName..."))
-	err := Db.QueryRow(`SELECT
+func (target *Target) SelectTargetByName() {
+	fmt.Println(Gray(8-1, "Starting SelectTargetByName..."))
+	_ = Db.QueryRow(`SELECT
                          t.id
                        FROM targets t
                        WHERE t.name=$1`, target.Name).Scan(&target.Id)
-	if err != nil {
-		panic(err.Error())
-	}
 }
 
 func TargetsByNames(targetNames []string) (targets []Target) {
@@ -221,53 +246,210 @@ func TargetsByNames(targetNames []string) (targets []Target) {
 	return
 }
 
-func (user *User) UsersTargetsByUserAndName(target Target) (err error) {
-	fmt.Println(Gray(8-1, "Starting UsersTargetsByUserAndName..."))
-	err = Db.QueryRow(`SELECT
-                         t.id,
-                         t.createdat 
-                       FROM users u
-                       INNER JOIN userstargets ut ON(u.id = ut.userid) 
-                       INNER JOIN targets t ON(ut.targetid = t.id)
-                       WHERE u.id=$1
-                       AND t.name=$2
-                       AND ut.deletedat IS NULL`, user.Id, target.Name).Scan(
-		&target.Id, &target.CreatedAt)
+func (user *User) SelectUserTargetByUserAndTarget(target Target) (userTargetId int) {
+	fmt.Println(Gray(8-1, "Starting SelectUserTargetByUserAndTarget..."))
+	_ = Db.QueryRow(`SELECT
+                         ut.id
+                       FROM userstargets ut
+                       WHERE ut.userid = $1
+                       AND ut.targetid = $2
+                       AND ut.deletedat IS NULL;`, user.Id, target.Id).Scan(&userTargetId)
 	return
 }
 
-func (target *Target) SetDeletedAtInUsersTargetsByUserAndTarget(user User) {
-	fmt.Println(Gray(8-1, "Starting SetDeletedAtInUsersTargetsByUserAndTarget..."))
-
-	statement := `UPDATE userstargets
-                  SET deletedat = current_timestamp
-                  WHERE userid = $1
-                  AND targetid = $2;`
-
-	stmt, err := Db.Prepare(statement)
+func (user *User) SelectTargetsKeywordsByUser() (utks []map[string]interface{}) {
+	fmt.Println(Gray(8-1, "Starting SelectTargetsKeywordsByUser..."))
+	rows, err := Db.Query(`
+							WITH
+								complete AS (
+									WITH
+										utks AS (
+											WITH
+												userkeywords AS(
+													SELECT
+														uk.id,
+														uk.keywordid
+													FROM userskeywords uk
+													WHERE uk.userid = $1
+													AND uk.deletedat IS NULL),
+												usertargets AS(
+													SELECT
+														ut.id,
+														ut.targetid
+													FROM userstargets ut
+													WHERE ut.userid = $1
+													AND ut.deletedat IS NULL)
+											SELECT
+												k.text AS keyword_text,
+												t.name AS target_name
+											FROM userstargetskeywords utk
+											INNER JOIN userkeywords uk ON(utk.userkeywordid = uk.id)
+											INNER JOIN usertargets ut ON(utk.usertargetid = ut.id)
+											LEFT JOIN keywords k ON(uk.keywordid = k.id)
+											LEFT JOIN targets t ON(ut.targetid = t.id)),
+										pivot_by_keyword AS (
+										    SELECT 
+												keyword_text, 
+												json_agg(target_name) AS target_name
+											FROM utks
+											GROUP BY 1),
+										pivot_by_target AS (
+										    SELECT 
+												target_name, 
+												json_agg(keyword_text) AS keyword_text
+											FROM utks
+											GROUP BY 1)
+								SELECT
+									json_object_agg(keyword_text, target_name) AS agg_data
+								FROM pivot_by_keyword
+								UNION ALL
+								SELECT
+									json_object_agg(target_name, keyword_text) AS agg_data
+								FROM pivot_by_target)
+							SELECT
+								*
+							FROM complete
+							WHERE agg_data IS NOT NULL;`, user.Id)
 	if err != nil {
 		panic(err.Error())
 	}
+	for rows.Next() {
+		var temp_utk string
+		if err = rows.Scan(
+			&temp_utk); err != nil {
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+		utk := map[string]interface{}{}
+		if err := json.Unmarshal([]byte(temp_utk), &utk); err != nil {
+			panic(err)
+		}
+		utks = append(utks, utk)
+	}
+	rows.Close()
+	return
+}
+
+func (user *User) UpdateDeletedAtInUsersTargets(target Target) {
+	fmt.Println(Gray(8-1, "Starting UpdateDeletedAtInUsersTargets..."))
+
+	statement := `UPDATE userstargets
+				  SET deletedat = current_timestamp
+				  WHERE userid = $1
+				  AND targetid = $2;`
+	stmt, err := Db.Prepare(statement)
 	defer stmt.Close()
-	_, err = stmt.Exec(user.Id, target.Id)
+	stmt.QueryRow(user.Id, target.Id)
 	if err != nil {
 		panic(err.Error())
 	}
 }
 
-func (target *Target) SetDeletedAtIntUserTargetKeywordByUserAndTarget(user User) {
-	fmt.Println(Gray(8-1, "Starting SetDeletedAtIntUserTargetKeywordByUserAndTarget..."))
-	statement := `UPDATE userstargetskeywords
-                  SET deletedat = current_timestamp
-                  WHERE userid = $1
-                  AND targetid = $2`
+func (user *User) DeleteUserTargetsKeywordsByKeywords(keywords []string) {
+	fmt.Println(Gray(8-1, "Starting DeleteUserTargetsKeywordsByKeywords..."))
 
+	statement := `DELETE FROM userstargetskeywords
+					WHERE userkeywordid IN(
+						SELECT
+							uk.id AS userkeywordid
+						FROM userskeywords uk
+						WHERE uk.userid = $1
+						AND uk.keywordid = (
+							SELECT
+								k.id
+							FROM keywords k
+							WHERE k.text = ANY($2)));`
 	stmt, err := Db.Prepare(statement)
+	defer stmt.Close()
+	stmt.QueryRow(user.Id, pq.Array(keywords))
 	if err != nil {
 		panic(err.Error())
 	}
+}
+
+func (user *User) DeleteUserTargetsKeywordsByTargets(targets []string) {
+	fmt.Println(Gray(8-1, "Starting DeleteUserTargetsKeywordsByTargets..."))
+
+	statement := `DELETE FROM userstargetskeywords
+					WHERE usertargetid IN(
+						SELECT
+							ut.id AS usertargetid
+						FROM userstargets ut
+						WHERE ut.userid = $1
+						AND ut.targetid = (
+							SELECT
+								t.id
+							FROM targets t
+							WHERE t.name = ANY($2)));`
+	stmt, err := Db.Prepare(statement)
 	defer stmt.Close()
-	_, err = stmt.Exec(user.Id, target.Id)
+	stmt.QueryRow(user.Id, pq.Array(targets))
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+func (user *User) InsertUserTargetsKeywords(keywords []string, targets []string) {
+	fmt.Println(Gray(8-1, "Starting InsertUserTargetsKeywords..."))
+
+	var k_ids []int
+	k_rows, err := Db.Query(`
+					SELECT
+						uk.id
+					FROM userskeywords uk
+					LEFT JOIN keywords k ON(uk.keywordid = k.id)
+					WHERE uk.userid = $1
+					AND k.text = ANY($2);`, user.Id, pq.Array(keywords))
+	if err != nil {
+		panic(err.Error())
+	}
+	for k_rows.Next() {
+		var k_id int
+		err = k_rows.Scan(&k_id)
+		if err != nil {
+			panic(err.Error())
+		}
+		k_ids = append(k_ids, k_id)
+	}
+	k_rows.Close()
+
+	var t_ids []int
+	t_rows, err := Db.Query(`
+					SELECT
+						ut.id
+					FROM userstargets ut
+					LEFT JOIN targets t ON(ut.targetid = t.id)
+					WHERE ut.userid = $1
+					AND t.name = ANY($2);`, user.Id, pq.Array(targets))
+	if err != nil {
+		panic(err.Error())
+	}
+	for t_rows.Next() {
+		var t_id int
+		err = t_rows.Scan(&t_id)
+		if err != nil {
+			panic(err.Error())
+		}
+		t_ids = append(t_ids, t_id)
+	}
+	t_rows.Close()
+
+	valueStrings := []string{}
+	for _, k_elem := range k_ids {
+		for _, t_elem := range t_ids {
+			str1 := "(" + strconv.Itoa(k_elem)
+			str2 := "," + strconv.Itoa(t_elem)
+			str3 := ",current_timestamp)"
+			str_n := str1 + str2 + str3
+			valueStrings = append(valueStrings, str_n)
+		}
+	}
+	smt := `INSERT INTO userstargetskeywords (userkeywordid, usertargetid, createdat) VALUES %s;`
+
+	smt = fmt.Sprintf(smt, strings.Join(valueStrings, ","))
+
+	_, err = Db.Exec(smt)
 	if err != nil {
 		panic(err.Error())
 	}

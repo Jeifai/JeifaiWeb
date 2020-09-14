@@ -11,6 +11,8 @@
             <script src="https://npmcdn.com/vue-router/dist/vue-router.js"></script>
             <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
             <script src="https://unpkg.com/vue-chartkick@0.5.1"></script>
+            <script type="text/javascript" src="https://unpkg.com/vue-simple-suggest"></script>
+            <link rel="stylesheet" href="https://unpkg.com/vue-simple-suggest/dist/styles.css">
             <script src="/static/js/main.js" type="module"></script>
             <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
             <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
@@ -45,6 +47,22 @@
                                 <i class="material-icons mdc-list-item__graphic">home</i>
                                 <span class="mdc-list-item__text">Home</span>
                             </router-link>
+                            <router-link to="/manage" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">mediation</i>
+                                <span class="mdc-list-item__text">Manage</span>
+                            </router-link>
+                            <hr class="mdc-list-divider">
+                            <h6 class="mdc-list-group__subheader">My</h6>
+                            <router-link to="/matches" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">star</i>
+                                <span class="mdc-list-item__text">Watchlist (coming soon)</span>
+                            </router-link>
+                            <router-link to="/matches" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">local_fire_department</i>
+                                <span class="mdc-list-item__text">Matches</span>
+                            </router-link>
+                            <hr class="mdc-list-divider">
+                            <h6 class="mdc-list-group__subheader">Analytics</h6>
                             <router-link to="/targets" class="mdc-list-item">
                                 <i class="material-icons mdc-list-item__graphic">gps_fixed</i>
                                 <span class="mdc-list-item__text">Targets</span>
@@ -53,13 +71,9 @@
                                 <i class="material-icons mdc-list-item__graphic">text_fields</i>
                                 <span class="mdc-list-item__text">Keywords</span>
                             </router-link>
-                            <router-link to="/matches" class="mdc-list-item">
-                                <i class="material-icons mdc-list-item__graphic">local_fire_department</i>
-                                <span class="mdc-list-item__text">Matches</span>
-                            </router-link>
                             <router-link to="/analytics" class="mdc-list-item">
                                 <i class="material-icons mdc-list-item__graphic">show_chart</i>
-                                <span class="mdc-list-item__text">Analytics</span>
+                                <span class="mdc-list-item__text">Charts</span>
                             </router-link>
                         </nav>
                     </div>
@@ -84,7 +98,7 @@
                 .main-content {
                     position: absolute; 
                     left: 20%; 
-                    top: 13%;
+                    top: 10%;
                     width: 80%;
                 }
             </style>
