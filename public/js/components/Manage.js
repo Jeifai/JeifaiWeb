@@ -211,6 +211,7 @@ export default {
                         this.fetchUserKeywords();
                         this.fetchAllKeywords();
                         this.fetchUserTargetsKeywords();
+                        this.fetchResults();
                         this.messageLoading = false;
                         this.message = response.data.Message;
                         setTimeout(() => this.message = '', 2000);
@@ -285,6 +286,7 @@ export default {
                         this.fetchUserTargets();
                         this.fetchAllTargets();
                         this.fetchUserTargetsKeywords();
+                        this.fetchResults();
                         this.messageLoading = false;
                         this.message = response.data.Message;
                         setTimeout(() => this.message = '', 2000);
