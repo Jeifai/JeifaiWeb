@@ -49,6 +49,8 @@ func main() {
 	r.HandleFunc("/keywords/{keyword}", PutKeyword).Methods("PUT")
 	r.HandleFunc("/keywords/{keyword}", RemoveKeyword).Methods("DELETE")
 
+	r.HandleFunc("/jobs", GetJobsByTargetsAndKeywords).Methods("GET")
+
 	r.HandleFunc("/utks", GetUserTargetsKeywords).Methods("GET")
 	r.HandleFunc("/utks", PutUserTargetsKeywords).Methods("PUT")
 

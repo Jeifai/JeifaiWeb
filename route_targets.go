@@ -190,3 +190,25 @@ func GetTargetsAnalytic(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(infos)
 }
+
+func GetJobsByTargetsAndKeywords(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetJobsByTargetsAndKeywords..."))
+
+	sess := GetSession(r)
+	user := UserById(sess.UserId)
+
+	targets := user.SelectTargetsByUser()
+	keywords := user.SelectKeywordsByUser()
+
+	jobs := user.SelectJobsByTargetsAndKeywords(targets, keywords)
+
+	infos := struct {
+		Jobs []Job
+	}{
+		jobs,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}

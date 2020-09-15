@@ -4,6 +4,16 @@ export default {
     data: function () {
         return {
             macroPivot: '',
+            jobs: [],
+            sortedByJobs: "CreatedDate",
+            sortingJobs: {
+                CreatedDate: true,
+                TargetName: false,
+                KeywordText: false,
+                Title: false,
+                Location: false,
+                Url: false,
+            },
             utksKeyword: {},
             utksTarget: {},
             allKeywords: [],
@@ -37,8 +47,6 @@ export default {
     },
     mounted() {
         this.$parent.selectedIndex = this.selectedIndex
-        mdc.textField.MDCTextField.attachTo(document.getElementById("KeywordsField"));
-        mdc.textField.MDCTextField.attachTo(document.getElementById("TargetsField"));
 
         let styleElem = document.createElement('style');
         styleElem.textContent = `
@@ -107,8 +115,18 @@ export default {
         this.fetchAllKeywords();
         this.fetchUserTargets();
         this.fetchAllTargets();
+        this.fetchResults();
     },
     methods: {
+        fetchResults: function() {
+            this.$http.get('/jobs').then(function(response) {
+                if (response.data.Jobs !== null) {
+                    this.jobs = response.data.Jobs;
+                }
+            }).catch(function(error) {
+                console.log(error);
+            });
+        },
         fetchUserTargetsKeywords: function() {
             this.$http.get('/utks').then(function(response) {
                 if (response.data.Utks !== null) {
@@ -371,6 +389,29 @@ export default {
                 }
             }
         },
+        sortRowsJobs: function(column) {
+            this.sortedByJobs = column
+            if (column == "CreatedDate") {
+                if (this.sortingJobs[column]) {
+                    this.jobs.sort((a,b) => (new Date(a[column]) - new Date(b[column])))
+                    this.sortingJobs[column] = false
+                } else {
+                    this.jobs.sort((b,a) => (new Date(a[column]) - new Date(b[column])))
+                    this.sortingJobs[column] = true
+                }
+            } else {
+                if (this.sortingJobs[column]) {
+                    this.jobs.sort((a,b) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.sortingJobs[column] = false
+                } else {
+                    this.jobs.sort((b,a) => (a[column] > b[column]) ? 1 : ((b[column] > a[column]) ? -1 : 0))
+                    this.sortingJobs[column] = true
+                }
+            }
+        },
+        select: function(raw) {
+            window.open(raw.Url, "_blank");
+        },
     },
     computed: {
         checkAllKeywords() {
@@ -387,6 +428,39 @@ export default {
                 return false;
             }
         },
+        filteredRows() {
+
+            var string_keywords;
+            for (var i = 0; i < this.checksKeywords.length; i++) {
+                string_keywords = string_keywords + this.userKeywords[this.checksKeywords[0]].Text.toLowerCase();
+            }
+
+            var string_targets;
+            for (var i = 0; i < this.checksTargets.length; i++) {
+                string_targets = string_targets + this.userTargets[this.checksTargets[0]].Name.toLowerCase();
+            }
+
+            return this.jobs.filter(row => {
+                const TargetName = row.TargetName.toString().toLowerCase();
+                const KeywordText = row.KeywordText.toString().toLowerCase();
+                if (this.checksKeywords.length > 0) {
+                    if (string_keywords.includes(KeywordText)) {
+                        if (this.checksTargets.length > 0) {
+                            if (string_targets.includes(TargetName)) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return true;
+                }
+            });
+        }
     },
     template: `
         <div>
@@ -582,6 +656,68 @@ export default {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="row scrollable">
+                <table class="mdc-data-table__table" aria-label="Results">
+                    <thead>
+                        <tr class="mdc-data-table__header-row">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Job Url</th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header" @click="sortRowsJobs('CreatedDate')">
+                                    CreatedAt
+                                    <i v-if="sortedByJobs === 'CreatedDate' && sortingJobs['CreatedDate'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                    <i v-if="sortedByJobs === 'CreatedDate' && sortingJobs['CreatedDate'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header" @click="sortRowsJobs('TargetName')">
+                                    Target
+                                    <i v-if="sortedByJobs === 'TargetName' && sortingJobs['TargetName'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                    <i v-if="sortedByJobs === 'TargetName' && sortingJobs['TargetName'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header" @click="sortRowsJobs('KeywordText')">
+                                    Keyword
+                                    <i v-if="sortedByJobs === 'KeywordText' && sortingJobs['KeywordText'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                    <i v-if="sortedByJobs === 'KeywordText' && sortingJobs['KeywordText'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header" @click="sortRowsJobs('Location')">
+                                    Location
+                                    <i v-if="sortedByJobs === 'Location' && sortingJobs['Location'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                    <i v-if="sortedByJobs === 'Location' && sortingJobs['Location'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                                <a class="column-header" @click="sortRowsJobs('Title')">
+                                    Title
+                                    <i v-if="sortedByJobs === 'Title' && sortingJobs['Title'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                    <i v-if="sortedByJobs === 'Title' && sortingJobs['Title'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="mdc-data-table__content">
+                        <tr v-for="(row, index) in filteredRows" class="mdc-data-table__row">
+                            <td class="mdc-data-table__cell">
+                                <button 
+                                    class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
+                                    aria-label="Open"
+                                    target="_blank" 
+                                    rel="noopener"
+                                    v-on:click="select(row)">open_in_new
+                                </button>
+                            </td>
+                            <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
+                            <td class="mdc-data-table__cell" v-html="row.TargetName"></td>
+                            <td class="mdc-data-table__cell" v-html="row.KeywordText"></td>
+                            <td class="mdc-data-table__cell" v-html="row.Location"></td>
+                            <td class="mdc-data-table__cell" v-html="row.Title"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>`,
 };
