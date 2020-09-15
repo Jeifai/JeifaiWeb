@@ -42,11 +42,13 @@ export default {
                 suggestItem: "list-group-item"
             },
             message: '',
-            messageLoading: ''
+            messageLoading: '',
         }
     },
     mounted() {
-        this.$parent.selectedIndex = this.selectedIndex
+        this.$parent.selectedIndex = this.selectedIndex;
+        mdc.textField.MDCTextField.attachTo(document.getElementById("KeywordsField"));
+        mdc.textField.MDCTextField.attachTo(document.getElementById("TargetsField"));
 
         let styleElem = document.createElement('style');
         styleElem.textContent = `
@@ -91,7 +93,18 @@ export default {
             }
             .scrollable {
                 overflow-y: scroll;
-                height:36vh;
+                height:30vh;
+            }
+            table.tableBodyScroll tbody {
+              display: block;
+              max-height: 35vh;
+              overflow-y: scroll;
+            }
+            table.tableBodyScroll thead, table.tableBodyScroll tbody tr {
+              display: table;
+              table-layout: fixed;
+              width: 98%;
+              text-align: center;
             }
             .loader-message {
                 width: 40px;
@@ -153,6 +166,7 @@ export default {
                 "targets": targets
             }).then(function(response) {
                     this.fetchUserTargetsKeywords();
+                    this.fetchResults();
                     this.messageLoading = false;
                     this.message = response.data.Message;
                     setTimeout(() => this.message = '', 2000);
@@ -429,30 +443,23 @@ export default {
             }
         },
         filteredRows() {
-
             var string_keywords = "";
             for (var i = 0; i < this.checksKeywords.length; i++) {
-                string_keywords = string_keywords + this.userKeywords[this.checksKeywords[0]].Text.toLowerCase();
+                string_keywords = string_keywords + this.userKeywords[this.checksKeywords[i]].Text.toLowerCase();
             }
-
             var string_targets = "";
             for (var i = 0; i < this.checksTargets.length; i++) {
-                string_targets = string_targets + this.userTargets[this.checksTargets[0]].Name.toLowerCase();
+                string_targets = string_targets + this.userTargets[this.checksTargets[i]].Name.toLowerCase();
             }
-
             return this.jobs.filter(row => {
-                const TargetName = row.TargetName.toString().toLowerCase();
                 const KeywordText = row.KeywordText.toString().toLowerCase();
+                const TargetName = row.TargetName.toString().toLowerCase();
                 if (this.checksKeywords.length == 0 && this.checksTargets.length == 0) {
                     return true;
-                } else if (this.checksKeywords.length > 0 && this.checksTargets.length == 0) {
-                    return string_keywords.includes(KeywordText);
-                } else if (this.checksKeywords.length == 0 && this.checksTargets.length > 0) {
-                    return string_targets.includes(TargetName);
                 } else {
                     return string_keywords.includes(KeywordText) && string_targets.includes(TargetName);
-                };
-            });
+                }
+            })
         }
     },
     template: `
@@ -460,9 +467,9 @@ export default {
             <div class="row">
                 <div>
                     <div>
-                        <h1>
+                        <h3>
                             My Keywords
-                        </h1>
+                        </h3>
                         <div class="input-row">
                             <vue-simple-suggest
                                 v-model="inputKeyword"
@@ -489,7 +496,7 @@ export default {
                                     <tr class="mdc-data-table__header-row">
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <input
-                                                v-if="checksTargets.length"
+                                                v-if="checksTargets.length && (macroPivot != 'keywords')"
                                                 type="checkbox" 
                                                 v-model="checkAllKeywords"
                                                 @click="selectAllKeywords"
@@ -563,9 +570,9 @@ export default {
                 </div>
                 <div>
                     <div>
-                        <h1>
+                        <h3>
                             My Targets
-                        </h1>
+                        </h3>
                         <div class="input-row">
                             <vue-simple-suggest
                                 v-model="inputTarget"
@@ -592,7 +599,7 @@ export default {
                                     <tr class="mdc-data-table__header-row">
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <input
-                                                v-if="checksKeywords.length"
+                                                v-if="checksKeywords.length && (macroPivot != 'targets')"
                                                 type="checkbox"
                                                 v-model="checkAllTargets"
                                                 @click="selectAllTargets"
@@ -649,41 +656,41 @@ export default {
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row scrollable">
-                <table class="mdc-data-table__table" aria-label="Results">
+            </div><br>
+            <div class="row">
+                <table class="mdc-data-table__table tableBodyScroll" aria-label="Results" style="">
                     <thead>
                         <tr class="mdc-data-table__header-row">
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">Job Url</th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:7%;white-space:nowrap;">Job Url</th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:10%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('CreatedDate')">
                                     CreatedAt
                                     <i v-if="sortedByJobs === 'CreatedDate' && sortingJobs['CreatedDate'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                     <i v-if="sortedByJobs === 'CreatedDate' && sortingJobs['CreatedDate'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                 </a>
                             </th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
-                                <a class="column-header" @click="sortRowsJobs('TargetName')">
-                                    Target
-                                    <i v-if="sortedByJobs === 'TargetName' && sortingJobs['TargetName'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                    <i v-if="sortedByJobs === 'TargetName' && sortingJobs['TargetName'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
-                                </a>
-                            </th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:10%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('KeywordText')">
                                     Keyword
                                     <i v-if="sortedByJobs === 'KeywordText' && sortingJobs['KeywordText'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                     <i v-if="sortedByJobs === 'KeywordText' && sortingJobs['KeywordText'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                 </a>
                             </th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:13%;white-space:nowrap;">
+                                <a class="column-header" @click="sortRowsJobs('TargetName')">
+                                    Target
+                                    <i v-if="sortedByJobs === 'TargetName' && sortingJobs['TargetName'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
+                                    <i v-if="sortedByJobs === 'TargetName' && sortingJobs['TargetName'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                </a>
+                            </th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:20%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('Location')">
                                     Location
                                     <i v-if="sortedByJobs === 'Location' && sortingJobs['Location'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
                                     <i v-if="sortedByJobs === 'Location' && sortingJobs['Location'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
                                 </a>
                             </th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:40%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('Title')">
                                     Title
                                     <i v-if="sortedByJobs === 'Title' && sortingJobs['Title'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
@@ -694,7 +701,7 @@ export default {
                     </thead>
                     <tbody class="mdc-data-table__content">
                         <tr v-for="(row, index) in filteredRows" class="mdc-data-table__row">
-                            <td class="mdc-data-table__cell">
+                            <td class="mdc-data-table__cell" style="width:7%;white-space:nowrap;">
                                 <button 
                                     class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
                                     aria-label="Open"
@@ -703,11 +710,11 @@ export default {
                                     v-on:click="select(row)">open_in_new
                                 </button>
                             </td>
-                            <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
-                            <td class="mdc-data-table__cell" v-html="row.TargetName"></td>
-                            <td class="mdc-data-table__cell" v-html="row.KeywordText"></td>
-                            <td class="mdc-data-table__cell" v-html="row.Location"></td>
-                            <td class="mdc-data-table__cell" v-html="row.Title"></td>
+                            <td class="mdc-data-table__cell" v-html="row.CreatedDate" style="width:10%;white-space:nowrap;"></td>
+                            <td class="mdc-data-table__cell" v-html="row.KeywordText" style="width:10%;white-space:nowrap;"></td>
+                            <td class="mdc-data-table__cell comment" v-html="row.TargetName" style="width:13%;white-space:nowrap;"></td>
+                            <td class="mdc-data-table__cell comment" v-html="row.Location" style="width:20%;white-space:nowrap;" v-bind:title="row.Location"></td>
+                            <td class="mdc-data-table__cell" v-html="row.Title" style="width:40%;white-space:nowrap;" v-bind:title="row.Title"></td>
                         </tr>
                     </tbody>
                 </table>
