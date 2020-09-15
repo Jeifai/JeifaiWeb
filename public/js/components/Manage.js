@@ -430,12 +430,12 @@ export default {
         },
         filteredRows() {
 
-            var string_keywords;
+            var string_keywords = "";
             for (var i = 0; i < this.checksKeywords.length; i++) {
                 string_keywords = string_keywords + this.userKeywords[this.checksKeywords[0]].Text.toLowerCase();
             }
 
-            var string_targets;
+            var string_targets = "";
             for (var i = 0; i < this.checksTargets.length; i++) {
                 string_targets = string_targets + this.userTargets[this.checksTargets[0]].Name.toLowerCase();
             }
@@ -443,22 +443,15 @@ export default {
             return this.jobs.filter(row => {
                 const TargetName = row.TargetName.toString().toLowerCase();
                 const KeywordText = row.KeywordText.toString().toLowerCase();
-                if (this.checksKeywords.length > 0) {
-                    if (string_keywords.includes(KeywordText)) {
-                        if (this.checksTargets.length > 0) {
-                            if (string_targets.includes(TargetName)) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
+                if (this.checksKeywords.length == 0 && this.checksTargets.length == 0) {
                     return true;
-                }
+                } else if (this.checksKeywords.length > 0 && this.checksTargets.length == 0) {
+                    return string_keywords.includes(KeywordText);
+                } else if (this.checksKeywords.length == 0 && this.checksTargets.length > 0) {
+                    return string_targets.includes(TargetName);
+                } else {
+                    return string_keywords.includes(KeywordText) && string_targets.includes(TargetName);
+                };
             });
         }
     },
