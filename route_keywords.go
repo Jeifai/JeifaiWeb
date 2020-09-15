@@ -117,22 +117,3 @@ func RemoveKeyword(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(message)
 }
-
-func GetKeywordsAnalytic(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting GetKeywordsAnalytic..."))
-
-	sess := GetSession(r)
-	user := UserById(sess.UserId)
-
-	infoUserKeywords := user.InfoUsersKeywordsByUser()
-
-	infos := struct {
-		Keywords []KeywordInfo
-	}{
-		infoUserKeywords,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
-}

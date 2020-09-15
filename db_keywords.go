@@ -20,14 +20,6 @@ type UserTargetKeyword struct {
 	TargetName  string
 }
 
-type KeywordInfo struct {
-    CreatedDate                 string
-    Name                        string
-    CountTargets                int
-    CountAllTimeResults         int
-    CountResultsSinceCreation   int
-}
-
 func (keyword *Keyword) InsertKeyword() {
 	fmt.Println(Gray(8-1, "Starting InsertKeyword..."))
 	statement := `INSERT INTO keywords (text, createdat)
@@ -175,55 +167,6 @@ func (user *User) GetUserTargetKeyword() (utks []UserTargetKeyword) {
 			}
 		}
 		utks = append(utks, utk)
-	}
-	rows.Close()
-	return
-}
-
-func (user *User) InfoUsersKeywordsByUser() (keywordsInfo []KeywordInfo) {
-	fmt.Println(Gray(8-1, "Starting InfoUsersKeywordsByUser..."))
-	rows, err := Db.Query(`
-                            WITH
-                                userkeywords AS(
-                                    SELECT
-                                        uk.keywordid
-                                    FROM userskeywords uk
-                                    WHERE uk.userid = $1
-                                    AND uk.deletedat IS NULL),
-                                usertargets AS(
-                                    SELECT
-                                        ut.targetid
-                                    FROM userstargets ut
-                                    WHERE ut.userid = $1
-                                    AND ut.deletedat IS NULL)
-                            SELECT
-                                TO_CHAR(uk.createdat, 'YYYY-MM-DD') AS createdat,
-                                k.text,
-                                COUNT(DISTINCT ut.targetid) AS targets_involved,
-                                COUNT(DISTINCT r.id) AS results_all_time,
-                                SUM(CASE WHEN r.createdat > uk.createdat THEN 1 ELSE 0 END) AS results_since_creation
-                            FROM userstargetskeywords utk
-                            LEFT JOIN userskeywords uk ON(utk.userkeywordid = uk.id)
-                            LEFT JOIN keywords k ON(uk.keywordid = k.id)
-                            LEFT JOIN userstargets ut ON(utk.usertargetid = ut.id)
-                            LEFT JOIN scrapers s ON(ut.targetid = s.targetid)
-                            LEFT JOIN results r ON(s.id = r.scraperid)
-                            WHERE LOWER(r.title) LIKE('%' || k.text || '%')
-                            GROUP BY 1, 2;`, user.Id)
-	if err != nil {
-		panic(err.Error())
-	}
-	for rows.Next() {
-		keywordInfo := KeywordInfo{}
-		if err = rows.Scan(
-			&keywordInfo.CreatedDate,
-            &keywordInfo.Name,
-			&keywordInfo.CountTargets,
-            &keywordInfo.CountAllTimeResults,
-            &keywordInfo.CountResultsSinceCreation); err != nil {
-			panic(err.Error())
-		}
-		keywordsInfo = append(keywordsInfo, keywordInfo)
 	}
 	rows.Close()
 	return

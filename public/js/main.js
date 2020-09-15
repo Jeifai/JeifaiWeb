@@ -1,6 +1,5 @@
 import Manage from './components/Manage.js';
 import Targets from './components/Targets.js';
-import Keywords from './components/Keywords.js';
 import Matches from './components/Matches.js';
 import Analytics from './components/Analytics.js';
 import Profile from './components/Profile.js';
@@ -15,10 +14,6 @@ const router = new VueRouter({
     {
         path: '/targets',
         component: Targets
-    },
-    {
-        path: '/keywords',
-        component: Keywords
     },
     {
         path: '/matches',
