@@ -38,3 +38,22 @@ func PutFavourite(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(message)
 }
+
+func GetJobsByUserAndFavourite(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting GetJobsByUserAndFavourite..."))
+
+	sess := GetSession(r)
+	user := UserById(sess.UserId)
+
+	jobs := user.SelectJobsByUserAndFavourite()
+
+	infos := struct {
+		Jobs []Job
+	}{
+		jobs,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}

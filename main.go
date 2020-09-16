@@ -50,6 +50,7 @@ func main() {
 	r.HandleFunc("/keywords/{keyword}", RemoveKeyword).Methods("DELETE")
 
 	r.HandleFunc("/jobs", GetJobsByTargetsAndKeywords).Methods("GET")
+	r.HandleFunc("/jobs/favourite", GetJobsByUserAndFavourite).Methods("GET")
 	r.HandleFunc("/favourite/{resultid}/{checked}", PutFavourite).Methods("PUT")
 
 	r.HandleFunc("/utks", GetUserTargetsKeywords).Methods("GET")

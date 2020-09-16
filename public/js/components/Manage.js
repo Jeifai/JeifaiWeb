@@ -1,5 +1,5 @@
 export default {
-    name: 'keywords',
+    name: 'manage',
     delimiters: ["[[","]]"],
     data: function () {
         return {
@@ -81,19 +81,9 @@ export default {
                 color: #1D3557;
                 font-size: 25px;
             }
-            .suggestions-style {
-                position: absolute;
-                z-index: 1000;
-                text-align: center;
-                width: 30%;
-                background-color: rgba(245, 245, 245, 0.8);
-            }
             .arrowBold {
                 font-weight: bold !important;
                 color: black !important;
-            }
-            .saveGray {
-                color: gray !important;
             }
             .scrollable {
                 overflow-y: scroll;
@@ -433,8 +423,6 @@ export default {
             window.open(row.Url, "_blank");
         },
         save: function(row, event) {
-            console.log(row.Id, row.IsSaved);
-            console.log(event);
             this.$http.put('/favourite/' + row.Id + '/' + event.target.checked).then(function(response) {
                     this.message = response.data.Message;
                     setTimeout(() => this.message = '', 2000);

@@ -1,4 +1,5 @@
 import Manage from './components/Manage.js';
+import Watch from './components/Watch.js';
 import Targets from './components/Targets.js';
 import Matches from './components/Matches.js';
 import Analytics from './components/Analytics.js';
@@ -10,6 +11,10 @@ const router = new VueRouter({
     {
         path: '/',
         component: Manage
+    },
+    {
+        path: '/watch',
+        component: Watch
     },
     {
         path: '/targets',
