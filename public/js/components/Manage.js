@@ -81,6 +81,17 @@ export default {
                 color: #1D3557;
                 font-size: 25px;
             }
+            .suggestions-style {
+                position: absolute;
+                z-index: 1000;
+                text-align: center;
+                width: 30%;
+                background-color: rgba(245, 245, 245, 0.8);
+            }
+            .hover {
+                background-color: #007bff;
+                color: #fff;
+            }
             .arrowBold {
                 font-weight: bold !important;
                 color: black !important;
