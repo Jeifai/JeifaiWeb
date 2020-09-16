@@ -69,6 +69,7 @@ var app = new Vue({
             .column-sort {
                 font-size: 16px;
                 vertical-align: -3px;
+                color: #BEBEBE;
             }`
         document.head.appendChild(styleElem);
     }

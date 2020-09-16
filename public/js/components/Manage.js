@@ -87,9 +87,9 @@ export default {
                 width: 30%;
                 background-color: rgba(245, 245, 245, 0.8);
             }
-            .hover {
-                background-color: #007bff;
-                color: #fff;
+            .arrowBold {
+                font-weight: bold !important;
+                color: black !important;
             }
             .scrollable {
                 overflow-y: scroll;
@@ -428,6 +428,11 @@ export default {
         select: function(raw) {
             window.open(raw.Url, "_blank");
         },
+        arrowDefine: function (sortedBy, column) {
+            return {
+                'arrowBold': sortedBy == column,
+            }
+        }
     },
     computed: {
         checkAllKeywords() {
@@ -462,7 +467,7 @@ export default {
                     return string_keywords.includes(KeywordText) && string_targets.includes(TargetName);
                 }
             })
-        }
+        },
     },
     template: `
         <div>
@@ -508,10 +513,10 @@ export default {
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <a class="column-header" @click="sortRowsKeywords('CreatedDate')">
                                                 CreatedDate
-                                                <i v-if="sortedByKeywords === 'CreatedDate' && sortingKeywords['CreatedDate'] === true" class="material-icons column-sort">
+                                                <i v-if="sortingKeywords['CreatedDate'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByKeywords == 'CreatedDate'}">
                                                     keyboard_arrow_up
                                                 </i>
-                                                <i v-if="sortedByKeywords === 'CreatedDate' && sortingKeywords['CreatedDate'] === false" class="material-icons column-sort">
+                                                <i v-if="sortingKeywords['CreatedDate'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByKeywords == 'CreatedDate'}">
                                                     keyboard_arrow_down
                                                 </i>
                                             </a>
@@ -519,10 +524,10 @@ export default {
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <a class="column-header" @click="sortRowsKeywords('Text')">
                                                 Keyword
-                                                <i v-if="sortedByKeywords === 'Text' && sortingKeywords['Text'] === true" class="material-icons column-sort">
+                                                <i v-if="sortingKeywords['Text'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByKeywords == 'Text'}">
                                                     keyboard_arrow_up
                                                 </i>
-                                                <i v-if="sortedByKeywords === 'Text' && sortingKeywords['Text'] === false" class="material-icons column-sort">
+                                                <i v-if="sortingKeywords['Text'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByKeywords == 'Text'}">
                                                     keyboard_arrow_down
                                                 </i>
                                             </a>
@@ -611,10 +616,10 @@ export default {
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <a class="column-header" @click="sortRowsTargets('CreatedDate')">
                                                 CreatedDate
-                                                <i v-if="sortedByTargets === 'CreatedDate' && sortingTargets['CreatedDate'] === true" class="material-icons column-sort">
+                                                <i v-if="sortingTargets['CreatedDate'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByTargets == 'CreatedDate'}">
                                                     keyboard_arrow_up
                                                 </i>
-                                                <i v-if="sortedByTargets === 'CreatedDate' && sortingTargets['CreatedDate'] === false" class="material-icons column-sort">
+                                                <i v-if="sortingTargets['CreatedDate'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByTargets == 'CreatedDate'}">
                                                     keyboard_arrow_down
                                                 </i>
                                             </a>
@@ -622,10 +627,10 @@ export default {
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
                                             <a class="column-header" @click="sortRowsTargets('Name')">
                                                 Target
-                                                <i v-if="sortedByTargets === 'Name' && sortingTargets['Name'] === true" class="material-icons column-sort">
+                                                <i v-if="sortingTargets['Name'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByTargets == 'Name'}">
                                                     keyboard_arrow_up
                                                 </i>
-                                                <i v-if="sortedByTargets === 'Name' && sortingTargets['Name'] === false" class="material-icons column-sort">
+                                                <i v-if="sortingTargets['Name'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByTargets == 'Name'}">
                                                     keyboard_arrow_down
                                                 </i>
                                             </a>
@@ -667,36 +672,56 @@ export default {
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:10%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('CreatedDate')">
                                     CreatedAt
-                                    <i v-if="sortedByJobs === 'CreatedDate' && sortingJobs['CreatedDate'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                    <i v-if="sortedByJobs === 'CreatedDate' && sortingJobs['CreatedDate'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                    <i v-if="sortingJobs['CreatedDate'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'CreatedDate'}">
+                                        keyboard_arrow_up
+                                    </i>
+                                    <i v-if="sortingJobs['CreatedDate'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'CreatedDate'}">
+                                        keyboard_arrow_down
+                                    </i>
                                 </a>
                             </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:10%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('KeywordText')">
                                     Keyword
-                                    <i v-if="sortedByJobs === 'KeywordText' && sortingJobs['KeywordText'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                    <i v-if="sortedByJobs === 'KeywordText' && sortingJobs['KeywordText'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                    <i v-if="sortingJobs['KeywordText'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'KeywordText'}">
+                                        keyboard_arrow_up
+                                    </i>
+                                    <i v-if="sortingJobs['KeywordText'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'KeywordText'}">
+                                        keyboard_arrow_down
+                                    </i>
                                 </a>
                             </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:13%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('TargetName')">
                                     Target
-                                    <i v-if="sortedByJobs === 'TargetName' && sortingJobs['TargetName'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                    <i v-if="sortedByJobs === 'TargetName' && sortingJobs['TargetName'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                    <i v-if="sortingJobs['TargetName'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'TargetName'}">
+                                        keyboard_arrow_up
+                                    </i>
+                                    <i v-if="sortingJobs['TargetName'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'TargetName'}">
+                                        keyboard_arrow_down
+                                    </i>
                                 </a>
                             </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:20%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('Location')">
                                     Location
-                                    <i v-if="sortedByJobs === 'Location' && sortingJobs['Location'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                    <i v-if="sortedByJobs === 'Location' && sortingJobs['Location'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                    <i v-if="sortingJobs['Location'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'Location'}">
+                                        keyboard_arrow_up
+                                    </i>
+                                    <i v-if="sortingJobs['Location'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'Location'}">
+                                        keyboard_arrow_down
+                                    </i>
                                 </a>
                             </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:40%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('Title')">
                                     Title
-                                    <i v-if="sortedByJobs === 'Title' && sortingJobs['Title'] === true" class="material-icons column-sort">keyboard_arrow_up</i>
-                                    <i v-if="sortedByJobs === 'Title' && sortingJobs['Title'] === false" class="material-icons column-sort">keyboard_arrow_down</i>
+                                    <i v-if="sortingJobs['Title'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'Title'}">
+                                        keyboard_arrow_up
+                                    </i>
+                                    <i v-if="sortingJobs['Title'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'Title'}">
+                                        keyboard_arrow_down
+                                    </i>
                                 </a>
                             </th>
                         </tr>
