@@ -56,8 +56,6 @@ func main() {
 	r.HandleFunc("/utks", GetUserTargetsKeywords).Methods("GET")
 	r.HandleFunc("/utks", PutUserTargetsKeywords).Methods("PUT")
 
-	r.HandleFunc("/matches", Matches)
-
 	r.HandleFunc("/analytics/getTargets", AnalyticsGetTargets).Methods("GET")
 	r.HandleFunc("/analytics/target/{target}", AnalyticsPerTarget).Methods("GET")
 

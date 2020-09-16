@@ -1,7 +1,6 @@
 import Manage from './components/Manage.js';
 import Watch from './components/Watch.js';
 import Targets from './components/Targets.js';
-import Matches from './components/Matches.js';
 import Analytics from './components/Analytics.js';
 import Profile from './components/Profile.js';
 
@@ -19,10 +18,6 @@ const router = new VueRouter({
     {
         path: '/targets',
         component: Targets
-    },
-    {
-        path: '/matches',
-        component: Matches
     },
     {
         path: '/analytics',

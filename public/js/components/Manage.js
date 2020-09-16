@@ -671,7 +671,17 @@ export default {
                     <thead>
                         <tr class="mdc-data-table__header-row">
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:7%;white-space:nowrap;">Job Url</th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:7%;white-space:nowrap;">Save</th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:7%;white-space:nowrap;">
+                                <a class="column-header" @click="sortRowsJobs('IsSaved')">
+                                    Save
+                                    <i v-if="sortingJobs['IsSaved'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'IsSaved'}">
+                                        keyboard_arrow_up
+                                    </i>
+                                    <i v-if="sortingJobs['IsSaved'] === false" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'IsSaved'}">
+                                        keyboard_arrow_down
+                                    </i>
+                                </a>
+                            </th>
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:11%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('CreatedDate')">
                                     CreatedAt
