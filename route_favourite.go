@@ -1,9 +1,10 @@
 package main
 
 import (
-	// "encoding/json"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	. "github.com/logrusorgru/aurora"
@@ -15,20 +16,25 @@ func PutFavourite(w http.ResponseWriter, r *http.Request) {
 	sess := GetSession(r)
 	user := UserById(sess.UserId)
 
-	result := Result{
-		Url: mux.Vars(r)["url"],
+	resultid, err := strconv.Atoi(mux.Vars(r)["resultid"])
+	if err != nil {
+		panic(err.Error())
 	}
-
-	// result.SelectResultByUrl()
+	checked, err := strconv.ParseBool(mux.Vars(r)["checked"])
+	if err != nil {
+		panic(err.Error())
+	}
 
 	// filelocation := SaveResultToStorage(result.Url)
 
-	user.InsertFavourite(result)
+	if checked {
+		user.InsertFavourite(resultid)
+	} else {
+		user.DeleteFavourite(resultid)
+	}
 
-	/**
-	info := struct{ Message string }{message}
+	message := struct{ Message string }{`<p style="color:green">Success!</p>`}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(info)
-	*/
+	json.NewEncoder(w).Encode(message)
 }

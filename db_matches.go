@@ -16,7 +16,7 @@ type Match struct {
 
 func (user *User) MatchesByUser() (matches []Match) {
 	fmt.Println(Gray(8-1, "Starting MatchesByUser..."))
-    rows, err := Db.Query(`
+	rows, err := Db.Query(`
                             WITH
                                 userkeywords AS(
                                     SELECT

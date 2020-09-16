@@ -32,6 +32,8 @@ type TargetInfo struct {
 }
 
 type Job struct {
+	Id          string
+	IsSaved     bool
 	CreatedDate string
 	TargetName  string
 	KeywordText string
@@ -467,41 +469,52 @@ func (user *User) InsertUserTargetsKeywords(keywords []string, targets []string)
 func (user *User) SelectJobsByTargetsAndKeywords(targets []Target, keywords []Keyword) (jobs []Job) {
 	fmt.Println(Gray(8-1, "Starting SelectJobsByTargetsAndKeywords..."))
 	rows, err := Db.Query(`
-					WITH
-						usertargets AS(
+							WITH
+								usertargets AS(
+									SELECT
+										DISTINCT s.id,
+										s.name
+									FROM userstargets ut
+									LEFT JOIN targets t ON(ut.targetid = t.id)
+									LEFT JOIN scrapers s ON(t.id = s.targetid)
+									WHERE ut.userid = $1
+									AND ut.deletedat IS NULL),
+								userkeywords AS(
+									SELECT
+										k.text
+									FROM userskeywords ut
+									LEFT JOIN keywords k ON(ut.keywordid = k.id)
+									WHERE ut.userid = $1
+									AND ut.deletedat IS NULL),
+								userfavouriteresults AS(
+									SELECT
+										ft.resultid
+									FROM favouriteresults ft
+									WHERE ft.userid = $1
+									AND ft.deletedat IS NULL)
 							SELECT
-								DISTINCT s.id,
-								s.name
-							FROM userstargets ut
-							LEFT JOIN targets t ON(ut.targetid = t.id)
-							LEFT JOIN scrapers s ON(t.id = s.targetid)
-							WHERE ut.userid = $1
-							AND ut.deletedat IS NULL),
-						userkeywords AS(
-							SELECT
-								k.text
-							FROM userskeywords ut
-							LEFT JOIN keywords k ON(ut.keywordid = k.id)
-							WHERE ut.userid = $1
-							AND ut.deletedat IS NULL)
-					SELECT
-						TO_CHAR(r.createdat, 'YYYY-MM-DD') AS createdat,
-						ut.name,
-						uk.text,
-						r.title,
-						CASE WHEN r.location IS NULL THEN '/' ELSE r.location END,
-						r.url
-					FROM results r
-					INNER JOIN usertargets ut ON(r.scraperid = ut.id)
-					INNER JOIN userkeywords uk ON(LOWER(r.title) LIKE('%' || uk.text || '%'))
-					WHERE r.createdat > NOW() - INTERVAL '7 days'
-					ORDER BY 1 DESC;`, user.Id)
+								r.id,
+								CASE WHEN uft.resultid IS NULL THEN FALSE ELSE TRUE END,
+								TO_CHAR(r.createdat, 'YYYY-MM-DD') AS createdat,
+								ut.name,
+								uk.text,
+								r.title,
+								CASE WHEN r.location IS NULL THEN '/' ELSE r.location END,
+								r.url
+							FROM results r
+							INNER JOIN usertargets ut ON(r.scraperid = ut.id)
+							INNER JOIN userkeywords uk ON(LOWER(r.title) LIKE('%' || uk.text || '%'))
+							LEFT JOIN userfavouriteresults uft ON(r.id = uft.resultid)
+							WHERE r.createdat > NOW() - INTERVAL '7 days'
+							ORDER BY 3 DESC;`, user.Id)
 	if err != nil {
 		panic(err.Error())
 	}
 	for rows.Next() {
 		job := Job{}
 		if err = rows.Scan(
+			&job.Id,
+			&job.IsSaved,
 			&job.CreatedDate,
 			&job.TargetName,
 			&job.KeywordText,

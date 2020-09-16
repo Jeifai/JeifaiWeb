@@ -13,6 +13,7 @@ export default {
                 Title: false,
                 Location: false,
                 Url: false,
+                IsSaved: false,
             },
             utksKeyword: {},
             utksTarget: {},
@@ -90,6 +91,9 @@ export default {
             .arrowBold {
                 font-weight: bold !important;
                 color: black !important;
+            }
+            .saveGray {
+                color: gray !important;
             }
             .scrollable {
                 overflow-y: scroll;
@@ -425,8 +429,18 @@ export default {
                 }
             }
         },
-        select: function(raw) {
-            window.open(raw.Url, "_blank");
+        select: function(row) {
+            window.open(row.Url, "_blank");
+        },
+        save: function(row, event) {
+            console.log(row.Id, row.IsSaved);
+            console.log(event);
+            this.$http.put('/favourite/' + row.Id + '/' + event.target.checked).then(function(response) {
+                    this.message = response.data.Message;
+                    setTimeout(() => this.message = '', 2000);
+            }).catch(function(error) {
+                console.log(error)
+            });
         },
         arrowDefine: function (sortedBy, column) {
             return {
@@ -669,7 +683,8 @@ export default {
                     <thead>
                         <tr class="mdc-data-table__header-row">
                             <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:7%;white-space:nowrap;">Job Url</th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:10%;white-space:nowrap;">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:7%;white-space:nowrap;">Save</th>
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:11%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('CreatedDate')">
                                     CreatedAt
                                     <i v-if="sortingJobs['CreatedDate'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'CreatedDate'}">
@@ -680,7 +695,7 @@ export default {
                                     </i>
                                 </a>
                             </th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:10%;white-space:nowrap;">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:11%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('KeywordText')">
                                     Keyword
                                     <i v-if="sortingJobs['KeywordText'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'KeywordText'}">
@@ -702,7 +717,7 @@ export default {
                                     </i>
                                 </a>
                             </th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:20%;white-space:nowrap;">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:19%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('Location')">
                                     Location
                                     <i v-if="sortingJobs['Location'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'Location'}">
@@ -713,7 +728,7 @@ export default {
                                     </i>
                                 </a>
                             </th>
-                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:40%;white-space:nowrap;">
+                            <th class="mdc-data-table__header-cell" role="columnheader" scope="col" style="width:32%;white-space:nowrap;">
                                 <a class="column-header" @click="sortRowsJobs('Title')">
                                     Title
                                     <i v-if="sortingJobs['Title'] === true" class="material-icons column-sort" v-bind:class="{'arrowBold': sortedByJobs == 'Title'}">
@@ -737,11 +752,18 @@ export default {
                                     v-on:click="select(row)">open_in_new
                                 </button>
                             </td>
-                            <td class="mdc-data-table__cell" v-html="row.CreatedDate" style="width:10%;white-space:nowrap;"></td>
-                            <td class="mdc-data-table__cell" v-html="row.KeywordText" style="width:10%;white-space:nowrap;"></td>
+                            <td class="mdc-data-table__cell" style="width:7%;white-space:nowrap;">
+                                <input
+                                    type="checkbox"
+                                    v-model="row.IsSaved"
+                                    @change="save(row,$event)"
+                                >
+                            </td>
+                            <td class="mdc-data-table__cell" v-html="row.CreatedDate" style="width:11%;white-space:nowrap;"></td>
+                            <td class="mdc-data-table__cell" v-html="row.KeywordText" style="width:11%;white-space:nowrap;"></td>
                             <td class="mdc-data-table__cell comment" v-html="row.TargetName" style="width:13%;white-space:nowrap;"></td>
-                            <td class="mdc-data-table__cell comment" v-html="row.Location" style="width:20%;white-space:nowrap;" v-bind:title="row.Location"></td>
-                            <td class="mdc-data-table__cell" v-html="row.Title" style="width:40%;white-space:nowrap;" v-bind:title="row.Title"></td>
+                            <td class="mdc-data-table__cell comment" v-html="row.Location" style="width:19%;white-space:nowrap;" v-bind:title="row.Location"></td>
+                            <td class="mdc-data-table__cell" v-html="row.Title" style="width:32%;white-space:nowrap;" v-bind:title="row.Title"></td>
                         </tr>
                     </tbody>
                 </table>

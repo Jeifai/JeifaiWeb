@@ -24,6 +24,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		templates.ExecuteTemplate(w, "layout", nil)
 	}
 }
+
 func How(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting How..."))
 	templates := template.Must(template.ParseFiles(
