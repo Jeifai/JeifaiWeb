@@ -1,0 +1,95 @@
+{{ define "layout" }}
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta name="JeiFai" content="Know first when your favourite companies publish new offers.">
+            <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vuex/2.1.1/vuex.min.js"></script>
+            <script src="https://npmcdn.com/vue-router/dist/vue-router.js"></script>
+            <script src="https://unpkg.com/chart.js@2.8.0/dist/Chart.bundle.js"></script>
+            <script src="https://unpkg.com/vue-chartkick@0.5.1"></script>
+            <script type="text/javascript" src="https://unpkg.com/vue-simple-suggest"></script>
+            <link rel="stylesheet" href="https://unpkg.com/vue-simple-suggest/dist/styles.css">
+            <script src="/static/js/main.js" type="module"></script>
+            <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+            <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
+            <link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
+            <title>JeiFai - Know First</title>
+        </head>
+        <body>
+            <div id="app"> 
+                <header class="mdc-top-app-bar">
+                    <div class="mdc-top-app-bar__row">
+                        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                            <img src="/static/images/logoWhite.png" alt="triangle with all three sides equal" height="38px" width="82px"/>
+                        </section>
+                        <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
+                            <router-link to="/profile" tag="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Person">
+                                person
+                            </router-link>
+                            <button 
+                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
+                                aria-label="Login" 
+                                onclick="location.href='/logout';">logout
+                            </button>
+                        </section>
+                    </div>
+                </header>
+                <aside class="mdc-drawer mdc-top-app-bar--fixed-adjust">
+                    <div class="mdc-drawer__content">
+                        <nav class="mdc-list" role="listbox">
+                            <hr class="mdc-list-divider">
+                            <h6 class="mdc-list-group__subheader">My</h6>
+                            <router-link to="/" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">mediation</i>
+                                <span class="mdc-list-item__text">Manage</span>
+                            </router-link>
+                            <router-link to="/watch" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">star</i>
+                                <span class="mdc-list-item__text">Watch</span>
+                            </router-link>
+                            <hr class="mdc-list-divider">
+                            <h6 class="mdc-list-group__subheader">Analytics</h6>
+                            <router-link to="/targets" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">gps_fixed</i>
+                                <span class="mdc-list-item__text">Targets</span>
+                            </router-link>
+                            <router-link to="/analytics" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">show_chart</i>
+                                <span class="mdc-list-item__text">Charts</span>
+                            </router-link>
+                        </nav>
+                    </div>
+                </aside>
+                <div class="main-content">
+                    <router-view></router-view>
+                </div>
+            </div>
+            <style>
+                @use "@material/typography/mdc-typography";
+
+                :root {
+                    --mdc-theme-primary: #457b9d;
+                }
+                .mdc-top-app-bar {
+                    z-index: 7;
+                    background-color: #1d3557;
+                }
+                .mdc-drawer {
+                    position:fixed;
+                }
+                .main-content {
+                    position: absolute; 
+                    left: 20%; 
+                    top: 10%;
+                    width: 80%;
+                }
+            </style>
+        </body>
+    </html>
+{{ end }}
