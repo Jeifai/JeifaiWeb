@@ -1,2 +1,0 @@
-{"file":"/home/robimalco/JeifaiWeb/init.go:59","func":"main.init_db","level":"info","msg":"Successfully connected to the database","time":"2020-07-11T17:56:35+02:00"}
-{"file":"/home/robimalco/JeifaiWeb/main.go:49","func":"main.main","level":"info","msg":"Application is running","time":"2020-07-11T17:56:35+02:00"}
