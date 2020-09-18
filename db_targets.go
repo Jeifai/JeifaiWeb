@@ -191,7 +191,7 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo) {
                                 ut.name,
                                 ut.createdat,
                                 CASE WHEN ut.employees IS NULL THEN 0 ELSE ut.employees END AS employees,
-                                TO_CHAR(MAX(ls.createdat), 'YYYY-MM-DD') AS last_extraction,
+                                CASE WHEN ls.createdat IS NULL THEN '' ELSE TO_CHAR(MAX(ls.createdat), 'YYYY-MM-DD') END AS last_extraction,
                                 COUNT(DISTINCT r.url) AS all_time_job,
                                 SUM(CASE WHEN r.scrapingid = ls.scrapingid THEN 1 ELSE 0 END) AS actual_job_opens,
                                 SUM(CASE WHEN (r.createdat > current_date - interval '7' day) THEN 1 ELSE 0 END) AS open_positions_last_7_days,
@@ -199,7 +199,7 @@ func (user *User) InfoUsersTargetsByUser() (targetsinfo []TargetInfo) {
                             FROM usertargets ut
                             LEFT JOIN results r ON(ut.scraperid = r.scraperid)
                             LEFT JOIN latest_scraping ls ON(r.scraperid = ls.scraperid)
-                            GROUP BY 1, 2, 3
+                            GROUP BY 1, 2, 3, ls.createdat
                             ORDER BY 2;`, user.Id)
 	if err != nil {
 		panic(err.Error())
