@@ -1,17 +1,20 @@
 {{ define "main" }}
-    <main id="content" class="grid fade-in">
-        <section class="txt-heavy">
+    <main>
+        <div class="grid__max grid hiw-hero-splash push--top fade-in">
+            <figure>
+                <img width="1500" height="700" src="/static/images/logo_main.png">
+            </figure>
             <h1 class="txt-center" style="padding:0px;margin:0px;">
                 HR Data Detective
             </h1>
+        </div>
+    </main>
+    <main id="content" class="grid fade-in">
+        <section class="txt-heavy">
             <h3 class="txt-center" style="padding:0px;margin:0px;">
-                <u>pioneering data-driven recruitment</u>
+                <u>Tell us a company to follow.</u><br>
+                <u>We'll get the job done.</u>
             </h3>
-            <br><br>
-            <p align="justify">Our goal is to help recruiteers driving better results, using data.</p>
-            <p align="justify">Jeifai provides highly accurate job vacancies, extracting cutting edge analytic out of them.</p>
-            <p align="justify">With our software we monitor career pages.<br>With data you leverage your potential.</p>
-            <p align="justify"><b>Tell us a company to follow, we'll get the job done.</b></p>
         <section>
     </main>
     <main id="content">
@@ -19,13 +22,15 @@
             <img width="1200" height="1200" src="/static/images/diagram_value.png">
         </figure>
     </main>
+
     <main id="content">
-        <div class="grid__max grid hiw-hero-splash push--top fade-in">
-            <figure class="hiw-hero grid__wide fade-in delay-short">
-                <img width="2000" height="1125" src="/static/images/home.png">
-            </figure>
-        </div>
+        <figure>
+            <video width="750" height="350" controls>
+              <source src="/static/video/hello_world.mp4" type="video/mp4">
+            </video>
+        </figure>
     </main>
+
     <main id="content" class="grid fade-in">
         <h2 class="txt-center">Three things to remember.</h2>
         <h3 class="txt-center push-large--top">1 ~ Targets</h3>
@@ -49,6 +54,7 @@
                 <img width="900" height="900" src="/static/images/matches.png">
             </figure>
         </section>
-        <h2 class="txt-center">Now you know (almost) everything about us. Ready to have a go?</h2>
+        <h2 class="txt-center">Explore our <a href="/features">features</a><br>
+            or straight joining our <a href="/invitation">beta</a>!</h2>
     </main>
 {{ end }}
