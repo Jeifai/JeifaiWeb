@@ -161,10 +161,10 @@ export default {
             var keywords = [];
             var targets = [];
             for (var i = 0; i < this.checksKeywords.length; i++) {
-                keywords.push(this.userKeywords[this.checksKeywords[i]].Text);
+                keywords.push(this.checksKeywords[i]);
             };
             for (var q = 0; q < this.checksTargets.length; q++) {
-                targets.push(this.userTargets[this.checksTargets[q]].Name);
+                targets.push(this.checksTargets[q]);
             };
             this.$http.put('/utks', {
                 "macroPivot": this.macroPivot,
@@ -229,7 +229,7 @@ export default {
         selectAllKeywords: function() {
             if (this.checksKeywords.length <  this.userKeywords.length) {
                 for (var i = 0; i < this.userKeywords.length; i++) {
-                    this.checksKeywords.push(i)
+                    this.checksKeywords.push(this.userKeywords[i].Text)
                 }
                 return;
             }
@@ -304,7 +304,7 @@ export default {
         selectAllTargets: function() {
             if (this.checksTargets.length <  this.userTargets.length) {
                 for (var i = 0; i < this.userTargets.length; i++) {
-                    this.checksTargets.push(i)
+                    this.checksTargets.push(this.userTargets[i].Name)
                 }
                 return;
             }
@@ -333,26 +333,25 @@ export default {
         sortCheckboxes: function(arr_values, arr_checks) {
             var temp_result_present = [];
             var temp_result_not_present = [];
-            var temp_checkbox = [];
-            var matches = 0
             for (var i = 0; i < arr_values.length; i++) {
                 var is_present = false;
+                var temp_value = "";
+                if (this.macroPivot == 'keywords') {
+                    temp_value = arr_values[i].Name;
+                } else {
+                    temp_value = arr_values[i].Text;
+                }
                 for (var x = 0; x < arr_checks.length; x++) {
-                    if (i === arr_checks[x]) {
+                    if (arr_checks[x] == temp_value) {
                         is_present = true;
                         temp_result_present.push(arr_values[i]);
-                        temp_checkbox.push(matches);
-                        matches++;
                     }
                 }
                 if (!is_present) {
                     temp_result_not_present.push(arr_values[i]);
                 }
             }
-            return [
-                temp_result_present.concat(temp_result_not_present),
-                temp_checkbox
-            ];
+            return temp_result_present.concat(temp_result_not_present);
         },
         updateCheckboxes: function(pivotOn, index) {
 
@@ -388,12 +387,10 @@ export default {
                 if (keywordTargets !== null) {
                     for (var i = 0; i < this.userTargets.length; i++) {
                         if (keywordTargets.includes(this.userTargets[i].Name)) {
-                            this.checksTargets.push(i);
+                            this.checksTargets.push(this.userTargets[i].Name);
                         }
                     }
-                    var sorted_elem = this.sortCheckboxes(this.userTargets, this.checksTargets);
-                    this.userTargets = sorted_elem[0];
-                    this.checksTargets = sorted_elem[1];
+                    this.userTargets = this.sortCheckboxes(this.userTargets, this.checksTargets);
                 }
             }
             if (pivotOn == 'targets' && this.checksTargets.length == 1) {
@@ -402,12 +399,10 @@ export default {
                 if (targetKeywords !== null) {
                     for (var i = 0; i < this.userKeywords.length; i++) {
                         if (targetKeywords.includes(this.userKeywords[i].Text)) {
-                            this.checksKeywords.push(i);
+                            this.checksKeywords.push(this.userKeywords[i].Text);
                         }
                     }
-                    var sorted_elem = this.sortCheckboxes(this.userKeywords, this.checksKeywords);
-                    this.userKeywords = sorted_elem[0];
-                    this.checksKeywords = sorted_elem[1];
+                    this.userKeywords = this.sortCheckboxes(this.userKeywords, this.checksKeywords);
                 }
             }
         },
@@ -449,28 +444,34 @@ export default {
         }
     },
     computed: {
-        checkAllKeywords() {
-            if (this.checksKeywords.length == this.userKeywords.length) {
-                return true;
-            } else {
-                return false;
-            }
+        checkAllKeywords: {
+            get: function () {
+                if (this.checksKeywords.length == this.userKeywords.length) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            set: function () {}
         },
-        checkAllTargets() {
-            if (this.checksTargets.length == this.userTargets.length) {
-                return true;
-            } else {
-                return false;
-            }
+        checkAllTargets: {
+            get: function () {
+                if (this.checksTargets.length == this.userTargets.length) {
+                    return true;
+                } else {
+                    return false;
+                }
+            },
+            set: function () {}
         },
         filteredRows() {
             var string_keywords = "";
             for (var i = 0; i < this.checksKeywords.length; i++) {
-                string_keywords = string_keywords + this.userKeywords[this.checksKeywords[i]].Text.toLowerCase();
+                string_keywords = string_keywords + this.checksKeywords[i].toLowerCase();
             }
             var string_targets = "";
             for (var i = 0; i < this.checksTargets.length; i++) {
-                string_targets = string_targets + this.userTargets[this.checksTargets[i]].Name.toLowerCase();
+                string_targets = string_targets + this.checksTargets[i].toLowerCase();
             }
             return this.jobs.filter(row => {
                 const KeywordText = row.KeywordText.toString().toLowerCase();
@@ -521,7 +522,7 @@ export default {
                                                 type="checkbox" 
                                                 v-model="checkAllKeywords"
                                                 @click="selectAllKeywords"
-                                                :disabled="macroPivot == 'keywords' && checksKeywords.length == 1"
+                                                :disabled="macroPivot == 'keywords' && checksKeywords[index] != row.Text"
                                             >
                                         </th>
                                         <th class="mdc-data-table__header-cell" role="columnheader" scope="col">
@@ -554,9 +555,10 @@ export default {
                                             <input
                                                 type="checkbox"
                                                 v-model="checksKeywords"
-                                                :value="index"
+                                                :value="row.Text"
                                                 @change="updateCheckboxes('keywords', index)"
-                                                :disabled="macroPivot == 'keywords' && checksKeywords[0] != index"
+                                                :disabled="macroPivot == 'keywords' && checksKeywords[0] != row.Text"
+
                                             >
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
@@ -564,6 +566,7 @@ export default {
                                         <td class="mdc-data-table__cell">
                                             <button
                                                 v-on:click="deleteKeyword(index)"
+                                                :disabled="checksKeywords.length > 0 || checksTargets.length > 0"
                                                 class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
                                                 aria-label="Clear">clear
                                             </button>
@@ -657,9 +660,9 @@ export default {
                                             <input
                                                 type="checkbox"
                                                 v-model="checksTargets"
-                                                :value="index"
+                                                :value="row.Name"
                                                 @change="updateCheckboxes('targets', index)"
-                                                :disabled="macroPivot == 'targets' && checksTargets[0] != index"
+                                                :disabled="macroPivot == 'targets' && checksTargets[0] != row.Name"
                                             >
                                         </td>
                                         <td class="mdc-data-table__cell" v-html="row.CreatedDate"></td>
@@ -667,6 +670,7 @@ export default {
                                         <td class="mdc-data-table__cell">
                                             <button
                                                 v-on:click="deleteTarget(index)"
+                                                :disabled="checksKeywords.length > 0 || checksTargets.length > 0"
                                                 class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
                                                 aria-label="Clear">clear
                                             </button>
