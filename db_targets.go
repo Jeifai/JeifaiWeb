@@ -35,6 +35,7 @@ type Job struct {
 	Id          string
 	IsSaved     bool
 	CreatedDate string
+	ClosedDate  string
 	TargetName  string
 	KeywordText string
 	Title       string

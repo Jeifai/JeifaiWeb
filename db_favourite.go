@@ -70,6 +70,7 @@ func (user *User) SelectJobsByUserAndFavourite() (jobs []Job) {
                                 r.id,
                                 CASE WHEN uft.resultid IS NULL THEN FALSE ELSE TRUE END,
                                 TO_CHAR(r.createdat, 'YYYY-MM-DD') AS createdat,
+                                CASE WHEN r.updatedat > current_date - 1 THEN '' ELSE TO_CHAR(r.updatedat, 'YYYY-MM-DD') END AS closedat,
                                 ut.name,
                                 uk.text,
                                 r.title,
@@ -79,7 +80,6 @@ func (user *User) SelectJobsByUserAndFavourite() (jobs []Job) {
                             INNER JOIN usertargets ut ON(r.scraperid = ut.id)
                             INNER JOIN userkeywords uk ON(LOWER(r.title) LIKE('%' || uk.text || '%'))
                             INNER JOIN userfavouriteresults uft ON(r.id = uft.resultid)
-                            WHERE r.createdat > NOW() - INTERVAL '7 days'
                             ORDER BY 3 DESC;`, user.Id)
     if err != nil {
         panic(err.Error())
@@ -90,6 +90,7 @@ func (user *User) SelectJobsByUserAndFavourite() (jobs []Job) {
             &job.Id,
             &job.IsSaved,
             &job.CreatedDate,
+            &job.ClosedDate,
             &job.TargetName,
             &job.KeywordText,
             &job.Title,
