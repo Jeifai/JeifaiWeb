@@ -3,6 +3,7 @@ export default {
     delimiters: ["[[","]]"],
     data: function () {
         return {
+            selectedIndex: 0,
             macroPivot: '',
             jobs: [],
             sortedByJobs: "CreatedDate",
