@@ -505,7 +505,6 @@ func (user *User) SelectJobsByTargetsAndKeywords(targets []Target, keywords []Ke
 							INNER JOIN usertargets ut ON(r.scraperid = ut.id)
 							INNER JOIN userkeywords uk ON(LOWER(r.title) LIKE('%' || uk.text || '%'))
 							LEFT JOIN userfavouriteresults uft ON(r.id = uft.resultid)
-							WHERE r.createdat > NOW() - INTERVAL '7 days'
 							ORDER BY 3 DESC;`, user.Id)
 	if err != nil {
 		panic(err.Error())
