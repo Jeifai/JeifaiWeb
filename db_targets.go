@@ -492,7 +492,13 @@ func (user *User) SelectJobsByTargetsAndKeywords(targets []Target, keywords []Ke
 										ft.resultid
 									FROM favouriteresults ft
 									WHERE ft.userid = $1
-									AND ft.deletedat IS NULL)
+									AND ft.deletedat IS NULL),
+								latestscrape AS(
+									SELECT
+										s.scraperid,
+										TO_CHAR(MAX(s.createdat), 'YYYY-MM-DD') AS updatedat
+									FROM scrapings s
+									GROUP BY 1)
 							SELECT
 								r.id,
 								CASE WHEN uft.resultid IS NULL THEN FALSE ELSE TRUE END,
@@ -506,6 +512,8 @@ func (user *User) SelectJobsByTargetsAndKeywords(targets []Target, keywords []Ke
 							INNER JOIN usertargets ut ON(r.scraperid = ut.id)
 							INNER JOIN userkeywords uk ON(LOWER(r.title) LIKE('%' || uk.text || '%'))
 							LEFT JOIN userfavouriteresults uft ON(r.id = uft.resultid)
+							LEFT JOIN latestscrape ls ON(r.scraperid = ls.scraperid)
+							WHERE TO_CHAR(r.updatedat, 'YYYY-MM-DD') = ls.updatedat
 							ORDER BY 3 DESC;`, user.Id)
 	if err != nil {
 		panic(err.Error())
