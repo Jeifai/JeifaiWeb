@@ -58,14 +58,24 @@ func Faq(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
-
-
-
-
-
-func GetMetabaseUrl(w http.ResponseWriter, r *http.Request) {
-
+func ServeMetabaseJobs(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting ServeMetabaseJobs..."))
 	iframeUrl := "http://metabase.jeifai.com/embed/dashboard/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJhbXMiOnt9LCJyZXNvdXJjZSI6eyJkYXNoYm9hcmQiOjJ9fQ.SxWrCmoTZOkOJlMCgSM7LZlGeyx4W9XRk-pLja1Qids"
+
+	infos := struct {
+		Metabase string
+	}{
+		iframeUrl,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
+}
+
+func ServeMetabaseCompany(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(Gray(8-1, "Starting ServeMetabaseCompany..."))
+	iframeUrl := "http://metabase.jeifai.com/embed/dashboard/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJhbXMiOnt9LCJyZXNvdXJjZSI6eyJkYXNoYm9hcmQiOjN9fQ.88TwMbWha6RpgeZxDu3SpVz-z8ht8TZu-LmvmF_h8Qg"
 
 	infos := struct {
 		Metabase string

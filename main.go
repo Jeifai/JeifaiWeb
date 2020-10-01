@@ -38,32 +38,8 @@ func main() {
 	r.HandleFunc("/profile", Profile).Methods("GET")
 	r.HandleFunc("/profile", UpdateProfile).Methods("PUT")
 
-	r.HandleFunc("/targets/user", GetUserTargets).Methods("GET")
-	r.HandleFunc("/targets/all", GetAllTargets).Methods("GET")
-	r.HandleFunc("/targets/{target}", PutTarget).Methods("PUT")
-	r.HandleFunc("/targets/{target}", RemoveTarget).Methods("DELETE")
-	r.HandleFunc("/targets/analytic", GetTargetsAnalytic).Methods("GET")
-
-	r.HandleFunc("/keywords/user", GetUserKeywords).Methods("GET")
-	r.HandleFunc("/keywords/all", GetAllKeywords).Methods("GET")
-	r.HandleFunc("/keywords/{keyword}", PutKeyword).Methods("PUT")
-	r.HandleFunc("/keywords/{keyword}", RemoveKeyword).Methods("DELETE")
-
-	r.HandleFunc("/jobs", GetJobsByTargetsAndKeywords).Methods("GET")
-	r.HandleFunc("/jobs/favourite", GetJobsByUserAndFavourite).Methods("GET")
-	r.HandleFunc("/favourite/{resultid}/{checked}", PutFavourite).Methods("PUT")
-
-	r.HandleFunc("/utks", GetUserTargetsKeywords).Methods("GET")
-	r.HandleFunc("/utks", PutUserTargetsKeywords).Methods("PUT")
-
-	r.HandleFunc("/analytics/getTargets", AnalyticsGetTargets).Methods("GET")
-	r.HandleFunc("/analytics/target/{target}", AnalyticsPerTarget).Methods("GET")
-
-<<<<<<< HEAD
-	r.HandleFunc("/getMetabaseUrl", GetMetabaseUrl).Methods("GET")
-=======
-	r.HandleFunc("/j/{urlshort}", ManageUrlShort).Methods("GET")
->>>>>>> master
+	r.HandleFunc("/serveMetabaseJobs", ServeMetabaseJobs).Methods("GET")
+	r.HandleFunc("/serveMetabaseCompany", ServeMetabaseCompany).Methods("GET")
 
 	fmt.Println(Bold(Green("Application is running")))
 

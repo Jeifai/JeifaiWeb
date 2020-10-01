@@ -1,9 +1,9 @@
 export default {
-    name: 'test',
+    name: 'jobs',
     delimiters: ["[[","]]"],
     data: function () {
         return {
-            selectedIndex: 4,
+            selectedIndex: 0,
             metabase: '',
         }
     },
@@ -15,11 +15,11 @@ export default {
         document.head.appendChild(styleElem);
     },
     created () {
-        this.getMetabaseUrl()
+        this.serveMetabaseJobs()
     },
     methods: {
-        getMetabaseUrl: function() {
-            this.$http.get('/getMetabaseUrl').then(function(response) {
+        serveMetabaseJobs: function() {
+            this.$http.get('/serveMetabaseJobs').then(function(response) {
                 this.metabase = response.data.Metabase
             }).catch(function(error) {
                 console.log(error)
@@ -32,7 +32,7 @@ export default {
                 v-bind:src="metabase"
                 frameborder="0"
                 width="100%"
-                height="680"
+                height="680px"
                 allowtransparency
             ></iframe>
         </div>`,

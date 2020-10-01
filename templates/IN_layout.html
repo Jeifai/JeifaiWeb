@@ -26,14 +26,15 @@
                 <header class="mdc-top-app-bar">
                     <div class="mdc-top-app-bar__row">
                         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-                            <img src="/static/images/logoWhite.png" alt="triangle with all three sides equal" height="38px" width="82px"/>
+                            <img src="/static/images/logoGrey.png" alt="triangle with all three sides equal" height="38px" width="82px"/>
                         </section>
                         <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end" role="toolbar">
-                            <router-link to="/profile" tag="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Person">
+                            <router-link to="/profile" tag="button" class="material-icons mdc-top-app-bar__action-item mdc-icon-button" aria-label="Person" style="color:#2E353B">
                                 person
                             </router-link>
                             <button 
-                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button" 
+                                class="material-icons mdc-top-app-bar__action-item mdc-icon-button"
+                                style="color:#2E353B"
                                 aria-label="Login" 
                                 onclick="location.href='/logout';">logout
                             </button>
@@ -44,28 +45,14 @@
                     <div class="mdc-drawer__content">
                         <nav class="mdc-list" role="listbox">
                             <hr class="mdc-list-divider">
-                            <h6 class="mdc-list-group__subheader">My</h6>
+                            <h6 class="mdc-list-group__subheader">Manager</h6>
                             <router-link to="/" class="mdc-list-item">
-                                <i class="material-icons mdc-list-item__graphic">mediation</i>
-                                <span class="mdc-list-item__text">Manage</span>
+                                <i class="material-icons mdc-list-item__graphic">explore</i>
+                                <span class="mdc-list-item__text">Jobs Explorer</span>
                             </router-link>
-                            <router-link to="/watch" class="mdc-list-item">
-                                <i class="material-icons mdc-list-item__graphic">star</i>
-                                <span class="mdc-list-item__text">Watch</span>
-                            </router-link>
-                            <hr class="mdc-list-divider">
-                            <h6 class="mdc-list-group__subheader">Analytics</h6>
-                            <router-link to="/targets" class="mdc-list-item">
-                                <i class="material-icons mdc-list-item__graphic">gps_fixed</i>
-                                <span class="mdc-list-item__text">Targets</span>
-                            </router-link>
-                            <router-link to="/analytics" class="mdc-list-item">
-                                <i class="material-icons mdc-list-item__graphic">show_chart</i>
-                                <span class="mdc-list-item__text">Charts</span>
-                            </router-link>
-                            <router-link to="/test" class="mdc-list-item">
-                                <i class="material-icons mdc-list-item__graphic">show_chart</i>
-                                <span class="mdc-list-item__text">TEST</span>
+                            <router-link to="/company" class="mdc-list-item">
+                                <i class="material-icons mdc-list-item__graphic">business</i>
+                                <span class="mdc-list-item__text">Company Explorer</span>
                             </router-link>
                         </nav>
                     </div>
@@ -78,18 +65,22 @@
                 @use "@material/typography/mdc-typography";
 
                 :root {
-                    --mdc-theme-primary: #457b9d;
+                    --mdc-theme-primary: #2E353B;
+                }
+                .material-icons {
+                    color: blue;
                 }
                 .mdc-top-app-bar {
                     z-index: 7;
-                    background-color: #1d3557;
+                    background-color: #509EE3;
                 }
                 .mdc-drawer {
                     position:fixed;
+                    width: 15%;
                 }
                 .main-content {
                     position: absolute; 
-                    left: 20%; 
+                    left: 18%; 
                     top: 10%;
                     width: 80%;
                 }
