@@ -59,6 +59,8 @@ func main() {
 	r.HandleFunc("/analytics/getTargets", AnalyticsGetTargets).Methods("GET")
 	r.HandleFunc("/analytics/target/{target}", AnalyticsPerTarget).Methods("GET")
 
+	r.HandleFunc("/getMetabaseUrl", GetMetabaseUrl).Methods("GET")
+
 	fmt.Println(Bold(Green("Application is running")))
 
 	server := &http.Server{

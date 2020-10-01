@@ -3,6 +3,7 @@ import Watch from './components/Watch.js';
 import Targets from './components/Targets.js';
 import Analytics from './components/Analytics.js';
 import Profile from './components/Profile.js';
+import Test from './components/Test.js';
 
 const router = new VueRouter({
     mode: 'hash',
@@ -26,6 +27,10 @@ const router = new VueRouter({
     {
         path: '/profile',
         component: Profile
+    },
+    {
+        path: '/test',
+        component: Test
     },
     ]
 })

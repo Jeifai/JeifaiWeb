@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"encoding/json"
 	"net/http"
 
 	. "github.com/logrusorgru/aurora"
@@ -55,4 +56,24 @@ func Faq(w http.ResponseWriter, r *http.Request) {
 		"templates/OUT_layout.html",
 		"templates/OUT_faq.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
+}
+
+
+
+
+
+
+func GetMetabaseUrl(w http.ResponseWriter, r *http.Request) {
+
+	iframeUrl := "http://metabase.jeifai.com/embed/dashboard/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXJhbXMiOnt9LCJyZXNvdXJjZSI6eyJkYXNoYm9hcmQiOjJ9fQ.SxWrCmoTZOkOJlMCgSM7LZlGeyx4W9XRk-pLja1Qids"
+
+	infos := struct {
+		Metabase string
+	}{
+		iframeUrl,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(infos)
 }
