@@ -38,6 +38,8 @@ func main() {
 	r.HandleFunc("/profile", Profile).Methods("GET")
 	r.HandleFunc("/profile", UpdateProfile).Methods("PUT")
 
+	r.HandleFunc("/j/{urlshort}", ManageUrlShort).Methods("GET")
+
 	r.HandleFunc("/serveMetabaseJobs", ServeMetabaseJobs).Methods("GET")
 	r.HandleFunc("/serveMetabaseCompany", ServeMetabaseCompany).Methods("GET")
 
