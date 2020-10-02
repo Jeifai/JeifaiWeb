@@ -1,31 +1,16 @@
-import Manage from './components/Manage.js';
-import Watch from './components/Watch.js';
-import Targets from './components/Targets.js';
-import Analytics from './components/Analytics.js';
-import Profile from './components/Profile.js';
+import Jobs from './components/Jobs.js';
+import Company from './components/Company.js';
 
 const router = new VueRouter({
     mode: 'hash',
     routes: [
     {
         path: '/',
-        component: Manage
+        component: Jobs
     },
     {
-        path: '/watch',
-        component: Watch
-    },
-    {
-        path: '/targets',
-        component: Targets
-    },
-    {
-        path: '/analytics',
-        component: Analytics
-    },
-    {
-        path: '/profile',
-        component: Profile
+        path: '/company',
+        component: Company
     },
     ]
 })
@@ -69,7 +54,7 @@ var app = new Vue({
             .column-sort {
                 font-size: 16px;
                 vertical-align: -3px;
-                color: #BEBEBE;
+                color: #2E353B;
             }`
         document.head.appendChild(styleElem);
     }
