@@ -17,7 +17,6 @@
 		</head>
 		<body>
 			<header class="header" data-style-header>
-				<a class="header__skip hide-screens button" href="#content">Skip to content</a>
 				<nav class="header__nav" aria-label="main">
 	    			<a href="/" class="header__logo" aria-label="Jeifai">
 	    				<img src="/static/images/logoBlack.png" alt="triangle with all three sides equal" height="38px" width="82px"/>
@@ -26,12 +25,33 @@
 					<label class="header__toggle" for="hamburger"><span></span> Menu</label>
 					<div class="header__links">
 						<a class="header__link" href="/">Home</a>
+						<a class="header__link" href="/invitation">Demo</a>
+						<a class="header__link" href="/blog">Blog</a>
+						<a class="header__link button" href="/login">Log in</a>
 					</div>
 				</nav>
 			</header>
 		    <main id="content" class="grid fade-in">
-		        <section class="txt-heavy">
-		            <p><a href="/blog/human_resources_and_data.html" class="header__logo" aria-label="Jeifai">Human resources, technology and data.</a></p>
+		        <section class="txt-heavy" style="padding: 30px;border-top:4px solid #989faa;border-bottom:4px solid #989faa">
+		            <p>
+			            <a href="/blog/human_resources_analytics_and_data" class="header__logo" aria-label="Jeifai">
+			            	Human resources, data and analytics
+			        	</a>
+			        </p>
+		        	<p style="text-align: justify; font-size: 20px;">
+		        		As we entered the era of data we have seen more and more industries being involved into a process of transformation, accepting a paradigma in which any decision, even the smallest, has to be taken...
+		        	</p>
+		        	<p style="font-size: 16px;">
+		        		<i>Roberto Malcotti - 03 October 2020
+		        	</p>
+		        </section>
+		        <p style="padding-top: 50px">
+					<form action="/subscribe" method="post" target="emptyIFrame">
+			            <input type="email" name="email" id="email" class="form-control" placeholder="Insert your email and keep in touch!"required>
+			            <input type="submit">
+			        </form>
+					<iframe name="emptyIFrame" style="display:none;"></iframe>
+			    </p>
 	    	</main>
 			<footer class="footer grid">
 				<p class="push-large--top push-small--bottom">Questions? Email us at <a href="mailto:roberto@jeifai.com">roberto@jeifai.com</a></p>

@@ -23,6 +23,7 @@ func main() {
 
 	r.HandleFunc("/blog", Blog).Methods("GET")
 	r.HandleFunc("/blog/{article}", RouteBlogArticle).Methods("GET")
+	r.HandleFunc("/subscribe", BlogSubscribe).Methods("POST")
 
 	r.HandleFunc("/invitation", StartInvitation).Methods("GET")
 	r.HandleFunc("/invitation", SubmitInvitation).Methods("PUT")

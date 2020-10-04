@@ -87,3 +87,22 @@ func (invitation *Invitation) UpdateInvitation() {
 		panic(err.Error())
 	}
 }
+
+func InsertSubscriberByEmail(email string) {
+	fmt.Println(Gray(8-1, "Starting InsertSubscriberByEmail..."))
+	statement := `
+		INSERT INTO subscribers (email, createdat) 
+		VALUES ($1, current_timestamp)
+		ON CONFLICT (email) DO NOTHING;`
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer stmt.Close()
+	stmt.QueryRow(
+		email,
+	)
+	if err != nil {
+		panic(err.Error())
+	}
+}
