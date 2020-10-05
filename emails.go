@@ -28,9 +28,9 @@ func SaveEmailIntoDb(email string, action string) {
 	)
 }
 
-func SendInvitationEmail(email string) {
+func SendInvitationEmail(email string) (err error) {
 	fmt.Println(Gray(8-1, "Starting SendInvitationEmail..."))
-	err := godotenv.Load()
+	err = godotenv.Load()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -66,6 +66,7 @@ func SendInvitationEmail(email string) {
 	}
 
 	SaveEmailIntoDb(email, "SendInvitationEmail")
+	return
 }
 
 func SendEmailToAdminAboutInvitation(email string) {

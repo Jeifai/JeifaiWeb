@@ -8,7 +8,7 @@
                 <section class="txt-heavy">
                 <p>We are truly excided, you want to join our club ;)</p>
                 <p>Before make it official, we need to ask you a few questions.</p>
-                <form action="/invitation" method="post" target="emptyIFrame">
+                <form action="/invitation" method="post" target="responseIFrame">
                     <div>
                         <label for="email">Email:</label><br>
                         <input type="email" name="email" id="email" class="form-control" placeholder="email" required autofocus>
@@ -37,9 +37,15 @@
                         <input type="submit" name="submit" value="submit">
                     </div>
                 </form>
-                <iframe name="emptyIFrame" style="display:none;"></iframe>
+                <iframe id="responseIFrame" name="responseIFrame" style="border-width: 0px;"></iframe>
             </main>
             {{ template "footer" . }}
+            <script>
+                var frame = document.getElementById('responseIFrame');
+                frame.onload = function () {
+                    frame.contentWindow.document.querySelector('body').style.fontSize = '30px';
+                };
+            </script>
         </body>
     </html>
 {{ end }}

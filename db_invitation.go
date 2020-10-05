@@ -12,19 +12,17 @@ func InvitationIdByEmail(email string) (err error) {
 	return
 }
 
-func CreateInvitation(email string, whyjoin string, whoareyou string, whichcompanies string, anythingelse string) {
+func CreateInvitation(email string, whyjoin string, whoareyou string, whichcompanies string, anythingelse string) (err error) {
 	fmt.Println(Gray(8-1, "Starting CreateInvitation..."))
-	statement := `INSERT INTO invitations (email, whyjoin, whoareyou, whichcompanies, anythingelse, createdat)
-                  VALUES ($1, $2, $3, $4, $5, current_timestamp)`
+	statement := `INSERT INTO invitations (uuid, email, whyjoin, whoareyou, whichcompanies, anythingelse, createdat)
+                  VALUES ($1, $2, $3, $4, $5, $6, current_timestamp);`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
 		panic(err.Error())
 	}
 	defer stmt.Close()
-	stmt.QueryRow(email, whyjoin, whoareyou, whichcompanies, anythingelse,)
-	if err != nil {
-		panic(err.Error())
-	}
+	err = stmt.QueryRow(createUUID(), email, whyjoin, whoareyou, whichcompanies, anythingelse).Scan()
+	return
 }
 
 func InsertSubscriberByEmail(email string) {
