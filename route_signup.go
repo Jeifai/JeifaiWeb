@@ -29,13 +29,13 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 	invitationcode := r.FormValue("invitationcode")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	err := InvitationIdByUuidAndEmail(email, invitationcode)
-	if err.Error() == "sql: no rows in result set" {
+	invitation_id := SelectInvitationIdByUuidAndEmail(email, invitationcode)
+	if invitation_id != 0 {
 		UpdateInvitation(email)
 		CreateUser(email, username, password)
 		SendSignUpEmail(email, username)
 		json.NewEncoder(w).Encode("Success! We have sent you an email")
 	} else {
-		json.NewEncoder(w).Encode("Something was wrong, please contact roberto@jeifai.com")
+		json.NewEncoder(w).Encode("Something was wrong")
 	}
 }

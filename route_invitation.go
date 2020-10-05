@@ -28,7 +28,7 @@ func SubmitInvitation(w http.ResponseWriter, r *http.Request) {
 	whoareyou := r.FormValue("whoareyou")
 	whichcompanies := r.FormValue("whichcompanies")
 	anythingelse := r.FormValue("anythingelse")
-	err := CreateInvitation(email, whyjoin, whoareyou, whichcompanies, anythingelse)
+	err := InsertInvitation(email, whyjoin, whoareyou, whichcompanies, anythingelse)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	if err.Error() == "sql: no rows in result set" {

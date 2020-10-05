@@ -31,7 +31,7 @@ func main() {
 	r.HandleFunc("/signup", SignupAccount).Methods("POST")
 
 	r.HandleFunc("/forgot_password", ForgotPassword).Methods("GET")
-	r.HandleFunc("/forgot_password", SetForgotPassword).Methods("PUT")
+	r.HandleFunc("/forgot_password", SetForgotPassword).Methods("POST")
 	r.HandleFunc("/reset_password/{token}", ResetPassword).Methods("GET")
 	r.HandleFunc("/reset_password/{token}", SetResetPassword).Methods("PUT")
 

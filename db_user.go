@@ -143,42 +143,18 @@ func CreateUser(email string, username string, password string) {
 	}
 }
 
-func (user *User) UserByEmail() {
+func UserByEmail(email string) (user User) {
 	fmt.Println(Gray(8-1, "Starting UserByEmail..."))
-	err := Db.QueryRow(`SELECT
-                        id,	
-                        username,
-                        email,
+	err := Db.QueryRow(`
+					SELECT
+						id,
                         password,
-                        createdat,
-                        updatedat,
-                        firstname,
-                        lastname,
-                        dateofbirth,
-                        country,
-                        city,
-                        gender
-                      FROM users
-                      WHERE email = $1`,
-		user.Email,
-	).
-		Scan(
-			&user.Id,
-			&user.UserName,
-			&user.Email,
-			&user.Password,
-			&user.CreatedAt,
-			&user.UpdatedAt,
-			&user.FirstName,
-			&user.LastName,
-			&user.DateOfBirth,
-			&user.Country,
-			&user.City,
-			&user.Gender,
-		)
+					FROM users
+					WHERE email = $1`,user.Email).Scan(user.Id,&user.Password,)
 	if err != nil {
 		panic(err.Error())
 	}
+	return
 }
 
 func UserById(userId int) (user User) {
@@ -302,9 +278,8 @@ func (user *User) CreateToken(token string) {
 	)
 }
 
-func (user *User) UserByToken(token string) {
+func UserByToken(token string) (user User)  {
 	fmt.Println(Gray(8-1, "Starting UserByToken..."))
-	current_timestamp := time.Now()
 	err := Db.QueryRow(`SELECT
                         u.id,
                         u.email,
@@ -312,12 +287,13 @@ func (user *User) UserByToken(token string) {
                       FROM resetpasswords r
                       LEFT JOIN users u ON (r.userid = u.id)
                       WHERE r.token = $1
-                      AND $2 < r.expiredat
-                      AND r.consumedat IS NULL`, token, current_timestamp).
-		Scan(&user.Id, &user.Email, &user.UserName)
+                      AND current_timestamp < r.expiredat
+                      AND r.consumedat IS NULL`, token).
+		Scan(user.Id, user.Email, user.UserName)
 	if err != nil {
 		panic(err.Error())
 	}
+	return
 }
 
 func (user *User) ChangePassword(password string) {
