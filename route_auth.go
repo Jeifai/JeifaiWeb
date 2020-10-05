@@ -6,16 +6,19 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/go-playground/validator"
 	"github.com/gorilla/mux"
 	. "github.com/logrusorgru/aurora"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Login..."))
-	templates := template.Must(template.ParseFiles(
-		"templates/OUT_layout.html",
-		"templates/OUT_login.html"))
+	templates := template.Must(
+		template.ParseFiles(
+			"templates/OUT_navbar.html",
+			"templates/OUT_head.html",
+			"templates/OUT_footer.html",
+			"templates/OUT_subscribe.html",
+			"templates/OUT_login.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
@@ -60,96 +63,35 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 
 func Signup(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Signup..."))
-	templates := template.Must(template.ParseFiles(
-		"templates/OUT_layout.html",
-		"templates/OUT_signup.html"))
+	templates := template.Must(
+		template.ParseFiles(
+			"templates/OUT_navbar.html",
+			"templates/OUT_head.html",
+			"templates/OUT_footer.html",
+			"templates/OUT_subscribe.html",
+			"templates/OUT_signup.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 
 func SignupAccount(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting SignupAccount..."))
-	var user User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	validate := validator.New()
-	err = validate.Struct(user)
-
-	var messages []string
-
-	if err != nil {
-		for _, err := range err.(validator.ValidationErrors) {
-
-			red_1 := `<p style="color:red">`
-			red_2 := `</p>`
-			var temp_message string
-			if err.Field() == "Password" {
-				if err.Tag() == "min" {
-					temp_message = `Password is too short`
-				} else if err.Tag() == "required" {
-					temp_message = `Password cannot be empty`
-				}
-				messages = append(messages, red_1+temp_message+red_2)
-			}
-			if err.Field() == "UserName" {
-				if err.Tag() == "required" {
-					temp_message = `Username cannot be empty`
-				} else if err.Tag() == "min" {
-					temp_message = `Username is too short`
-				} else if err.Tag() == "max" {
-					temp_message = `Username is too long`
-				}
-				messages = append(messages, red_1+temp_message+red_2)
-			}
-			if err.Field() == "Email" {
-				if err.Tag() == "required" {
-					temp_message = `Email cannot be empty`
-				} else if err.Tag() == "email" {
-					temp_message = `Email is not valid`
-				}
-				messages = append(messages, red_1+temp_message+red_2)
-			}
-			if err.Field() == "InvitationCode" {
-				if err.Tag() == "required" {
-					temp_message = `InvitationCode cannot be empty`
-				}
-				messages = append(messages, red_1+temp_message+red_2)
-			}
-		}
-	}
-
-	if len(messages) == 0 {
-		invitation := user.InvitationIdByUuidAndEmail()
-		if invitation.Id == 0 {
-			red_1 := `<p style="color:red">`
-			red_2 := `</p>`
-			messages = append(messages, red_1+"Something got wrong. Please try again."+red_2)
-			messages = append(messages, red_1+"In case of new failures, contact us."+red_2)
-		} else {
-			invitation.UpdateInvitation()
-			user.CreateUser()
-			user.SendSignUpEmail()
-			green_1 := `<p style="color:green">`
-			green_2 := `</p>`
-			messages = append(messages, green_1+"Well done!"+green_2)
-			messages = append(messages, green_1+"We have just sent you an email,"+green_2)
-			messages = append(messages, green_1+"otherwise just straight to log in!"+green_2)
-		}
-	}
-	infos := struct{ Messages []string }{messages}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(infos)
+	email := r.FormValue("email")
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	// invitationcode := r.FormValue("invitationcode")
+	CreateUser(email, username, password)
+	SendSignUpEmail(email, username)
 }
 
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting ForgotPassword..."))
-	templates := template.Must(template.ParseFiles(
-		"templates/OUT_layout.html",
-		"templates/OUT_forgotPassword.html"))
+	templates := template.Must(
+		template.ParseFiles(
+			"templates/OUT_navbar.html",
+			"templates/OUT_head.html",
+			"templates/OUT_footer.html",
+			"templates/OUT_subscribe.html",
+			"templates/OUT_forgotPassword.html"))
 	templates.ExecuteTemplate(w, "layout", nil)
 }
 

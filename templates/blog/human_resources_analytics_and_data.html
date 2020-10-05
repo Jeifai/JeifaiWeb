@@ -1,36 +1,9 @@
 {{ define "layout" }}
 	<!DOCTYPE html>
 	<html lang="en">
-		<head>
-			<meta charset="utf-8">
-			<meta http-equiv="X-UA-Compatible" content="IE=edge">
-			<meta name="viewport" content="width=device-width, initial-scale=1">  
-			<title>Human resources, data and analytics.</title>
-			<meta name="description" content="Data Driven Job Hunting.">  
-			<meta property="og:title" content="Jeifai"/>
-			<meta property="og:description" content="Data Driven Job Hunting."/>
-			<meta property="og:url" content="https://jeifai.ew.r.appspot.com">
-			<link rel="stylesheet" type="text/css" href="/static/css/style.css">
-			<link rel="canonical" href="https://jeifai.ew.r.appspot.com">
-			<link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
-			<link rel="icon" type="image/png" sizes="16x16" href="/static/images/favicon-16x16.png">
-		</head>
+		{{ template "head" .}}
 		<body>
-			<header class="header" data-style-header>
-				<nav class="header__nav" aria-label="main">
-	    			<a href="/" class="header__logo" aria-label="Jeifai">
-	    				<img src="/static/images/logoBlack.png" alt="triangle with all three sides equal" height="38px" width="82px"/>
-	    			</a>
-					<input type="checkbox" id="hamburger" class="header__checkbox"/>
-					<label class="header__toggle" for="hamburger"><span></span> Menu</label>
-					<div class="header__links">
-						<a class="header__link" href="/">Home</a>
-						<a class="header__link" href="/invitation">Demo</a>
-						<a class="header__link" href="/blog">Blog</a>
-						<a class="header__link button" href="/login">Log in</a>
-					</div>
-				</nav>
-			</header>
+			{{ template "navbar" . }}
 		    <main id="content" class="grid fade-in">
 		    	<p>
 		            <h1>Human resources,<br>data and analytics.</h1>
@@ -80,20 +53,9 @@
 						Being data driven means reilable sources, ability to manipulate data, capacity to generate insight, and lastly, maybe more importantly, <b>talent to spot new ways to gather data not accessible to competitors</b>.
 		            </p>
 		        </section>
-		        <p style="padding-top: 50px">
-					<form action="/subscribe" method="post" target="emptyIFrame">
-			            <input type="email" name="email" id="email" class="form-control" placeholder="Insert your email and keep in touch!"required>
-			            <input type="submit">
-			        </form>
-					<iframe name="emptyIFrame" style="display:none;"></iframe>
-			    </p>
+		        {{ template "subscribe" . }}
 	    	</main>
-			<footer class="footer grid">
-				<p class="push-large--top push-small--bottom">Questions? Email us at <a href="mailto:roberto@jeifai.com">roberto@jeifai.com</a></p>
-				<p class="txt-x-small">
-		    		<em>Copyright ©2020 Jeifai. All rights reserved.</em>
-		  		</p>
-		  	</footer>
+	    	{{ template "footer" . }}
 		</body>
 	</html>
 {{ end }}

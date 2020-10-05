@@ -1,0 +1,17 @@
+ {{ define "navbar" }}
+    <header class="header" data-style-header>
+        <nav class="header__nav" aria-label="main">
+            <a href="/" class="header__logo" aria-label="Jeifai">
+                <img src="/static/images/logoBlack.png" alt="triangle with all three sides equal" height="38px" width="82px"/>
+            </a>
+            <input type="checkbox" id="hamburger" class="header__checkbox"/>
+            <label class="header__toggle" for="hamburger"><span></span> Menu</label>
+            <div class="header__links">
+                <a class="header__link" href="/">Home</a>
+                <a class="header__link" href="/invitation">Demo</a>
+                <a class="header__link" href="/blog">Blog</a>
+                <a class="header__link button" href="/login">Log in</a>
+            </div>
+        </nav>
+    </header>
+ {{ end }}

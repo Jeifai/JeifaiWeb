@@ -127,29 +127,17 @@ func (session *Session) SetSessionDeletedAtByUUID() {
 	}
 }
 
-func (user *User) CreateUser() {
+func CreateUser(email string, username string, password string) {
 	fmt.Println(Gray(8-1, "Starting Create..."))
-	statement := `INSERT INTO users
-                  (username, email, password, createdat, updatedat)
-                  VALUES ($1, $2, $3, $4, $5)
+	statement := `INSERT INTO users (email, username, password, createdat, updatedat)
+                  VALUES ($1, $2, $3, current_timestamp, current_timestamp)
                   RETURNING id, createdat, updatedat`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
-
-	err = stmt.QueryRow(
-		user.UserName,
-		user.Email,
-		Encrypt(user.Password),
-		time.Now(),
-		time.Now(),
-	).Scan(
-		&user.Id,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
+	stmt.QueryRow(email, username, Encrypt(password))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -158,7 +146,7 @@ func (user *User) CreateUser() {
 func (user *User) UserByEmail() {
 	fmt.Println(Gray(8-1, "Starting UserByEmail..."))
 	err := Db.QueryRow(`SELECT
-                        id,
+                        id,	
                         username,
                         email,
                         password,

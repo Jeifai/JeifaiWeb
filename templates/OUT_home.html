@@ -1,33 +1,41 @@
-{{ define "main" }}
-    <main>
-        <div class="grid__max grid hiw-hero-splash push--top fade-in">
-            <figure>
-                <img width="1500" height="700" src="/static/images/logo_main.png">
-            </figure>
-            <h1 class="txt-center" style="padding:0px;margin:0px;">
-                HR Data Detective
-            </h1>
-            <h3 class="txt-center" style="padding:0px;margin:0px;">
-                <u>Tell us a company to follow.</u><br>
-                <u>We'll get the job done.</u>
-            </h3>
-        </div>
-    </main>
-    <main id="content">
-        <figure>
-            <img width="1200" height="1200" src="/static/images/diagram_value.png">
-        </figure>
-    </main>
-    <main id="content">
-        <figure>
-            <video width="750" height="350" controls>
-              <source src="/static/video/hello_world.mp4" type="video/mp4">
-            </video>
-        </figure>
-    </main>
-    <main id="content" class="grid fade-in">
-        <h2 class="txt-center">
-            Request a <a href="/invitation">demo</a> now!
-        </h2>
-    </main>
+{{ define "layout" }}
+    <!DOCTYPE html>
+    <html lang="en">
+        {{ template "head" .}}
+        <body>
+            {{ template "navbar" . }}
+            <main>
+                <div class="grid__max grid hiw-hero-splash push--top fade-in">
+                    <figure>
+                        <img width="1500" height="700" src="/static/images/logo_main.png">
+                    </figure>
+                    <h1 class="txt-center" style="padding:0px;margin:0px;">
+                        HR Data Detective
+                    </h1>
+                    <h3 class="txt-center" style="padding:0px;margin:0px;">
+                        <u>Tell us a company to follow.</u><br>
+                        <u>We'll get the job done.</u>
+                    </h3>
+                </div>
+            </main>
+            <main id="content">
+                <figure>
+                    <img width="1200" height="1200" src="/static/images/diagram_value.png">
+                </figure>
+            </main>
+            <main id="content">
+                <figure>
+                    <video width="750" height="350" controls>
+                      <source src="/static/video/hello_world.mp4" type="video/mp4">
+                    </video>
+                </figure>
+            </main>
+            <main id="content" class="grid fade-in">
+                <h2 class="txt-center">
+                    Request a <a href="/invitation">demo</a> now!
+                </h2>
+            </main>
+            {{ template "footer" . }}
+        </body>
+    </html>
 {{ end }}

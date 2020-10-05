@@ -1,50 +1,33 @@
-{{ define "main" }}
-    <main id="content" class="grid fade-in">
-        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vuex/2.1.1/vuex.min.js"></script>
-        <div id="app">
-            <div class="form-group">
-                <label for="username" class="text-info">Username:</label><br>
-                <input type="username" name="username" id="username" class="form-control" placeholder="username" v-model="infos.Username" required autofocus>
-            </div>
-            <div class="form-group">
-                <label for="email" class="text-info">Email:</label><br>
-                <input type="email" name="email" id="email" class="form-control" placeholder="email" v-model="infos.Email" required>
-            </div>
-            <div class="form-group">
-                <label for="password" class="text-info">Password:</label><br>
-                <input type="password" name="password" id="password" class="form-control" placeholder="password" v-model="infos.Password" required>
-            </div>
-            <div class="form-group">
-                <label for="invitationcode" class="text-info">Invitation Code:</label><br>
-                <input type="text" name="invitationcode" id="invitationcode" class="form-control" placeholder="invitationcode" v-model="infos.InvitationCode" required>
-            </div>
-            <div>
-                <input type="submit" name="submit" value="submit" v-on:click="signup">
-            </div>
-            <p v-for="(message, index) in messages">
-                <span v-html="message"></span>
-            </p>
-        </div>
-        <script>
-            new Vue({
-                el: '#app',
-                delimiters: ["[[","]]"],
-                data: {
-                    infos: {},
-                    messages: '',
-                },
-                methods: {
-                    signup: function() {
-                        this.$http.put('/signup', this.infos).then(function(response) {
-                            this.messages = response.data.Messages
-                        }).catch(function(error) {
-                            console.log(error)
-                        });
-                    },
-                }
-            })
-        </script>
-    </main>
+{{ define "layout" }}
+    <!DOCTYPE html>
+    <html lang="en">
+        {{ template "head" .}}
+        <body>
+            {{ template "navbar" . }}
+            <main id="content" class="grid fade-in">
+                <form action="/signup" method="post" target="emptyIFrame">
+                    <div class="form-group">
+                        <label for="username" class="text-info">Username:</label><br>
+                        <input type="username" name="username" id="username" class="form-control" placeholder="username" minlength="3" required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="text-info">Email:</label><br>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="text-info">Password:</label><br>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="password" minlength="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="invitationcode" class="text-info">Invitation Code:</label><br>
+                        <input type="text" name="invitationcode" id="invitationcode" class="form-control" placeholder="invitationcode"required>
+                    </div>
+                    <div>
+                        <input type="submit" name="submit" value="submit">
+                    </div>
+                </form>
+            </main>
+            {{ template "footer" . }}
+        </body>
+    </html>
 {{ end }}
