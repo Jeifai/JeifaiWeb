@@ -28,9 +28,9 @@ func SaveEmailIntoDb(email string, action string) {
 	)
 }
 
-func (invitation *Invitation) SendInvitationEmail() {
+func SendInvitationEmail(email string) (err error) {
 	fmt.Println(Gray(8-1, "Starting SendInvitationEmail..."))
-	err := godotenv.Load()
+	err = godotenv.Load()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -43,10 +43,11 @@ func (invitation *Invitation) SendInvitationEmail() {
 		panic(err.Error())
 	}
 
-	fmt.Println(Blue("Sending email to -->"), Bold(Blue(invitation.Email)))
+	fmt.Println(Blue("Sending email to -->"), Bold(Blue(email)))
 
+	infos := struct{ Email string }{email}
 	var tpl bytes.Buffer
-	if err := t.Execute(&tpl, invitation); err != nil {
+	if err := t.Execute(&tpl, infos); err != nil {
 		fmt.Println(err)
 	}
 
@@ -54,7 +55,7 @@ func (invitation *Invitation) SendInvitationEmail() {
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", "robimalco@gmail.com")
-	m.SetHeader("To", invitation.Email)
+	m.SetHeader("To", email)
 	m.SetHeader("Subject", "Hello! We got you!")
 	m.SetBody("text/html", result)
 
@@ -64,10 +65,11 @@ func (invitation *Invitation) SendInvitationEmail() {
 		panic(err.Error())
 	}
 
-	SaveEmailIntoDb(invitation.Email, "SendInvitationEmail")
+	SaveEmailIntoDb(email, "SendInvitationEmail")
+	return
 }
 
-func (invitation *Invitation) SendEmailToAdminAboutInvitation() {
+func SendEmailToAdminAboutInvitation(email string) {
 	fmt.Println(Gray(8-1, "Starting SendEmailToAdminAboutInvitation..."))
 	err := godotenv.Load()
 	if err != nil {
@@ -85,7 +87,7 @@ func (invitation *Invitation) SendEmailToAdminAboutInvitation() {
 	fmt.Println(Blue("Sending email to -->"), Bold(Blue("robimalco@gmail.com")))
 
 	var tpl bytes.Buffer
-	if err := t.Execute(&tpl, invitation); err != nil {
+	if err := t.Execute(&tpl, nil); err != nil {
 		fmt.Println(err)
 	}
 
@@ -106,7 +108,7 @@ func (invitation *Invitation) SendEmailToAdminAboutInvitation() {
 	SaveEmailIntoDb("robimalco@gmail.com", "SendEmailToAdminAboutInvitation")
 }
 
-func (user *User) SendSignUpEmail() {
+func SendSignUpEmail(email string, username string) {
 	fmt.Println(Gray(8-1, "Starting SendSignUpEmail..."))
 	err := godotenv.Load()
 	if err != nil {
@@ -121,10 +123,11 @@ func (user *User) SendSignUpEmail() {
 		panic(err.Error())
 	}
 
-	fmt.Println(Blue("Sending email to -->"), Bold(Blue(user.Email)))
+	fmt.Println(Blue("Sending email to -->"), Bold(Blue(email)))
 
+	infos := struct{ UserName string }{username}
 	var tpl bytes.Buffer
-	if err := t.Execute(&tpl, user); err != nil {
+	if err := t.Execute(&tpl, infos); err != nil {
 		fmt.Println(err)
 	}
 
@@ -132,7 +135,7 @@ func (user *User) SendSignUpEmail() {
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", "robimalco@gmail.com")
-	m.SetHeader("To", user.Email)
+	m.SetHeader("To", email)
 	m.SetHeader("Subject", "Hello! Welcome on board!")
 	m.SetBody("text/html", result)
 
@@ -142,7 +145,7 @@ func (user *User) SendSignUpEmail() {
 		panic(err.Error())
 	}
 
-	SaveEmailIntoDb(user.Email, "SendSignUpEmail")
+	SaveEmailIntoDb(email, "SendSignUpEmail")
 }
 
 func (user *User) SendResetPasswordEmail(reset_url string) {

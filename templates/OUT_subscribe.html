@@ -1,0 +1,9 @@
+ {{ define "subscribe" }}
+    <p style="padding-top: 50px">
+        <form action="/subscribe" method="post" target="emptyIFrame">
+            <input type="email" name="email" id="email" class="form-control" placeholder="Insert your email and keep in touch!"required>
+            <input type="submit">
+        </form>
+        <iframe name="emptyIFrame" style="display:none;"></iframe>
+    </p>
+ {{ end }}

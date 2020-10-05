@@ -1,0 +1,26 @@
+{{ define "layout" }}
+	<!DOCTYPE html>
+	<html lang="en">
+		{{ template "head" .}}
+		<body>
+			{{ template "navbar" . }}
+		    <main id="content" class="grid fade-in">
+		        <section class="txt-heavy" style="padding: 30px;border-top:4px solid #989faa;border-bottom:4px solid #989faa">
+		            <p>
+			            <a href="/blog/human_resources_analytics_and_data" class="header__logo" aria-label="Jeifai">
+			            	Human resources, data and analytics
+			        	</a>
+			        </p>
+		        	<p style="text-align: justify; font-size: 20px;">
+		        		As we entered the era of data we have seen more and more industries being involved into a process of transformation, accepting a paradigma in which any decision, even the smallest, has to be taken...
+		        	</p>
+		        	<p style="font-size: 16px;">
+		        		<i>Roberto Malcotti - 03 October 2020
+		        	</p>
+		        </section>
+		        {{ template "subscribe" . }}
+	    	</main>
+	    	{{ template "footer" . }}
+		</body>
+	</html>
+{{ end }}

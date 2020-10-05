@@ -1,76 +1,51 @@
-{{ define "main" }}
-    <main id="content" class="grid fade-in">      
-        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/0.7.0/vue-resource.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/vuex/2.1.1/vuex.min.js"></script>
-        <section class="txt-heavy">
-        <p>We are truly excided, you want to join our club ;)</p>
-        <p>Before make it official, we need to ask you a few questions.</p>
-        <div id="app">
-            <div>
-                <label for="email">Email:</label><br>
-                <input type="email" name="email" id="email" class="form-control" placeholder="email" v-model="infos.Email" required autofocus>
-            </div>
-            <div>
-                <label for="email">Who are you?</label><br>
-                <select id="whoareyou" v-model="infos.Whoareyou" onchange='checkValue(this.value);'>
-                    <option value="HeadHunter">Head Hunter</option>
-                    <option value="Company">Company</option>
-                    <option value="NoProfit">No Profit</option>
-                    <option value="Other">Other</option>
-                </select>
-                <div id="sectionSpecify" style="display:none;" >
-                    <label for="specify">Please specify:</label><br>
-                    <input type="specify" name="specify" id="specify" class="form-control" placeholder="specify" v-model="infos.SpecifyWhoAreYou" required autofocus>
-                </div>
-            </div>
-            <div>
-                <label for="whyjoin">Why would you like to join us?</label><br>
-                <input type="text" name="whyjoin" id="whyjoin" class="form-control" placeholder="Why joining us" v-model="infos.Whyjoin" required>
-            </div>
-            <div>
-                <label for="whichcompanies">Which companies would you ask us to monitor?</label><br>
-                <input type="text" name="whichcompanies" class="form-control" id="whichcompanies" placeholder="Which companies" v-model="infos.Whichcompanies" required>
-            </div>
-            <div>
-                <label for="anythingelse">Anything else?</label><br>
-                <input type="text" name="anythingelse" class="form-control" id="anythingelse" placeholder="Anything else" v-model="infos.Anythingelse" required>
-            </div>
-            <div>
-                <input type="submit" name="submit" value="submit" v-on:click="submitInvitation">
-            </div>
-            <p v-for="(message, index) in messages">
-                <span v-html="message"></span>
-            </p>
-        </div>
-        <script>
-            new Vue({
-                el: '#app',
-                delimiters: ["[[","]]"],
-                data: {
-                    infos: {},
-                    messages: '',
-                },
-                methods: {
-                    submitInvitation: function() {
-                        this.$http.put('/invitation', this.infos).then(function(response) {
-                            this.messages = response.data.Messages
-                        }).catch(function(error) {
-                            console.log(error)
-                        });
-                    },
-                }
-            })
-        </script>
-        <script type="text/javascript">
-            function checkValue(val){
-                var element=document.getElementById('sectionSpecify');
-                if (val == 'Other') {
-                    element.style.display='block';
-                } else {  
-                    element.style.display='none';
-                }
-            }
-        </script>
-    </main>
+{{ define "layout" }}
+    <!DOCTYPE html>
+    <html lang="en">
+        {{ template "head" .}}
+        <body>
+            {{ template "navbar" . }}
+            <main id="content" class="grid fade-in">      
+                <section class="txt-heavy">
+                <p>We are truly excided, you want to join our club ;)</p>
+                <p>Before make it official, we need to ask you a few questions.</p>
+                <form action="/invitation" method="post" target="responseIFrame">
+                    <div>
+                        <label for="email">Email:</label><br>
+                        <input type="email" name="email" id="email" class="form-control" placeholder="email" required autofocus>
+                    </div>
+                    <div>
+                        <label for="email">Who are you?</label><br>
+                        <select id="whoareyou" name="whoareyou"  required>
+                            <option value="HeadHunter">Head Hunter</option>
+                            <option value="Company">Company</option>
+                            <option value="NoProfit">No Profit</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="whyjoin">Why would you like to join us?</label><br>
+                        <input type="text" name="whyjoin" id="whyjoin" class="form-control" placeholder="Why joining us" required>
+                    </div>
+                    <div>
+                        <label for="whichcompanies">Which companies would you ask us to monitor?</label><br>
+                        <input type="text" name="whichcompanies" class="form-control" id="whichcompanies" placeholder="Which companies" required>
+                    </div>
+                    <div>
+                        <label for="anythingelse">Anything else?</label><br>
+                        <input type="text" name="anythingelse" class="form-control" id="anythingelse" placeholder="Anything else" required>
+                    </div>
+                    <div>
+                        <input type="submit" name="submit" value="submit">
+                    </div>
+                </form>
+                <iframe id="responseIFrame" name="responseIFrame" style="border-width: 0px; width: 100%;"></iframe>
+            </main>
+            {{ template "footer" . }}
+            <script>
+                var frame = document.getElementById('responseIFrame');
+                frame.onload = function () {
+                    frame.contentWindow.document.querySelector('body').style.fontSize = '30px';
+                };
+            </script>
+        </body>
+    </html>
 {{ end }}

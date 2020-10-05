@@ -1,8 +1,6 @@
 package main
 
 import (
-	"database/sql"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -11,24 +9,11 @@ import (
 )
 
 type User struct {
-	Id                int    `db:"id"`
-	UserName          string `db:"username"    validate:"required,min=5,max=15"`
-	Email             string `db:"email"       validate:"required,email"`
-	LoginPassword     string
-	Password          string         `db:"password" validate:"required,min=8,`
-	CreatedAt         time.Time      `db:"createdat"`
-	UpdatedAt         time.Time      `db:"updatedat"`
-	DeletedAt         time.Time      `db:"deletedat"`
-	FirstName         sql.NullString `db:"firstname"`
-	LastName          sql.NullString `db:"lastname"`
-	DateOfBirth       sql.NullString `db:"dateofbirth"`
-	Country           sql.NullString `db:"country"`
-	City              sql.NullString `db:"city"`
-	Gender            sql.NullString `db:"gender"`
-	CurrentPassword   string         `                 validate:"required,min=8,eqfield=Password"`
-	NewPassword       string         `db:"newpassword" validate:"eqfield=RepeatNewPassword"`
-	RepeatNewPassword string         `                 validate:"eqfield=NewPassword"`
-	InvitationCode    string         `                 validate:"required"`
+	Id            int
+	Email         string
+	UserName      string
+	LoginPassword string
+	Password      string
 }
 
 type Session struct {
@@ -57,7 +42,7 @@ func (user *User) CreateSession() (session Session) {
 	fmt.Println(Gray(8-1, "Starting CreateSession..."))
 	statement := `INSERT INTO sessions (uuid, email, userid, createdat)
                   VALUES ($1, $2, $3, $4)
-                  RETURNING id, uuid, email, userid, createdat`
+                  RETURNING id, uuid, email, userid, createdat;`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
 		return
@@ -91,7 +76,7 @@ func (session *Session) CheckSession() (valid bool, err error) {
                         userid,
                         createdat
                       FROM sessions
-                      WHERE uuid = $1`,
+                      WHERE uuid = $1;`,
 		session.Uuid,
 	).
 		Scan(
@@ -127,214 +112,65 @@ func (session *Session) SetSessionDeletedAtByUUID() {
 	}
 }
 
-func (user *User) CreateUser() {
-	fmt.Println(Gray(8-1, "Starting Create..."))
-	statement := `INSERT INTO users
-                  (username, email, password, createdat, updatedat)
-                  VALUES ($1, $2, $3, $4, $5)
-                  RETURNING id, createdat, updatedat`
+func InsertUser(email string, username string, password string) {
+	fmt.Println(Gray(8-1, "Starting InsertUser..."))
+	statement := `INSERT INTO users (email, username, password, createdat, updatedat)
+                  VALUES ($1, $2, $3, current_timestamp, current_timestamp)
+                  RETURNING id, createdat, updatedat;`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
-
-	err = stmt.QueryRow(
-		user.UserName,
-		user.Email,
-		Encrypt(user.Password),
-		time.Now(),
-		time.Now(),
-	).Scan(
-		&user.Id,
-		&user.CreatedAt,
-		&user.UpdatedAt,
-	)
+	stmt.QueryRow(email, username, Encrypt(password))
 	if err != nil {
 		panic(err.Error())
 	}
 }
 
-func (user *User) UserByEmail() {
+func UserByEmail(email string) (user User) {
 	fmt.Println(Gray(8-1, "Starting UserByEmail..."))
-	err := Db.QueryRow(`SELECT
-                        id,
-                        username,
-                        email,
-                        password,
-                        createdat,
-                        updatedat,
-                        firstname,
-                        lastname,
-                        dateofbirth,
-                        country,
-                        city,
-                        gender
-                      FROM users
-                      WHERE email = $1`,
-		user.Email,
-	).
-		Scan(
-			&user.Id,
-			&user.UserName,
-			&user.Email,
-			&user.Password,
-			&user.CreatedAt,
-			&user.UpdatedAt,
-			&user.FirstName,
-			&user.LastName,
-			&user.DateOfBirth,
-			&user.Country,
-			&user.City,
-			&user.Gender,
-		)
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func UserById(userId int) (user User) {
-	fmt.Println(Gray(8-1, "Starting UserById..."))
-	err := Db.QueryRow(`SELECT
-                        id,
-                        username,
-                        email,
-                        password,
-                        createdat,
-                        updatedat,
-                        firstname,
-                        lastname,
-                        dateofbirth,
-                        country,
-                        city,
-                        gender
-                      FROM users
-                      WHERE id = $1`, userId).
-		Scan(
-			&user.Id,
-			&user.UserName,
-			&user.Email,
-			&user.Password,
-			&user.CreatedAt,
-			&user.UpdatedAt,
-			&user.FirstName,
-			&user.LastName,
-			&user.DateOfBirth,
-			&user.Country,
-			&user.City,
-			&user.Gender,
-		)
-	if err != nil {
-		panic(err.Error())
-	}
+	_ = Db.QueryRow(`
+					SELECT
+						id,
+						email,
+                        password
+					FROM users
+					WHERE email = $1;`, email).Scan(&user.Id, &user.Email, &user.Password)
 	return
-}
-
-func (user User) UpdateUser() {
-	fmt.Println(Gray(8-1, "Starting UpdateUser..."))
-	statement := `UPDATE users SET 
-                    username=$2,
-                    email=$3,
-                    password=$4,
-                    firstname=$5,
-                    lastname=$6,
-                    country=$7,
-                    city=$8,
-                    gender=$9,
-                    dateofbirth=$10,
-                    updatedat=$11
-                  WHERE id=$1`
-	stmt, err := Db.Prepare(statement)
-	if err != nil {
-		panic(err.Error())
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(
-		user.Id,
-		user.UserName,
-		user.Email,
-		user.NewPassword,
-		user.FirstName.String,
-		user.LastName.String,
-		user.Country.String,
-		user.City.String,
-		user.Gender.String,
-		user.DateOfBirth.String,
-		time.Now())
-
-	if err != nil {
-		panic(err.Error())
-	}
-}
-
-func (user User) UpdateUserUpdates() {
-	fmt.Println(Gray(8-1, "Starting UpdateUserUpdates..."))
-	statement := `INSERT INTO usersupdates (userid, data, createdat) 
-                    VALUES ($1, $2, $3)`
-
-	stmt, err := Db.Prepare(statement)
-	if err != nil {
-		panic(err.Error())
-	}
-	defer stmt.Close()
-
-	user_json, err := json.Marshal(user)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	_, err = stmt.Exec(
-		user.Id,
-		user_json,
-		time.Now())
-	if err != nil {
-		panic(err.Error())
-	}
 }
 
 func (user *User) CreateToken(token string) {
 	fmt.Println(Gray(8-1, "Starting CreateToken..."))
-	statement := `INSERT INTO resetpasswords (userid, token, createdat, expiredat)
-                  VALUES ($1, $2, $3, $4)`
+	statement := `INSERT INTO resetpasswords (userid, token, createdat, expiredat) VALUES ($1, $2, $3, $4);`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
 		return
 	}
 	defer stmt.Close()
-
 	created_at := time.Now()
 	expired_at := time.Now().Local().Add(time.Minute * time.Duration(10))
-
-	stmt.QueryRow(
-		user.Id,
-		token,
-		created_at,
-		expired_at,
-	)
+	stmt.QueryRow(user.Id, token, created_at, expired_at)
 }
 
-func (user *User) UserByToken(token string) {
+func UserByToken(token string) (user User) {
 	fmt.Println(Gray(8-1, "Starting UserByToken..."))
-	current_timestamp := time.Now()
-	err := Db.QueryRow(`SELECT
-                        u.id,
+	_ = Db.QueryRow(`
+					SELECT
+						u.id,
                         u.email,
                         u.username
-                      FROM resetpasswords r
-                      LEFT JOIN users u ON (r.userid = u.id)
-                      WHERE r.token = $1
-                      AND $2 < r.expiredat
-                      AND r.consumedat IS NULL`, token, current_timestamp).
-		Scan(&user.Id, &user.Email, &user.UserName)
-	if err != nil {
-		panic(err.Error())
-	}
+					FROM resetpasswords r
+					LEFT JOIN users u ON (r.userid = u.id)
+					WHERE r.token = $1
+					AND current_timestamp < r.expiredat
+					AND r.consumedat IS NULL;`, token).Scan(&user.Id, &user.Email, &user.UserName)
+	return
 }
 
-func (user *User) ChangePassword(password string) {
-	fmt.Println(Gray(8-1, "Starting ChangePassword..."))
-	statement := `UPDATE users SET password=$1 WHERE id=$2`
+func (user *User) UpdatePassword(password string) {
+	fmt.Println(Gray(8-1, "Starting UpdatePassword..."))
+	statement := `UPDATE users SET password=$1 WHERE id=$2;`
 	stmt, err := Db.Prepare(statement)
 	if err != nil {
 		panic(err.Error())
@@ -344,4 +180,15 @@ func (user *User) ChangePassword(password string) {
 		password,
 		user.Id,
 	)
+}
+
+func (user *User) UpdateResetPassword(token string) {
+	fmt.Println(Gray(8-1, "Starting UpdateResetPassword..."))
+	statement := `UPDATE resetpasswords SET consumedat=current_timestamp WHERE userid=$1 AND token=$2;`
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer stmt.Close()
+	stmt.QueryRow(user.Id, token)
 }

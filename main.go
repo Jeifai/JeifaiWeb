@@ -16,27 +16,24 @@ func main() {
 	r.PathPrefix("/static/").Handler(s)
 
 	r.HandleFunc("/", Home).Methods("GET")
-	r.HandleFunc("/how", How).Methods("GET")
-	r.HandleFunc("/features", Features).Methods("GET")
-	r.HandleFunc("/pricing", Pricing).Methods("GET")
-	r.HandleFunc("/faq", Faq).Methods("GET")
+
+	r.HandleFunc("/blog", Blog).Methods("GET")
+	r.HandleFunc("/blog/{article}", RouteBlogArticle).Methods("GET")
+	r.HandleFunc("/subscribe", BlogSubscribe).Methods("POST")
 
 	r.HandleFunc("/invitation", StartInvitation).Methods("GET")
-	r.HandleFunc("/invitation", SubmitInvitation).Methods("PUT")
+	r.HandleFunc("/invitation", SubmitInvitation).Methods("POST")
 
 	r.HandleFunc("/login", Login).Methods("GET")
 	r.HandleFunc("/authenticate", Authenticate).Methods("POST")
 	r.HandleFunc("/logout", Logout).Methods("GET")
 	r.HandleFunc("/signup", Signup).Methods("GET")
-	r.HandleFunc("/signup", SignupAccount).Methods("PUT")
+	r.HandleFunc("/signup", SignupAccount).Methods("POST")
 
 	r.HandleFunc("/forgot_password", ForgotPassword).Methods("GET")
-	r.HandleFunc("/forgot_password", SetForgotPassword).Methods("PUT")
+	r.HandleFunc("/forgot_password", SetForgotPassword).Methods("POST")
 	r.HandleFunc("/reset_password/{token}", ResetPassword).Methods("GET")
-	r.HandleFunc("/reset_password/{token}", SetResetPassword).Methods("PUT")
-
-	r.HandleFunc("/profile", Profile).Methods("GET")
-	r.HandleFunc("/profile", UpdateProfile).Methods("PUT")
+	r.HandleFunc("/reset_password/{token}", SetResetPassword).Methods("POST")
 
 	r.HandleFunc("/j/{urlshort}", ManageUrlShort).Methods("GET")
 
