@@ -31,9 +31,9 @@ func SubmitInvitation(w http.ResponseWriter, r *http.Request) {
 	err := CreateInvitation(email, whyjoin, whoareyou, whichcompanies, anythingelse)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err != nil {
+	if err.Error() == "sql: no rows in result set" {
 		err = SendInvitationEmail(email)
-		if err != nil {
+		if err == nil {
 			json.NewEncoder(w).Encode("Success! We have sent you an email")
 		} else {
 			json.NewEncoder(w).Encode("Something was wrong, please contact roberto@jeifai.com")

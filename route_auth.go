@@ -61,28 +61,6 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", 302)
 }
 
-func Signup(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting Signup..."))
-	templates := template.Must(
-		template.ParseFiles(
-			"templates/OUT_navbar.html",
-			"templates/OUT_head.html",
-			"templates/OUT_footer.html",
-			"templates/OUT_subscribe.html",
-			"templates/OUT_signup.html"))
-	templates.ExecuteTemplate(w, "layout", nil)
-}
-
-func SignupAccount(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(Gray(8-1, "Starting SignupAccount..."))
-	email := r.FormValue("email")
-	username := r.FormValue("username")
-	password := r.FormValue("password")
-	// invitationcode := r.FormValue("invitationcode")
-	CreateUser(email, username, password)
-	SendSignUpEmail(email, username)
-}
-
 func ForgotPassword(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting ForgotPassword..."))
 	templates := template.Must(

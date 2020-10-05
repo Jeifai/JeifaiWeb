@@ -6,12 +6,6 @@ import (
 	. "github.com/logrusorgru/aurora"
 )
 
-func InvitationIdByEmail(email string) (err error) {
-	fmt.Println(Gray(8-1, "Starting InvitationIdByEmail..."))
-	Db.QueryRow(`SELECT i.id FROM invitations i WHERE i.email=$1`, email)
-	return
-}
-
 func CreateInvitation(email string, whyjoin string, whoareyou string, whichcompanies string, anythingelse string) (err error) {
 	fmt.Println(Gray(8-1, "Starting CreateInvitation..."))
 	statement := `INSERT INTO invitations (uuid, email, whyjoin, whoareyou, whichcompanies, anythingelse, createdat)
@@ -22,6 +16,15 @@ func CreateInvitation(email string, whyjoin string, whoareyou string, whichcompa
 	}
 	defer stmt.Close()
 	err = stmt.QueryRow(createUUID(), email, whyjoin, whoareyou, whichcompanies, anythingelse).Scan()
+	return
+}
+
+func InvitationIdByUuidAndEmail(email string, uuid string) (err error) {
+	fmt.Println(Gray(8-1, "Starting InvitationIdByUuidAndEmail..."))
+	err = Db.QueryRow(`
+					SELECT id FROM invitations
+                   	WHERE email=$2 AND uuid=$1
+                   	AND usedat IS NULL`, email, uuid).Scan()
 	return
 }
 
@@ -39,6 +42,20 @@ func InsertSubscriberByEmail(email string) {
 	stmt.QueryRow(
 		email,
 	)
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+func UpdateInvitation(email string) {
+	fmt.Println(Gray(8-1, "Starting UpdateInvitation..."))
+	statement := `UPDATE invitations SET usedat = current_timestamp WHERE email=$1;`
+	stmt, err := Db.Prepare(statement)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(email)
 	if err != nil {
 		panic(err.Error())
 	}

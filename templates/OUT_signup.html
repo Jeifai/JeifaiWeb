@@ -5,7 +5,7 @@
         <body>
             {{ template "navbar" . }}
             <main id="content" class="grid fade-in">
-                <form action="/signup" method="post" target="emptyIFrame">
+                <form action="/signup" method="post" target="responseIFrame">
                     <div class="form-group">
                         <label for="username" class="text-info">Username:</label><br>
                         <input type="username" name="username" id="username" class="form-control" placeholder="username" minlength="3" required autofocus>
@@ -26,8 +26,15 @@
                         <input type="submit" name="submit" value="submit">
                     </div>
                 </form>
+                <iframe id="responseIFrame" name="responseIFrame" style="border-width: 0px; width: 100%;"></iframe>
             </main>
             {{ template "footer" . }}
+            <script>
+                var frame = document.getElementById('responseIFrame');
+                frame.onload = function () {
+                    frame.contentWindow.document.querySelector('body').style.fontSize = '30px';
+                };
+            </script>
         </body>
     </html>
 {{ end }}
