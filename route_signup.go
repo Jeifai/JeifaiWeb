@@ -32,7 +32,7 @@ func SignupAccount(w http.ResponseWriter, r *http.Request) {
 	invitation_id := SelectInvitationIdByUuidAndEmail(email, invitationcode)
 	if invitation_id != 0 {
 		UpdateInvitation(email)
-		CreateUser(email, username, password)
+		InsertUser(email, username, password)
 		SendSignUpEmail(email, username)
 		json.NewEncoder(w).Encode("Success! We have sent you an email")
 	} else {

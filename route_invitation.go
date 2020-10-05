@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -36,9 +36,9 @@ func SubmitInvitation(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			json.NewEncoder(w).Encode("Success! We have sent you an email")
 		} else {
-			json.NewEncoder(w).Encode("Something was wrong, please contact roberto@jeifai.com")
+			json.NewEncoder(w).Encode("Something was wrong, please contact admin")
 		}
 	} else {
-		json.NewEncoder(w).Encode("Something was wrong, please contact roberto@jeifai.com")
+		json.NewEncoder(w).Encode("Something was wrong, please contact admin")
 	}
 }

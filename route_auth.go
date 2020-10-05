@@ -26,7 +26,7 @@ func Authenticate(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Authenticate..."))
 	user := UserByEmail(r.FormValue("email"))
 	user.LoginPassword = r.FormValue("password")
-	if user.Password == Encrypt(user.LoginPassword) {
+	if user.Id != 0 && user.Password == Encrypt(user.LoginPassword) {
 		fmt.Println(Blue("Log in valid..."))
 		session := user.CreateSession()
 		cookie := http.Cookie{
@@ -46,7 +46,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting Logout..."))
 	sess := GetSession(r)
 	sess.SetSessionDeletedAtByUUID()
-	d_cookie := http.Cookie{// Delete cookie setting it in the past
+	d_cookie := http.Cookie{ // Delete cookie setting it in the past
 		Name:   "_cookie",
 		Value:  sess.Uuid,
 		MaxAge: -1,
@@ -73,7 +73,7 @@ func SetForgotPassword(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	if user.Id == 0 {
-		json.NewEncoder(w).Encode("Something was wrong, please contact roberto@jeifai.com")
+		json.NewEncoder(w).Encode("Something was wrong, please contact admin")
 	} else {
 		token := GenerateToken()
 		user.CreateToken(token)
@@ -94,7 +94,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 				"templates/OUT_head.html",
 				"templates/OUT_footer.html",
 				"templates/OUT_404.html"))
-			templates.ExecuteTemplate(w, "layout", nil)
+		templates.ExecuteTemplate(w, "layout", nil)
 	} else {
 		infos := struct{ Token string }{token}
 		templates := template.Must(
@@ -103,14 +103,14 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 				"templates/OUT_head.html",
 				"templates/OUT_footer.html",
 				"templates/OUT_resetPassword.html"))
-			templates.ExecuteTemplate(w, "layout", infos)
+		templates.ExecuteTemplate(w, "layout", infos)
 	}
 }
 
 func SetResetPassword(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(Gray(8-1, "Starting SetResetPassword..."))
 	password := r.FormValue("password")
-	repeatPassword := r.FormValue("repeatPassword")	
+	repeatPassword := r.FormValue("repeatPassword")
 	token, _ := mux.Vars(r)["token"]
 	user := UserByToken(token)
 	w.Header().Set("Content-Type", "application/json")
@@ -118,13 +118,14 @@ func SetResetPassword(w http.ResponseWriter, r *http.Request) {
 	if user.Id > 0 {
 		if password == repeatPassword {
 			e_password := Encrypt(password)
-			user.ChangePassword(e_password)
+			user.UpdatePassword(e_password)
+			user.UpdateResetPassword(token)
 			user.SendConfirmationResetPasswordEmail()
 			json.NewEncoder(w).Encode("Success! We have sent you an email")
 		} else {
 			json.NewEncoder(w).Encode("The two passwords do not match")
 		}
 	} else {
-		json.NewEncoder(w).Encode("Something was wrong, please contact roberto@jeifai.com")
+		json.NewEncoder(w).Encode("Something was wrong, please contact admin")
 	}
 }

@@ -33,10 +33,7 @@ func main() {
 	r.HandleFunc("/forgot_password", ForgotPassword).Methods("GET")
 	r.HandleFunc("/forgot_password", SetForgotPassword).Methods("POST")
 	r.HandleFunc("/reset_password/{token}", ResetPassword).Methods("GET")
-	r.HandleFunc("/reset_password/{token}", SetResetPassword).Methods("PUT")
-
-	r.HandleFunc("/profile", Profile).Methods("GET")
-	r.HandleFunc("/profile", UpdateProfile).Methods("PUT")
+	r.HandleFunc("/reset_password/{token}", SetResetPassword).Methods("POST")
 
 	r.HandleFunc("/j/{urlshort}", ManageUrlShort).Methods("GET")
 
