@@ -25,7 +25,7 @@ func ServeMetabaseJobs(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err.Error())
 	}
-	iframeUrl := "http://metabase.jeifai.com/embed/dashboard/" + tokenString
+	iframeUrl := "https://metabase.jeifai.com/embed/dashboard/" + tokenString
 	infos := struct {
 		Metabase string
 	}{
@@ -51,7 +51,7 @@ func ServeMetabaseCompany(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err.Error())
 	}
-	iframeUrl := "http://metabase.jeifai.com/embed/dashboard/" + tokenString
+	iframeUrl := "https://metabase.jeifai.com/embed/dashboard/" + tokenString
 	infos := struct {
 		Metabase string
 	}{
