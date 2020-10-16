@@ -1,0 +1,94 @@
+{{ define "layout" }}
+	<!DOCTYPE html>
+	<html lang="en">
+		{{ template "head" .}}
+		<body>
+			{{ template "navbar" . }}
+		    <main id="content" class="grid fade-in">
+		    	<p>
+		            <h1>Why and how we started using Notion at Jeifai.</h1>
+		        </p>
+		        <section class="txt-heavy" style="text-align: justify; font-size: 20px;">
+					<div>
+						<h3>A familiar struggle.</h3><br>
+						<p>An idea starts to flow on your mind, it seems promising, it requires researches.</p>
+						<p>You create a folder on Google Drive. Inside, two folders.
+						Inside those folders, a river of spreadsheets, documents, PDFs.</p>
+						<p>Each document has its own style. There is no structure, no consistency, no connections between files.</p>
+						<p>Soon you start to realise how complex is the management of this information, and this is just the beginning.</p>
+						<p>Frustration.</p>
+		            </div>
+		            <div>
+		            	<h3>Picking the right tool is hard</h3><br>
+		            	<p>It seems obvious, but a tool is needed to manage this aspect of your company.</p>
+		            	<p>For decades an industry has grown trying to solve these kind of challenges.
+		            	Sometimes because of the price, or because of limited time, or because of pure laziness,
+		            	but it is never the right moment to try to get out of this jungle of files/madness.</p>
+		            	<p>Luckily, at Jeifai we have just started, so we can take advantage of our freshness to get important decisions about tooling.</p>
+		            </div>
+		            <div>
+		            	<h3>Born in the USA</h3><br>
+		            	<p>As often happens, a saviour comes from the other side of the ocean.</p>
+		            	<p>A bit more than one year ago, while browsing <a href="https://qz.com/" target="_blank">Quartz</a> I came across a new tool to enhance productivity. <a href="https://qz.com/work/1640095/five-productivity-and-creativity-apps-popular-in-silicon-valley/" target="_blank">Quartz was claiming about a "limitless" software called Notion</a>.</p>
+		            	<p>Driven by a wave of curiosity, I created an account, giving the tool a first quick look, which mostly was exploring the interface as well as the ready-to-use templates.</p>
+			            <figure>
+			            	<img style="width:50%;height:50%" src="/static/images/blog/jeifai_is_using_notion/notion.png">
+			            	<figcaption style="font-size: 12px;">
+			            		Fig 2 - Notion's logo
+			            	</figcaption>
+			            </figure>
+		            	<p>Since then <a href="https://www.notion.so/" target="_blank">Notion</a> stuck in my mind, and during the following months, more and more often people from Twitter were recommending with their heart to dive into Notion. Then companies were starting creating their career page using it, then freelancer were using it to create their blogs.</p>
+		            	<p>On the time I am writing this post (16th October 2020), I decided to spend the whole day migrating all the documents created till now for Jeifai from Google Drive to Notion.</p>
+		            	<p>Day zero I am already so grateful of the decision I have taken this morning.</p>
+		            </div>
+		            <div>
+		            	<h3>A solid foundation</h3><br>
+			            <figure>
+			            	<img src="/static/images/blog/jeifai_is_using_notion/buildingsite.jpg">
+			            	<figcaption style="font-size: 12px;">
+			            		Fig 3 - A typical scenario in a building site
+			            	</figcaption>
+			            </figure>
+		            	<p>Initial implementation of a tool is the part where you want to make things right, isn't?
+		            	Googling ideas as well as following pure instinct, here the main sections of our Notion:</p>
+						<ul><br>
+							<li><b>Team</b>: an incredible pool of talented people, which might help us along the way.</li>
+							<li><b>Marketing</b>: high level strategy, as well as a detail of our channels.</li>
+							<li><b>Customers</b>: segmentation, and a section called Leads containing a sort of CRM.</li>
+							<li><b>Goals</b>: short, medium and long term goals of Jeifai. Curious to know more?</li>
+							<li><b>Meetings</b>: any conversation, any note, stored, in one place. For the eternity.</li>
+							<li><b>Pitch</b>: as startup this section is essential to keep everyone on the same page.</li>
+							<li><b>Links</b>: list of competitors, HR tools, ideas and so on.</li>
+						</ul>
+						<p>Three other really important sections will be created in the upcoming days:<br>
+						Engineering, Product and Design.</p>
+		            </div>
+		            <div>
+		            	<h3>Future challenges</h3><br>
+		            	<p>Using Notion does not replace existing tools, such as our beloved Google Drive (we'll never betray you).</p>
+		            	<p>We are sure those tools can gladly coexist, supporting each other, filling each other gaps, simultaneously leveraging the growth of Jeifai.</p>
+		            	<p>Future challenges consist in keeping the tool growing without messing around with the structure, ending up in having a similar situation which made us choosing Notion.</p>
+		            	<p>We truly believe in the benefit of our choice, and only the time will tell us if this decision will pay dividends to us.</p>
+		            	<p>Stay tuned, another blog article about this topic will arrive sooner than later.</p>
+		            </div>
+		            <div>
+		            	<h3>A final consideration</h3><br>
+		            	<p>While building Jeifai we have learnt a lot about web applications.</p>
+		            	<p>Doing simple things is easy, but as soon as you expand your ideas, the amount of code grows and everything get complicated. Entropy at its best.</p>
+			            <figure>
+			            	<img style="width:50%;height:50%" src="/static/images/blog/jeifai_is_using_notion/notionpeople.png">
+			            	<figcaption style="font-size: 12px;">
+			            		Fig 4 - People at work - <a href="https://www.notion.so/" target="_blank">Source</a>
+			            	</figcaption>
+			            </figure>
+		            	<p>It is difficult to image the level of hard engineering/producteering behind Notion as a whole.
+		            	That interface, the endless level of customizing, the responsiveness... just wow.</p>
+		            	<p>Here, totally public, I want to express my deep respect thanking <a href="https://www.notion.so/about" target="_blank">all the people</a> working behind the scenes on this amazing software.</p>
+		            </div>
+		        </section>
+		        {{ template "subscribe" . }}
+	    	</main>
+	    	{{ template "footer" . }}
+		</body>
+	</html>
+{{ end }}
