@@ -13,6 +13,10 @@ export default {
         let styleElem = document.createElement('style');
         styleElem.textContent = ``
         document.head.appendChild(styleElem);
+        gtag('config', 'UA-180812973-1', {
+          'page_title' : 'CompanyExplorer',
+          'page_path': '/CompanyExplorer'
+        });
     },
     created () {
         this.serveMetabaseCompany()
