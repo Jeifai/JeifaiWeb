@@ -1,0 +1,26 @@
+{{ define "layout" }}
+    <!DOCTYPE html>
+    <html lang="en">
+        {{ template "head" .}}
+        <body>
+            {{ template "navbar" . }}  
+            <div>
+                <iframe
+                    src="{{ .Metabase }}"
+                    style="height: 160vh; width: 100%; border: none;"
+                    allowtransparency
+                ></iframe>
+            </div>
+            <div>
+                {{ template "footer" . }}
+            </div>
+            <style>
+                .footer {
+                    margin: 0;
+                    padding: 0;
+                    text-align: center;
+                }
+            </style>
+        </body>
+    </html>
+{{ end }}

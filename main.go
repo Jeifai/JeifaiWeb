@@ -24,6 +24,8 @@ func main() {
 	r.HandleFunc("/invitation", StartInvitation).Methods("GET")
 	r.HandleFunc("/invitation", SubmitInvitation).Methods("POST")
 
+	r.HandleFunc("/data", Data).Methods("GET")
+
 	r.HandleFunc("/login", Login).Methods("GET")
 	r.HandleFunc("/authenticate", Authenticate).Methods("POST")
 	r.HandleFunc("/logout", Logout).Methods("GET")
