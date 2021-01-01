@@ -1,0 +1,64 @@
+{{ define "layout" }}
+<!DOCTYPE html>
+<html lang="en">
+   {{ template "head" .}}
+   <body>
+      {{ template "navbar" . }}
+      <main id="content" class="grid fade-in">
+         <p>
+         <h1>The journey so far.</h1>
+         </p>
+         <section class="txt-heavy" style="text-align: justify; font-size: 20px;">
+            <div>
+               <h3>Rollercoaster</h3>
+               <br>
+               <p>It might sounds obvious but let's repeat it: 2020 has been an unusual year from too many points of view.</p>
+               <p>Without taking into account the dramatic events occoured with the global pandemic emergency, Jeifai's develop has been an incredible rollercoaster till now.</p>
+               <p>The idea to start this project has came so naturally that from one day to another, the team was diving into coding at a pace never knew before.</p>
+               <p>As a proper rollercoaster would do, this year has fluctuated across moments of slow speed into moments at speed of lights.</p>
+               <p>Sometimes ideas were flourishing so fast, that was necessary to completely stop any development in order to figure them out properly.</p>
+               <p>An enourmous part of the work has been done, but now the rollearcoasted is facing new challenges.</p>
+               <p>Exciting times ahead!</p>
+            </div>
+            <figure>
+               <img src="/static/images/blog/the_journey_so_far/TODO.jpg">
+               <figcaption style="font-size: 12px;">
+                  TO DO
+               </figcaption>
+            </figure>
+            <div>
+         </section>
+         <section class="txt-heavy" style="text-align: justify; font-size: 20px;">
+            <div>
+               <h3>Technologies</h3>
+               <br>
+               <p>TO DO.</p>
+            </div>
+            <figure>
+               <img src="/static/images/blog/the_journey_so_far/TODO.jpg">
+               <figcaption style="font-size: 12px;">
+                  TO DO
+               </figcaption>
+            </figure>
+            <div>
+         </section>
+         <section class="txt-heavy" style="text-align: justify; font-size: 20px;">
+            <div>
+               <h3>A wish list</h3>
+               <br>
+               <p>TO DO.</p>
+            </div>
+            <figure>
+               <img src="/static/images/blog/the_journey_so_far/TODO.jpg">
+               <figcaption style="font-size: 12px;">
+                  TO DO
+               </figcaption>
+            </figure>
+            <div>
+         </section>
+         {{ template "subscribe" . }}
+      </main>
+      {{ template "footer" . }}
+   </body>
+</html>
+{{ end }}
