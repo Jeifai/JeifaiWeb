@@ -1,0 +1,99 @@
+{{ define "layout" }}
+<!DOCTYPE html>
+<html lang="en">
+   {{ template "head" .}}
+   <body>
+      {{ template "navbar" . }}
+      <main id="content" class="grid fade-in">
+         <p>
+         <h1>The journey so far.</h1>
+         </p>
+         <section class="txt-heavy" style="text-align: justify; font-size: 20px;">
+            <div>
+               <h3>Roller Coaster</h3>
+               <br>
+               <p>It might sound obvious, but let's repeat it: 2020 has been an unusual year from too many points of view.
+               Without taking into account the dramatic events occurred with the global pandemic emergency, Jeifai's develop has been an incredible roller coaster till now.</p>
+               <p>The idea to start this project has come so naturally that from one day to another, the team dived into coding at a pace never known before.</p>
+               <p>As a proper roller coaster would do, this year had fluctuated across moments of slow speed into moments at the speed of lights.
+               Sometimes the ideas were flourishing so fast, that was necessary to completely stop any development in order to figure them out properly.</p>
+               <p>An enormous part of the work has been done, but now the roller coaster is facing new challenges.</p>
+               <p>Exciting times ahead!</p>
+            </div>
+            <figure>
+               <img src="/static/images/blog/the_journey_so_far/rollercoaster.jpg">
+               <figcaption style="font-size: 12px;">
+                  Building something new is like a roller coaster :)
+               </figcaption>
+            </figure>
+            <div>
+         </section>
+         <section class="txt-heavy" style="text-align: justify; font-size: 20px;">
+            <div>
+               <h3>Technologies</h3>
+               <br>
+               <p>We are here to talk about technology.</p>
+               <p>Developing Jeifai has required to learn an amount of new tech stuff not predictable at the beginning, and it has been a really beautiful journey.</p>
+               <p>First of all, the whole backend is written in Golang, and that was the first thing that needs to be learned.
+               The idea was to try something new, more solid than the standalone Python or Ruby.
+               Golang has been a fantastic journey, because thanks to it new levels of programming understanding have been reached, mostly from an architectural point of view.
+               Developing a medium size web application requires a good knowledge of patterns, and Golang has revealed as an optimal choice because of its flexibility.</p>
+               <p>Then it came the frontend, and there has been a pretty long debate about which framework start to use.
+               VueJS has won the challenge, because of its freshness and low entry level barriers.
+               Vue is a pure pleasure to use, particularly in moving data across different sections of the application.</p>
+               <p>Both Goalng and Vue have required to learn new paradigms, syntax, and of course, plenty of libraries.</p>
+               <p>In terms of hosting, Google Cloud Platform has been explored as never before: App Engine, Kubernetes Engine, Database, Billing, Scheduling and so on and so fort.
+               Such a pleasure working with GCP!</p>
+               <p>From a database point of view, Postgresql was the choice without any doubts.
+               If until now the team was fully capable of extracting data, Jeifai has requested to write a large amount of queries to insert data, a really valuable experience.</p>
+               <p>We have learnt how to deploy a business intelligence software (Metabase), ensuring its safety with HTTPS.
+               So many pages of documentations have been explored!</p>
+               <p>Of course, modern software requires modern pipelines, so Jeifai is also driven by Continuous Integration methodologies, making new deploys always available and ready to go with a minimum effort.</p>
+               <p>Time to talk about machine learning, big things are happening in this direction.
+               During the last two months of 2020, we have been spending a huge amount of time learning how to apply machine learning to tabular data.
+               Thanks to Kaggle we have achieved impressive progresses, and now we are almost ready to apply all this knowledge here at Jeifai.</p>
+               <p>Last but not least, we moved from Linux Mint to Arch Linux, and we started using Vim as main text editor.</p>
+               <p>Pretty impressive how many technical things we got, isn't?</p>
+            </div>
+            <figure>
+               <img src="/static/images/blog/the_journey_so_far/technology.jpg">
+               <figcaption style="font-size: 12px;">
+                  Technology is shaping our whole world and we want to be part of it
+               </figcaption>
+            </figure>
+            <div>
+         </section>
+         <section class="txt-heavy" style="text-align: justify; font-size: 20px;">
+            <div>
+               <h3>Soft skills are much harder</h3>
+               <br>
+               <p>As rough estimation, learn a soft skill require the same effort as learning five hard skills.
+               A soft skill is much harder to be proved and verified.
+               Considering you mostly need to practice offline, soft skills are processes requiring longer time.</p>
+               <p>The benefits coming from soft skills are more visible in the long run instead in the short term.
+               For this reason it is important to stay focused and keep working on building such skills, without giving up because of lack of results in the short term.</p>
+               <p>Soft skills are the direction Jeifai needs to take in order to flourish.
+               Ability to talk, to sell, to negotiate, to convince, are a few of the skills necessary to "win this battle".</p>
+               <p>What Jeifai is looking for is someone capable of mastering all the soft skills necessary to let a startup fluorishing.
+               Yes, we need a CEO.</p>
+            </div>
+            <figure>
+               <img src="/static/images/blog/the_journey_so_far/soft.jpg">
+               <figcaption style="font-size: 12px;">
+                 Learning a soft skills is a long and hard process, but really rewarding 
+               </figcaption>
+            </figure>
+            <div>
+         </section>
+         <section class="txt-heavy" style="text-align: justify; font-size: 20px;">
+            <div>
+               <br>
+               <p>A big thank to <a href="https://unsplash.com/">Unsplash</a> for the beautiful images!</p>
+            </div>
+         </section>
+         {{ template "subscribe" . }}
+      </main>
+      {{ template "footer" . }}
+   </body>
+</html>
+{{ end }}
