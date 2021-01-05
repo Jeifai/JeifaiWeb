@@ -1543,9 +1543,7 @@ input[type=submit] {
 /* Manage social media section within footer */
 
 ul#social-horizontal-list {
-	min-width: 696px;
 	list-style: none;
-	padding-top: 20px;
 }
 ul#social-horizontal-list li {
  display: inline;
